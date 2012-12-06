@@ -23,7 +23,64 @@ SOFTWARE.
 
 class ToopherAPITests extends PHPUnit_Framework_TestCase {
 
+    protected static $oldKey;
+    protected static $oldSecret;
+    public static function setUpBeforeClass(){
+        self::$oldKey = getenv('TOOPHER_CONSUMER_KEY');
+        self::$oldSecret = getenv('TOOPHER_CONSUMER_SECRET');
+        putenv('TOOPHER_CONSUMER_KEY=');
+        putenv('TOOPHER_CONSUMER_SECRET=');
+    }
+    public static function tearDownAfterClass(){
+        putenv("TOOPHER_CONSUMER_KEY=" . self::$oldKey);
+        putenv("TOOPHER_CONSUMER_SECRET=" . self::$oldSecret);
+    }
 
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testEmptyKeyEmptySecretThrowsException() {
+        $toopher = new ToopherAPI();
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testEmptyKeyThrowsException() {
+        $toopher = new ToopherAPI('', 'secret');
+    }
+
+    /**
+     * @expectedException InvalidArgumentException
+     */
+    public function testEmptySecretThrowsException() {
+        $toopher = new ToopherAPI('key', '');
+    }
+
+    public function testCanCreateToopherApiWithArguments() {
+        $toopher = new ToopherAPI('key', 'secret');
+    }
+
+    public function testCanCreateToopherApiWithEnvironmentVars() {
+        putenv("TOOPHER_CONSUMER_KEY=key");
+        putenv("TOOPHER_CONSUMER_SECRET=secret");
+        $toopher = new ToopherAPI();
+        putenv("TOOPHER_CONSUMER_KEY=");
+        putenv("TOOPHER_CONSUMER_SECRET=");
+    }
+
+    public function testCreatePair(){
+        $mock = new HTTP_Request2_Adapter_Mock();
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://toopher-api.appspot.com/v1/pairings/create');
+        $resp->appendBody('{"id":"1","enabled":true,"user":{"id":"1","name":"user"}}');
+        $mock->addResponse($resp);
+        $toopher = new ToopherAPI('key', 'secret', '', $mock);
+        $pairing = $toopher->pair('immediate_pair', 'user');
+        assertTrue($pairing['id'] == '1', 'bad pairing id');
+        assertTrue($pairing['enabled'] == true, 'pairing not enabled');
+        assertTrue($pairing['user_id'] == '1', 'bad user id');
+        assertTrue($pairing['user_name'] == 'user', 'bad user name');
+    }
 }
 
 ?>

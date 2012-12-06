@@ -1,6 +1,33 @@
 {
-  "name": "toopher/php-sdk",
+  "name": "toopher/toopher-api",
+  "description": "Toopher PHP Client Library",
+  "keywords": ["toopher", "authentication", "two-factor"],
+  "type": "library",
+  "homepage": "http://www.toopher.com/developer",
+  "license": "MIT",
+  "authors": [
+    {
+      "name":"Toopher",
+      "homepage":"https://github.com/toopher"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "pear",
+      "url": "http://pear.php.net"
+    }
+  ],
+
+  "require":{
+    "php": ">=5.2.0",
+    "ext-curl": "*",
+    "ext-json": "*",
+    "pear-pear/HTTP_Request2": ">=2.1.1"
+  },
   "require-dev" : {
     "phpunit/phpunit": "3.7.*"
+  },
+  "autoload":{
+    "classmap": ["lib"]
   }
 }
