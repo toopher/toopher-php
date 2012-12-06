@@ -1,0 +1,6 @@
+{
+  "name": "toopher/php-sdk",
+  "require-dev" : {
+    "phpunit/phpunit": "3.7.*"
+  }
+}
