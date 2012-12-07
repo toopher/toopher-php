@@ -28,7 +28,6 @@ class ToopherAPI
 {
     protected $baseUrl;
     protected $oauthConsumer;
-    protected $hmacMethod;
     protected $httpAdapter;
 
     function __construct($key, $secret, $baseUrl = '', $httpAdapter = NULL)
