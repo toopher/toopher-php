@@ -22,6 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+require_once("common.inc.php");
+
 if (!function_exists('curl_init')) {
   throw new Exception('Facebook needs the CURL PHP extension.');
 }
@@ -32,27 +34,27 @@ if (!function_exists('json_decode')) {
 class ToopherAPI
 {
     protected $baseUrl;
-    protected $consumerKey;
-    protected $consumerSecret;
+    protected $oauthConsumer;
+    protected $hmacMethod;
+    protected $httpAdapter;
+    protected $oauthParameters;
 
-    protected $http_adapter;
-
-    function __construct($key = '', $secret = '', $baseUrl = '', $http_adapter = NULL)
+    function __construct($key, $secret, $baseUrl = '', $httpAdapter = NULL, $oauthParameters = NULL)
     {
-        $this->consumerKey = (!empty($key)) ? $key : getenv('TOOPHER_CONSUMER_KEY');
-        $this->consumerSecret = (!empty($secret)) ? $secret : getenv('TOOPHER_CONSUMER_SECRET');
-        $this->baseUrl = (!empty($baseUrl)) ? $baseUrl : 'https://toopher-api.appspot.com/v1/';
+        if(empty($key))
+        {
+            throw new InvalidArgumentException('Toopher consumer key cannot be empty');
+        }
+        if(empty($secret))
+        {
+            throw new InvalidArgumentException('Toopher consumer secret cannot be empty');
+        }
 
-        $this->http_adapter = (!is_null($http_adapter)) ? $http_adapter : new HTTP_Request2_Adapter_Curl();
-        
-        if(empty($this->consumerKey))
-        {
-            throw new InvalidArgumentException('Toopher consumer key not supplied (try defining $TOOPHER_CONSUMER_KEY)');
-        }
-        if(empty($this->consumerSecret))
-        {
-            throw new InvalidArgumentException('Toopher consumer secret not supplied (try defining $TOOPHER_CONSUMER_SECRET)');
-        }
+        $this->oauthConsumer = new OAuthConsumer($key, $secret, NULL);
+        $this->baseUrl = (!empty($baseUrl)) ? $baseUrl : 'https://toopher-api.appspot.com/v1/';
+        $this->httpAdapter = (!is_null($httpAdapter)) ? $httpAdapter : new HTTP_Request2_Adapter_Curl();
+        $this->hmacMethod = new OAuthSignatureMethod_HMAC_SHA1();
+        $this->oauthParameters = $oauthParameters;
     }
 
     public function pair($pairingPhrase, $userName)
@@ -63,7 +65,7 @@ class ToopherAPI
         )));
     }
 
-    public function getPairingStatus($paringId)
+    public function getPairingStatus($pairingId)
     {
         return $this->makePairResponse($this->get('pairings/' . $pairingId));
     }
@@ -88,7 +90,6 @@ class ToopherAPI
 
     private function makePairResponse($result)
     {
-        var_dump($result);
         return array(
             'id' => $result['id'],
             'enabled' => $result['enabled'],
@@ -112,26 +113,32 @@ class ToopherAPI
 
     private function post($endpoint, $parameters)
     {
-        $req = new HTTP_Request2();
-        $req->setMethod('PUT');
-        foreach($parameters as $key => $value)
-        {
-            $req->addPostParameter($key, $value);
-        }
-        return $this->request($endpoint, $req);
+        return $this->request('POST', $endpoint, $parameters);
     }
 
     private function get($endpoint)
     {
-        $req = new HTTP_Request2();
-        $req->setMethod('GET');
-        return $this->request($endpoint, $req);
+        return $this->request('GET', $endpoint);
     }
 
-    private function request($endpoint, $req)
+    private function request($method, $endpoint, $parameters = NULL)
     {
+        $oauthReq = new OAuthRequest($method, $this->baseUrl . $endpoint, $parameters);
+        $oauthReq->sign_request($this->hmacMethod, $this->oauthConsumer, $this->oauthParameters);
+        $req = new HTTP_Request2();
+        $req->setMethod($method);
         $req->setUrl($this->baseUrl . $endpoint);
-        $req->setAdapter($this->http_adapter);
+        if(!is_null($parameters))
+        {
+            foreach($parameters as $key => $value)
+            {
+                $req->addPostParameter($key, $value);
+            }
+        }
+        $req->setHeader('Authorization', $oauthReq->to_header());
+        $req->setAdapter($this->httpAdapter);
+        print("dumping request to $endpoint\n");
+        print_r($req);
         return json_decode($req->send()->getBody(), true);
     }
 }

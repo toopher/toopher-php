@@ -23,25 +23,7 @@ SOFTWARE.
 
 class ToopherAPITests extends PHPUnit_Framework_TestCase {
 
-    protected static $oldKey;
-    protected static $oldSecret;
-    public static function setUpBeforeClass(){
-        self::$oldKey = getenv('TOOPHER_CONSUMER_KEY');
-        self::$oldSecret = getenv('TOOPHER_CONSUMER_SECRET');
-        putenv('TOOPHER_CONSUMER_KEY=');
-        putenv('TOOPHER_CONSUMER_SECRET=');
-    }
-    public static function tearDownAfterClass(){
-        putenv("TOOPHER_CONSUMER_KEY=" . self::$oldKey);
-        putenv("TOOPHER_CONSUMER_SECRET=" . self::$oldSecret);
-    }
-
-    /**
-     * @expectedException InvalidArgumentException
-     */
-    public function testEmptyKeyEmptySecretThrowsException() {
-        $toopher = new ToopherAPI();
-    }
+    protected $oauthParams = ['oauth_nonce' => 'nonce', 'oauth_timestamp' => '0'];
 
     /**
      * @expectedException InvalidArgumentException
@@ -61,25 +43,86 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $toopher = new ToopherAPI('key', 'secret');
     }
 
-    public function testCanCreateToopherApiWithEnvironmentVars() {
-        putenv("TOOPHER_CONSUMER_KEY=key");
-        putenv("TOOPHER_CONSUMER_SECRET=secret");
-        $toopher = new ToopherAPI();
-        putenv("TOOPHER_CONSUMER_KEY=");
-        putenv("TOOPHER_CONSUMER_SECRET=");
-    }
-
     public function testCreatePair(){
         $mock = new HTTP_Request2_Adapter_Mock();
         $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://toopher-api.appspot.com/v1/pairings/create');
         $resp->appendBody('{"id":"1","enabled":true,"user":{"id":"1","name":"user"}}');
         $mock->addResponse($resp);
-        $toopher = new ToopherAPI('key', 'secret', '', $mock);
+        $toopher = new ToopherAPI('key', 'secret', '', $mock, $this->oauthParams);
         $pairing = $toopher->pair('immediate_pair', 'user');
         $this->assertTrue($pairing['id'] == '1', 'bad pairing id');
         $this->assertTrue($pairing['enabled'] == true, 'pairing not enabled');
         $this->assertTrue($pairing['userId'] == '1', 'bad user id');
         $this->assertTrue($pairing['userName'] == 'user', 'bad user name');
+    }
+
+    public function testGetPairingStatus(){
+        $mock = new HTTP_Request2_Adapter_Mock();
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://toopher-api.appspot.com/v1/pairings/1');
+        $resp1->appendBody('{"id":"1","enabled":true,"user":{"id":"1","name":"paired user"}}');
+        $resp2 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://toopher-api.appspot.com/v1/pairings/1');
+        $resp2->appendBody('{"id":"2","enabled":false,"user":{"id":"2","name":"unpaired user"}}');
+        $mock->addResponse($resp1);
+        $mock->addResponse($resp2);
+        $toopher = new ToopherAPI('key', 'secret', '', $mock);
+        
+        $pairing = $toopher->getPairingStatus('1');
+        $this->assertTrue($pairing['id'] == '1', 'bad pairing id');
+        $this->assertTrue($pairing['enabled'] == true, 'pairing not enabled');
+        $this->assertTrue($pairing['userId'] == '1', 'bad user id');
+        $this->assertTrue($pairing['userName'] == 'paired user', 'bad user name');
+
+        $pairing = $toopher->getPairingStatus('2');
+        $this->assertTrue($pairing['id'] == '2', 'bad pairing id');
+        $this->assertTrue($pairing['enabled'] == false, 'pairing not enabled');
+        $this->assertTrue($pairing['userId'] == '2', 'bad user id');
+        $this->assertTrue($pairing['userName'] == 'unpaired user', 'bad user name');
+    }
+
+    public function testCreateAuthenticationWithNoAction(){
+        $mock = new HTTP_Request2_Adapter_Mock();
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://toopher-api.appspot.com/v1/authentication_requests/initiate');
+        $resp1->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason":"some reason","terminal":{"id":"1","name":"term name"}}');
+        $mock->addResponse($resp1);
+
+        $toopher = new ToopherAPI('key', 'secret', '', $mock);
+        $auth = $toopher->authenticate('1', 'term name');
+        $this->assertTrue($auth['id'] == '1', 'wrong auth id');
+        $this->assertTrue($auth['pending'] == false, 'wrong auth pending');
+        $this->assertTrue($auth['granted'] == true, 'wrong auth granted');
+        $this->assertTrue($auth['automated'] == true, 'wrong auth automated');
+        $this->assertTrue($auth['reason'] == 'some reason', 'wrong auth reason');
+        $this->assertTrue($auth['terminalId'] == '1', 'wrong auth terminal id');
+        $this->assertTrue($auth['terminalName'] == 'term name', 'wrong auth terminal name');
+    }
+
+    public function testGetAuthenticationStatus(){
+        $mock = new HTTP_Request2_Adapter_Mock();
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://toopher-api.appspot.com/v1/authentication_requests/1');
+        $resp1->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason":"some reason","terminal":{"id":"1","name":"term name"}}');
+        $resp2 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://toopher-api.appspot.com/v1/authentication_requests/2');
+        $resp2->appendBody('{"id":"2","pending":true,"granted":false,"automated":false,"reason":"some other reason","terminal":{"id":"2","name":"another term name"}}');
+        $mock->addResponse($resp1);
+        $mock->addResponse($resp2);
+
+        $toopher = new ToopherAPI('key', 'secret', '', $mock);
+        $auth = $toopher->getAuthenticationStatus('1');
+        $this->assertTrue($auth['id'] == '1', 'wrong auth id');
+        $this->assertTrue($auth['pending'] == false, 'wrong auth pending');
+        $this->assertTrue($auth['granted'] == true, 'wrong auth granted');
+        $this->assertTrue($auth['automated'] == true, 'wrong auth automated');
+        $this->assertTrue($auth['reason'] == 'some reason', 'wrong auth reason');
+        $this->assertTrue($auth['terminalId'] == '1', 'wrong auth terminal id');
+        $this->assertTrue($auth['terminalName'] == 'term name', 'wrong auth terminal name');
+
+        $auth = $toopher->getAuthenticationStatus('2');
+        $this->assertTrue($auth['id'] == '2', 'wrong auth id');
+        $this->assertTrue($auth['pending'] == true, 'wrong auth pending');
+        $this->assertTrue($auth['granted'] == false, 'wrong auth granted');
+        $this->assertTrue($auth['automated'] == false, 'wrong auth automated');
+        $this->assertTrue($auth['reason'] == 'some other reason', 'wrong auth reason');
+        $this->assertTrue($auth['terminalId'] == '2', 'wrong auth terminal id');
+        $this->assertTrue($auth['terminalName'] == 'another term name', 'wrong auth terminal name'); 
     }
 }
 
