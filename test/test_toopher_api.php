@@ -126,6 +126,20 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $this->assertTrue($auth['terminalId'] == '2', 'wrong auth terminal id');
         $this->assertTrue($auth['terminalName'] == 'another term name', 'wrong auth terminal name'); 
     }
+
+    /**
+     * @expectedException ToopherRequestException
+     */
+    public function testToopherRequestException(){
+        $mock = new HTTP_Request2_Adapter_Mock();
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 401 Unauthorized", false, 'https://toopher-api.appspot.com/v1/authentication_requests/1');
+        $resp1->appendBody('{"error_code":401, "error_message":"Not a valid OAuth signed request"}');
+        $mock->addResponse($resp1);
+
+
+        $toopher = new ToopherAPI('key', 'secret', '', $mock);
+        $auth = $toopher->getAuthenticationStatus('1');
+    }
 }
 
 ?>

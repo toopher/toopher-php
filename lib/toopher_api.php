@@ -22,6 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+class ToopherRequestException extends Exception
+{
+    
+}
+
 class ToopherAPI
 {
     protected $baseUrl;
@@ -125,7 +130,13 @@ class ToopherAPI
         $oauthRequest->accept($req);
         $this->oauthConsumer->accept($oauthRequest);
         $result = $this->oauthConsumer->sendRequest($this->baseUrl . $endpoint, $parameters, $method);
-        return json_decode($result->getBody(), true);
+        $decoded = json_decode($result->getBody(), true);
+
+        if(array_key_exists("error_message", $decoded))
+        {
+            throw new ToopherRequestException($decoded['error_message'], $decoded['error_code']);
+        }
+        return $decoded;   
     }
 }
 
