@@ -48,9 +48,9 @@ if($authStatus['granted']){
 
 #### Dependencies
 Toopher manages dependencies with [composer](http://getcomposer.org).  To ensure all dependencies are up-to-date, execute the following command:
-'''shell
+```shell
 $ composer install
-'''
+```
 from the root directory the package (the same directory that this README is located in)
 
 #### Handling Errors
@@ -65,6 +65,6 @@ To avoid being prompted for your Toopher API key and secret, you can define them
 
 #### Tests
 To run all unit tests:
-'''shell
+```shell
 $ phpunit test/test_toopher_api.php
-'''
+```
