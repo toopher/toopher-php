@@ -76,10 +76,10 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $mock->addResponse($resp);
         $toopher = new ToopherAPI('key', 'secret', '', $mock);
         $pairing = $toopher->pair('immediate_pair', 'user');
-        assertTrue($pairing['id'] == '1', 'bad pairing id');
-        assertTrue($pairing['enabled'] == true, 'pairing not enabled');
-        assertTrue($pairing['user_id'] == '1', 'bad user id');
-        assertTrue($pairing['user_name'] == 'user', 'bad user name');
+        $this->assertTrue($pairing['id'] == '1', 'bad pairing id');
+        $this->assertTrue($pairing['enabled'] == true, 'pairing not enabled');
+        $this->assertTrue($pairing['userId'] == '1', 'bad user id');
+        $this->assertTrue($pairing['userName'] == 'user', 'bad user name');
     }
 }
 

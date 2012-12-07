@@ -57,22 +57,38 @@ class ToopherAPI
 
     public function pair($pairingPhrase, $userName)
     {
+        return $this->makePairResponse($this->post('pairings/create', array(
+            'pairing_phrase' => $pairingPhrase,
+            'user_name' => $userName
+        )));
     }
 
     public function getPairingStatus($paringId)
     {
+        return $this->makePairResponse($this->get('pairings/' . $pairingId));
     }
 
-    public function authenticate($pairingId)
+    public function authenticate($pairingId, $terminalName, $actionName = '')
     {
+        $params = array(
+            'pairing_id' => $pairingId,
+            'terminal_name' => $terminalName
+        );
+        if(!empty($actionName))
+        {
+            $params['action_name'] = $actionName;
+        }
+        return $this->makeAuthResponse($this->post('authentication_requests/initiate', $params));
     }
 
     public function getAuthenticationStatus($authenticationRequestId)
     {
+        return $this->makeAuthResponse($this->get('authentication_requests/' . $authenticationRequestId));
     }
 
     private function makePairResponse($result)
     {
+        var_dump($result);
         return array(
             'id' => $result['id'],
             'enabled' => $result['enabled'],
@@ -96,16 +112,27 @@ class ToopherAPI
 
     private function post($endpoint, $parameters)
     {
+        $req = new HTTP_Request2();
+        $req->setMethod('PUT');
+        foreach($parameters as $key => $value)
+        {
+            $req->addPostParameter($key, $value);
+        }
+        return $this->request($endpoint, $req);
     }
 
     private function get($endpoint)
     {
+        $req = new HTTP_Request2();
+        $req->setMethod('GET');
+        return $this->request($endpoint, $req);
     }
 
-    private function request($url, $req)
+    private function request($endpoint, $req)
     {
-        $req->setAdapter($http_adapter);
-
+        $req->setUrl($this->baseUrl . $endpoint);
+        $req->setAdapter($this->http_adapter);
+        return json_decode($req->send()->getBody(), true);
     }
 }
 
