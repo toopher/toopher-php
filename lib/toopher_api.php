@@ -30,9 +30,8 @@ class ToopherAPI
     protected $oauthConsumer;
     protected $hmacMethod;
     protected $httpAdapter;
-    protected $oauthParameters;
 
-    function __construct($key, $secret, $baseUrl = '', $httpAdapter = NULL, $oauthParameters = NULL)
+    function __construct($key, $secret, $baseUrl = '', $httpAdapter = NULL)
     {
         if(empty($key))
         {
@@ -46,7 +45,6 @@ class ToopherAPI
         $this->oauthConsumer = new HTTP_OAuth_Consumer($key, $secret);
         $this->baseUrl = (!empty($baseUrl)) ? $baseUrl : 'https://toopher-api.appspot.com/v1/';
         $this->httpAdapter = (!is_null($httpAdapter)) ? $httpAdapter : new HTTP_Request2_Adapter_Curl();
-        $this->oauthParameters = $oauthParameters;
     }
 
     public function pair($pairingPhrase, $userName)
@@ -130,9 +128,6 @@ class ToopherAPI
         $oauthRequest->accept($req);
         $this->oauthConsumer->accept($oauthRequest);
         $result = $this->oauthConsumer->sendRequest($this->baseUrl . $endpoint, $parameters, $method);
-        print("dumping request to $endpoint\n");
-        print_r($req);
-        print_r($result);
         return json_decode($result->getBody(), true);
     }
 }
