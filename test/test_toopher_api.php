@@ -21,6 +21,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+require_once("bootstrap.php");
+
 class ToopherAPITests extends PHPUnit_Framework_TestCase {
 
     protected $oauthParams = ['oauth_nonce' => 'nonce', 'oauth_timestamp' => '0'];

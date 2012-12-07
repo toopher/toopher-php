@@ -24,13 +24,6 @@ SOFTWARE.
 
 require_once("common.inc.php");
 
-if (!function_exists('curl_init')) {
-  throw new Exception('Facebook needs the CURL PHP extension.');
-}
-if (!function_exists('json_decode')) {
-  throw new Exception('Facebook needs the JSON PHP extension.');
-}
-
 class ToopherAPI
 {
     protected $baseUrl;
@@ -50,10 +43,9 @@ class ToopherAPI
             throw new InvalidArgumentException('Toopher consumer secret cannot be empty');
         }
 
-        $this->oauthConsumer = new OAuthConsumer($key, $secret, NULL);
+        $this->oauthConsumer = new HTTP_OAuth_Consumer($key, $secret);
         $this->baseUrl = (!empty($baseUrl)) ? $baseUrl : 'https://toopher-api.appspot.com/v1/';
         $this->httpAdapter = (!is_null($httpAdapter)) ? $httpAdapter : new HTTP_Request2_Adapter_Curl();
-        $this->hmacMethod = new OAuthSignatureMethod_HMAC_SHA1();
         $this->oauthParameters = $oauthParameters;
     }
 
@@ -121,11 +113,10 @@ class ToopherAPI
         return $this->request('GET', $endpoint);
     }
 
-    private function request($method, $endpoint, $parameters = NULL)
+    private function request($method, $endpoint, $parameters = [])
     {
-        $oauthReq = new OAuthRequest($method, $this->baseUrl . $endpoint, $parameters);
-        $oauthReq->sign_request($this->hmacMethod, $this->oauthConsumer, $this->oauthParameters);
         $req = new HTTP_Request2();
+        $req->setAdapter($this->httpAdapter);
         $req->setMethod($method);
         $req->setUrl($this->baseUrl . $endpoint);
         if(!is_null($parameters))
@@ -135,11 +126,14 @@ class ToopherAPI
                 $req->addPostParameter($key, $value);
             }
         }
-        $req->setHeader('Authorization', $oauthReq->to_header());
-        $req->setAdapter($this->httpAdapter);
+        $oauthRequest = new HTTP_OAuth_Consumer_Request;
+        $oauthRequest->accept($req);
+        $this->oauthConsumer->accept($oauthRequest);
+        $result = $this->oauthConsumer->sendRequest($this->baseUrl . $endpoint, $parameters, $method);
         print("dumping request to $endpoint\n");
         print_r($req);
-        return json_decode($req->send()->getBody(), true);
+        print_r($result);
+        return json_decode($result->getBody(), true);
     }
 }
 
