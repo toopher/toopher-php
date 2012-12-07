@@ -32,11 +32,11 @@ $toopherApi = new ToopherAPI($key, $secret);
 $pairing = $toopherApi->pair("pairing phrase", "username@yourservice.com");
 
 // Step 2 - Authenticate a log in
-$authStatus = $toopherApi->authenticate($pairingStatus->id, "my computer");
+$authStatus = $toopherApi->authenticate($pairingStatus['id'], "my computer");
 
 // Once they've responded you can then check the status
 while($authStatus['pending']){
-    $authStatus = $toopherApi->getAuthenticationStatus($authStatus->id);
+    $authStatus = $toopherApi->getAuthenticationStatus($authStatus['id']);
     sleep(1);
 }
 if($authStatus['granted']){
