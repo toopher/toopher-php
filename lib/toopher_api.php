@@ -83,7 +83,7 @@ class ToopherAPI
 
     private function makeAuthResponse($result)
     {
-        retun array(
+        return array(
             'id' => $result['id'],
             'pending' => $result['pending'],
             'granted' => $result['granted'],
