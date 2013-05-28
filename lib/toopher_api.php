@@ -85,6 +85,7 @@ class ToopherAPI
         return array(
             'id' => $result['id'],
             'enabled' => $result['enabled'],
+            'secret' => $result['secret'],
             'userId' => $result['user']['id'],
             'userName' => $result['user']['name']
         );
@@ -138,6 +139,49 @@ class ToopherAPI
         }
         return $decoded;   
     }
+
+
+    ///////////////////////////////////////////////////////////////
+    //  OTP VALIDATION
+    ///////////////////////////////////////////////////////////////
+	public static function oath_hotp($seed, $counter, $otpLength)
+	{
+	    $bin_counter = pack('N*', 0) . pack('N*', $counter);		// Counter must be 64-bit int
+	    $hash 	 = hash_hmac ('sha1', $bin_counter, $seed, true);
+
+	    return str_pad(self::oathTruncate($hash, $otpLength), $otpLength, '0', STR_PAD_LEFT);
+	}
+
+	public static function verifyOtp($utf8seed, $otp, $drift=0, $windowSize = 2, $otpResolutionSeconds = 30, $otpLength = 6) {
+
+		$timeStamp = floor(microtime(true)/$otpResolutionSeconds);
+
+		$binarySeed = utf8_decode($utf8seed);
+
+		for ($i = $drift - $windowSize; $i <= $drift + $windowSize; $i++){
+            $ts = $timeStamp + $i;
+			if (self::oath_hotp($binarySeed, $ts, $otpLength) == $otp)
+				return array(true, $i);
+        }
+
+		return array (false, 0);
+
+	}
+
+	public static function oathTruncate($hash, $otpLength)
+	{
+	    $offset = ord($hash[19]) & 0xf;
+
+	    return (
+	        ((ord($hash[$offset+0]) & 0x7f) << 24 ) |
+	        ((ord($hash[$offset+1]) & 0xff) << 16 ) |
+	        ((ord($hash[$offset+2]) & 0xff) << 8 ) |
+	        (ord($hash[$offset+3]) & 0xff)
+	    ) % pow(10, $otpLength);
+	}
+
+
+
 }
 
 ?>
