@@ -47,7 +47,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
 
     public function testCreatePair(){
         $mock = new HTTP_Request2_Adapter_Mock();
-        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://toopher-api.appspot.com/v1/pairings/create');
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/create');
         $resp->appendBody('{"id":"1","enabled":true,"user":{"id":"1","name":"user"}}');
         $mock->addResponse($resp);
         $toopher = new ToopherAPI('key', 'secret', '', $mock, $this->oauthParams);
@@ -60,9 +60,9 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
 
     public function testGetPairingStatus(){
         $mock = new HTTP_Request2_Adapter_Mock();
-        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://toopher-api.appspot.com/v1/pairings/1');
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1');
         $resp1->appendBody('{"id":"1","enabled":true,"user":{"id":"1","name":"paired user"}}');
-        $resp2 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://toopher-api.appspot.com/v1/pairings/1');
+        $resp2 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1');
         $resp2->appendBody('{"id":"2","enabled":false,"user":{"id":"2","name":"unpaired user"}}');
         $mock->addResponse($resp1);
         $mock->addResponse($resp2);
@@ -83,7 +83,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
 
     public function testCreateAuthenticationWithNoAction(){
         $mock = new HTTP_Request2_Adapter_Mock();
-        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://toopher-api.appspot.com/v1/authentication_requests/initiate');
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/initiate');
         $resp1->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason":"some reason","terminal":{"id":"1","name":"term name"}}');
         $mock->addResponse($resp1);
 
@@ -100,9 +100,9 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
 
     public function testGetAuthenticationStatus(){
         $mock = new HTTP_Request2_Adapter_Mock();
-        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://toopher-api.appspot.com/v1/authentication_requests/1');
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/1');
         $resp1->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason":"some reason","terminal":{"id":"1","name":"term name"}}');
-        $resp2 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://toopher-api.appspot.com/v1/authentication_requests/2');
+        $resp2 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/2');
         $resp2->appendBody('{"id":"2","pending":true,"granted":false,"automated":false,"reason":"some other reason","terminal":{"id":"2","name":"another term name"}}');
         $mock->addResponse($resp1);
         $mock->addResponse($resp2);
@@ -132,7 +132,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
      */
     public function testToopherRequestException(){
         $mock = new HTTP_Request2_Adapter_Mock();
-        $resp1 = new HTTP_Request2_Response("HTTP/1.1 401 Unauthorized", false, 'https://toopher-api.appspot.com/v1/authentication_requests/1');
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 401 Unauthorized", false, 'https://api.toopher.com/v1/authentication_requests/1');
         $resp1->appendBody('{"error_code":401, "error_message":"Not a valid OAuth signed request"}');
         $mock->addResponse($resp1);
 
