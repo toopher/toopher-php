@@ -45,7 +45,7 @@ class ToopherAPI
         }
 
         $this->oauthConsumer = new HTTP_OAuth_Consumer($key, $secret);
-        $this->baseUrl = (!empty($baseUrl)) ? $baseUrl : 'https://toopher-api.appspot.com/v1/';
+        $this->baseUrl = (!empty($baseUrl)) ? $baseUrl : 'https://api.toopher.com/v1/';
         $this->httpAdapter = (!is_null($httpAdapter)) ? $httpAdapter : new HTTP_Request2_Adapter_Curl();
     }
 
