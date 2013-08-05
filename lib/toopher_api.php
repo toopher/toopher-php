@@ -49,12 +49,14 @@ class ToopherAPI
         $this->httpAdapter = (!is_null($httpAdapter)) ? $httpAdapter : new HTTP_Request2_Adapter_Curl();
     }
 
-    public function pair($pairingPhrase, $userName)
+    public function pair($pairingPhrase, $userName, $extras = array())
     {
-        return $this->makePairResponse($this->post('pairings/create', array(
+        $params = array(
             'pairing_phrase' => $pairingPhrase,
             'user_name' => $userName
-        )));
+        );
+        $params = array_merge($params, $extras);
+        return $this->makePairResponse($this->post('pairings/create', $params));
     }
 
     public function getPairingStatus($pairingId)
@@ -62,7 +64,7 @@ class ToopherAPI
         return $this->makePairResponse($this->get('pairings/' . $pairingId));
     }
 
-    public function authenticate($pairingId, $terminalName, $actionName = '')
+    public function authenticate($pairingId, $terminalName, $actionName = '', $extras = array())
     {
         $params = array(
             'pairing_id' => $pairingId,
@@ -72,6 +74,7 @@ class ToopherAPI
         {
             $params['action_name'] = $actionName;
         }
+        $params = array_merge($params, $extras);
         return $this->makeAuthResponse($this->post('authentication_requests/initiate', $params));
     }
 
@@ -86,7 +89,8 @@ class ToopherAPI
             'id' => $result['id'],
             'enabled' => $result['enabled'],
             'userId' => $result['user']['id'],
-            'userName' => $result['user']['name']
+            'userName' => $result['user']['name'],
+            'raw' => $result
         );
     }
 
@@ -99,7 +103,8 @@ class ToopherAPI
             'automated' => $result['automated'],
             'reason' => $result['reason'],
             'terminalId' => $result['terminal']['id'],
-            'terminalName' => $result['terminal']['name']
+            'terminalName' => $result['terminal']['name'],
+            'raw' => $result
         );
     }
 
