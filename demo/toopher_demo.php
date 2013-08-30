@@ -28,6 +28,7 @@ $stdin = fopen('php://stdin', 'r');
 
 $key = getenv('TOOPHER_CONSUMER_KEY');
 $secret = getenv('TOOPHER_CONSUMER_SECRET');
+$url = getenv('TOOPHER_BASE_URL');
 if(empty($key) || empty($secret)){
     echo("enter consumer credentials (set environment variables to prevent prompting):\n");
     echo("TOOPHER_CONSUMER_KEY=");
@@ -37,7 +38,7 @@ if(empty($key) || empty($secret)){
 }
 
 echo ("using key=$key, secret=$secret\n");
-$toopher = new ToopherAPI($key, $secret);
+$toopher = new ToopherAPI($key, $secret, $url);
 
 echo("\nSTEP 1: Pair device\n");
 echo("enter pairing phrase:");
@@ -46,6 +47,7 @@ echo("enter user name:");
 $userName = rtrim(fgets($stdin));
 
 $pairing = $toopher->pair($phrase, $userName);
+$pairing_secret = $pairing['secret'];
 
 while(!$pairing['enabled']){
     echo("waiting for authorization...\n");
@@ -60,14 +62,22 @@ $terminalName = rtrim(fgets($stdin));
 echo("enter action name, or [ENTER] for none:");
 while(true){
     $action = rtrim(fgets($stdin));
-    echo("sending authentication request...\n");
-    $auth = $toopher->authenticate($pairing['id'], $terminalName, $action);
-    while($auth['pending']){
-        echo("waiting for authentication...\n");
-        sleep(1);
-        $auth = $toopher->getAuthenticationStatus($auth['id']);
+    echo("enter OTP for local validation, or [ENTER] to validate using Toopher API:");
+    $otp = rtrim(fgets($stdin));
+    if (strlen($otp) > 0) {
+        echo("checking submitted OTP...\n");
+        list ($otpValid, $otpDrift) = ToopherAPI::verifyOtp($pairing_secret, $otp);
+        echo("OTP check = " . ($otpValid ? "valid with drift=$otpDrift" : "invalid") . ".  Enter another action to authorize again, or [Ctrl+C] to exit:");
+    } else {
+        echo("sending authentication request...\n");
+        $auth = $toopher->authenticate($pairing['id'], $terminalName, $action);
+        while($auth['pending']){
+            echo("waiting for authentication...\n");
+            sleep(1);
+            $auth = $toopher->getAuthenticationStatus($auth['id']);
+        }
+    
+        echo("Successfully authorized action '$action'.  Enter another action to authorize again, or [Ctrl+C] to exit:");
     }
-
-    echo("Successfully authorized action '$action'.  Enter another action to authorize again, or [Ctrl+C] to exit:");
 }
 ?>
