@@ -118,7 +118,7 @@ class ToopherAPI
         return $this->request('GET', $endpoint);
     }
 
-    private function request($method, $endpoint, $parameters = [])
+    private function request($method, $endpoint, $parameters = array())
     {
         $req = new HTTP_Request2();
         $req->setAdapter($this->httpAdapter);
