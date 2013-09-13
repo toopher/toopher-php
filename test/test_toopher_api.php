@@ -25,7 +25,7 @@ require_once("bootstrap.php");
 
 class ToopherAPITests extends PHPUnit_Framework_TestCase {
 
-    protected $oauthParams = ['oauth_nonce' => 'nonce', 'oauth_timestamp' => '0'];
+    protected $oauthParams = array('oauth_nonce' => 'nonce', 'oauth_timestamp' => '0');
 
     /**
      * @expectedException InvalidArgumentException
@@ -139,6 +139,10 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
 
         $toopher = new ToopherAPI('key', 'secret', '', $mock);
         $auth = $toopher->getAuthenticationStatus('1');
+    }
+
+    public function testToopherVersionStringExists() {
+        $this->assertNotEmpty(ToopherAPI::VERSION, 'no version string');
     }
 }
 
