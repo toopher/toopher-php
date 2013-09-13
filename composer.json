@@ -1,6 +1,7 @@
 {
   "name": "toopher/toopher-api",
   "description": "Toopher PHP Client Library",
+  "version": "1.0.6",
   "keywords": ["toopher", "authentication", "two-factor"],
   "type": "library",
   "homepage": "http://www.toopher.com/developer",
