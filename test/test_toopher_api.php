@@ -140,6 +140,10 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $toopher = new ToopherAPI('key', 'secret', '', $mock);
         $auth = $toopher->getAuthenticationStatus('1');
     }
+
+    public function testToopherVersionStringExists() {
+        $this->assertNotEmpty(ToopherAPI::VERSION, 'no version string');
+    }
 }
 
 ?>
