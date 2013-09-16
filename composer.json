@@ -1,6 +1,7 @@
 {
   "name": "toopher/toopher-api",
   "description": "Toopher PHP Client Library",
+  "version": "1.0.6",
   "keywords": ["toopher", "authentication", "two-factor"],
   "type": "library",
   "homepage": "http://www.toopher.com/developer",
@@ -19,7 +20,7 @@
   ],
 
   "require":{
-    "php": ">=5.4.0",
+    "php": ">=5.3.0",
     "ext-json": "*",
     "pear-pear/HTTP_Request2": ">=2.1.1",
     "pear-pear/HTTP_OAuth": ">=0.2.3"
