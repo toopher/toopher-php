@@ -143,6 +143,10 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
 
     public function testToopherVersionStringExists() {
         $this->assertNotEmpty(ToopherAPI::VERSION, 'no version string');
+        list($major, $minor, $patch) = explode('.', ToopherAPI::VERSION);
+        $this->assertGreaterThanOrEqual(1, (int)$major);
+        $this->assertGreaterThanOrEqual(0, (int)$minor);
+        $this->assertGreaterThanOrEqual(0, (int)$patch);
     }
 }
 
