@@ -29,6 +29,8 @@ class ToopherRequestException extends Exception
 
 class ToopherAPI
 {
+    const VERSION = '1.0.6';
+
     protected $baseUrl;
     protected $oauthConsumer;
     protected $httpAdapter;
@@ -122,6 +124,8 @@ class ToopherAPI
     {
         $req = new HTTP_Request2();
         $req->setAdapter($this->httpAdapter);
+        $req->setHeader(array('User-Agent' =>
+            sprintf('Toopher-PHP/%s (PHP %s)', ToopherAPI::VERSION, phpversion())));
         $req->setMethod($method);
         $req->setUrl($this->baseUrl . $endpoint);
         if(!is_null($parameters))
