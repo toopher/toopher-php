@@ -1,5 +1,8 @@
 # ToopherAPI PHP Client
 
+[![Build
+Status](https://travis-ci.org/toopher/toopher-php.png?branch=master)](https://travis-ci.org/toopher/toopher-php)
+
 #### Introduction
 ToopherAPI PHP Client simplifies the task of interfacing with the Toopher API from PHP code.  This project includes all the dependency libraries and handles the required OAuth and JSON functionality so you can focus on just using the API.
 
