@@ -140,6 +140,29 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $toopher = new ToopherAPI('key', 'secret', '', $mock);
         $auth = $toopher->getAuthenticationStatus('1');
     }
+
+    /**
+     * @expectedException ToopherRequestException
+     */
+    public function test400WithEmptyBodyRaisesToopherRequestException(){
+        $mock = new HTTP_Request2_Adapter_Mock();
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 403 Forbidden", false, 'https://api.toopher.com/v1/authentication_requests/1');
+        $mock->addResponse($resp1);
+        $toopher = new ToopherAPI('key', 'secret', '', $mock);
+        $auth = $toopher->getAuthenticationStatus('1');
+    }
+
+    /**
+     * @expectedException ToopherRequestException
+     */
+    public function test200WithUnprintableBodyRaisesToopherRequestException(){
+        $mock = new HTTP_Request2_Adapter_Mock();
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 403 Forbidden", false, 'https://api.toopher.com/v1/authentication_requests/1');
+        $resp1->appendBody(sprintf('{"error_code":403, "error_message":"%c"}', chr(5)));
+        $mock->addResponse($resp1);
+        $toopher = new ToopherAPI('key', 'secret', '', $mock);
+        $auth = $toopher->getAuthenticationStatus('1');
+    }
 }
 
 ?>
