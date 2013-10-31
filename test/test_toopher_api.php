@@ -25,7 +25,7 @@ require_once("bootstrap.php");
 
 class ToopherAPITests extends PHPUnit_Framework_TestCase {
 
-    protected $oauthParams = ['oauth_nonce' => 'nonce', 'oauth_timestamp' => '0'];
+    protected $oauthParams = array('oauth_nonce' => 'nonce', 'oauth_timestamp' => '0');
 
     /**
      * @expectedException InvalidArgumentException
