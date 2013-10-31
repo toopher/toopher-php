@@ -155,7 +155,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
     /**
      * @expectedException ToopherRequestException
      */
-    public function test200WithUnprintableBodyRaisesToopherRequestException(){
+    public function test400WithUnprintableBodyRaisesToopherRequestException(){
         $mock = new HTTP_Request2_Adapter_Mock();
         $resp1 = new HTTP_Request2_Response("HTTP/1.1 403 Forbidden", false, 'https://api.toopher.com/v1/authentication_requests/1');
         $resp1->appendBody(sprintf('{"error_code":403, "error_message":"%c"}', chr(5)));
