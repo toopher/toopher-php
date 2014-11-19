@@ -67,7 +67,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $mock->addResponse($resp1);
         $mock->addResponse($resp2);
         $toopher = new ToopherAPI('key', 'secret', '', $mock);
-        
+
         $pairing = $toopher->getPairingStatus('1');
         $this->assertTrue($pairing['id'] == '1', 'bad pairing id');
         $this->assertTrue($pairing['enabled'] == true, 'pairing not enabled');
@@ -124,7 +124,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $this->assertTrue($auth['automated'] == false, 'wrong auth automated');
         $this->assertTrue($auth['reason'] == 'some other reason', 'wrong auth reason');
         $this->assertTrue($auth['terminalId'] == '2', 'wrong auth terminal id');
-        $this->assertTrue($auth['terminalName'] == 'another term name', 'wrong auth terminal name'); 
+        $this->assertTrue($auth['terminalName'] == 'another term name', 'wrong auth terminal name');
     }
 
     /**
@@ -147,6 +147,29 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $this->assertGreaterThanOrEqual(1, (int)$major);
         $this->assertGreaterThanOrEqual(0, (int)$minor);
         $this->assertGreaterThanOrEqual(0, (int)$patch);
+    }
+
+    /**
+     * @expectedException ToopherRequestException
+     */
+    public function test400WithEmptyBodyRaisesToopherRequestException(){
+        $mock = new HTTP_Request2_Adapter_Mock();
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 403 Forbidden", false, 'https://api.toopher.com/v1/authentication_requests/1');
+        $mock->addResponse($resp1);
+        $toopher = new ToopherAPI('key', 'secret', '', $mock);
+        $auth = $toopher->getAuthenticationStatus('1');
+    }
+
+    /**
+     * @expectedException ToopherRequestException
+     */
+    public function test400WithUnprintableBodyRaisesToopherRequestException(){
+        $mock = new HTTP_Request2_Adapter_Mock();
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 403 Forbidden", false, 'https://api.toopher.com/v1/authentication_requests/1');
+        $resp1->appendBody(sprintf('{"error_code":403, "error_message":"%c"}', chr(5)));
+        $mock->addResponse($resp1);
+        $toopher = new ToopherAPI('key', 'secret', '', $mock);
+        $auth = $toopher->getAuthenticationStatus('1');
     }
 }
 

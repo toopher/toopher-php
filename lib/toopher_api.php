@@ -138,14 +138,68 @@ class ToopherAPI
         $oauthRequest = new HTTP_OAuth_Consumer_Request;
         $oauthRequest->accept($req);
         $this->oauthConsumer->accept($oauthRequest);
-        $result = $this->oauthConsumer->sendRequest($this->baseUrl . $endpoint, $parameters, $method);
-        $decoded = json_decode($result->getBody(), true);
+        try {
+            $result = $this->oauthConsumer->sendRequest($this->baseUrl . $endpoint, $parameters, $method);
+        } catch (Exception $e) {
+            error_log($e);
+            throw new ToopherRequestException("Error making Toopher API request", $e->getCode(), $e);
+        }
 
-        if(array_key_exists("error_message", $decoded))
+        if ($result->getStatus() != 200)
         {
-            throw new ToopherRequestException($decoded['error_message'], $decoded['error_code']);
+            error_log(sprintf("Toopher API call returned unexpected HTTP response: %d - %s", $result->getStatus(), $result->getReasonPhrase()));
+            $resultBody = $result->getBody();
+            if (empty($resultBody)) {
+                error_log("empty response body");
+                throw new ToopherRequestException($result->getReasonPhrase(), $result->getStatus());
+            }
+
+            $err = json_decode($resultBody, true);
+            if ($err === NULL) {
+                $json_error = $this->json_error_to_string(json_last_error()); 
+                if (!empty($json_error)) {
+                    error_log(sprintf("Error parsing response body JSON: %s", $json_error));
+                    error_log(sprintf("response body: %s", $result->getBody()));
+                    throw new ToopherRequestException(sprintf("JSON Parsing Error: %s", $json_error));
+                }
+            } else {
+                if(array_key_exists("error_message", $err)) {
+                    throw new ToopherRequestException($err['error_message'], $err['error_code']);
+                } else {
+                    throw new ToopherRequestException(sprintf("%s - %s", $result->getReasonPhrase(), $resultBody), $result->getStatus());
+                }
+            }
+        }
+
+        $decoded = json_decode($result->getBody(), true);
+        if ($decoded === NULL) {
+            $json_error = $this->json_error_to_string(json_last_error()); 
+            if (!empty($json_error)) {
+                error_log(sprintf("Error parsing response body JSON: %s", $json_error));
+                error_log(sprintf("response body: %s", $result->getBody()));
+                throw new ToopherRequestException(sprintf("JSON Parsing Error: %s", $json_error));
+            }
         }
         return $decoded;   
+    }
+
+    private function json_error_to_string($json_error_code) {
+        switch ($json_error_code) {
+            case JSON_ERROR_NONE:
+                return NULL;
+            case JSON_ERROR_DEPTH:
+                return 'Maximum stack depth exceeded';
+            case JSON_ERROR_STATE_MISMATCH:
+                return 'Underflow or the modes mismatch';
+            case JSON_ERROR_CTRL_CHAR:
+                return 'Unexpected control character found';
+            case JSON_ERROR_SYNTAX:
+                return 'Syntax error, malformed JSON';
+            case JSON_ERROR_UTF8:
+                return 'Malformed UTF-8 characters, possibly incorrectly encoded';
+            default:
+                return 'Unknown error';
+        }
     }
 }
 
