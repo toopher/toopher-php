@@ -24,7 +24,7 @@ SOFTWARE.
 
 class ToopherRequestException extends Exception
 {
-    
+
 }
 
 class ToopherAPI
@@ -156,7 +156,7 @@ class ToopherAPI
 
             $err = json_decode($resultBody, true);
             if ($err === NULL) {
-                $json_error = $this->json_error_to_string(json_last_error()); 
+                $json_error = $this->json_error_to_string(json_last_error());
                 if (!empty($json_error)) {
                     error_log(sprintf("Error parsing response body JSON: %s", $json_error));
                     error_log(sprintf("response body: %s", $result->getBody()));
@@ -173,14 +173,14 @@ class ToopherAPI
 
         $decoded = json_decode($result->getBody(), true);
         if ($decoded === NULL) {
-            $json_error = $this->json_error_to_string(json_last_error()); 
+            $json_error = $this->json_error_to_string(json_last_error());
             if (!empty($json_error)) {
                 error_log(sprintf("Error parsing response body JSON: %s", $json_error));
                 error_log(sprintf("response body: %s", $result->getBody()));
                 throw new ToopherRequestException(sprintf("JSON Parsing Error: %s", $json_error));
             }
         }
-        return $decoded;   
+        return $decoded;
     }
 
     private function json_error_to_string($json_error_code) {
