@@ -67,7 +67,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $mock->addResponse($resp1);
         $mock->addResponse($resp2);
         $toopher = new ToopherAPI('key', 'secret', '', $mock);
-        
+
         $pairing = $toopher->getPairingStatus('1');
         $this->assertTrue($pairing['id'] == '1', 'bad pairing id');
         $this->assertTrue($pairing['enabled'] == true, 'pairing not enabled');
@@ -124,7 +124,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $this->assertTrue($auth['automated'] == false, 'wrong auth automated');
         $this->assertTrue($auth['reason'] == 'some other reason', 'wrong auth reason');
         $this->assertTrue($auth['terminalId'] == '2', 'wrong auth terminal id');
-        $this->assertTrue($auth['terminalName'] == 'another term name', 'wrong auth terminal name'); 
+        $this->assertTrue($auth['terminalName'] == 'another term name', 'wrong auth terminal name');
     }
 
     /**
