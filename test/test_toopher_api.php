@@ -58,6 +58,19 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $this->assertTrue($pairing['userName'] == 'user', 'bad user name');
     }
 
+    public function testCreateSmsPair(){
+      $mock = new HTTP_Request2_Adapter_Mock();
+      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/create/sms');
+      $resp->appendBody('{"id":"1", "enabled":true, "user":{"id":"1", "name":"user"}}');
+      $mock->addResponse($resp);
+      $toopher = new ToopherAPI('key', 'secret', '', $mock, $this->oauthParams);
+      $pairing = $toopher->pairSms('123', 'user');
+      $this->assertTrue($pairing['id'] == '1', 'bad pairing id');
+      $this->assertTrue($pairing['enabled'] == true, 'pairing not enabled');
+      $this->assertTrue($pairing['userId'] == '1', 'bad user id');
+      $this->assertTrue($pairing['userName'] == 'user', 'bad user name');
+    }
+
     public function testGetPairingStatus(){
         $mock = new HTTP_Request2_Adapter_Mock();
         $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1');
