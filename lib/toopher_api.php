@@ -59,6 +59,19 @@ class ToopherAPI
         return $this->makePairResponse($this->post('pairings/create', $params));
     }
 
+    public function pairSms($phoneNumber, $userName, $phoneCountry = '')
+    {
+        $params = array(
+            'phone_number' => $phoneNumber,
+            'user_name' => $userName
+        );
+        if(!empty($phoneCountry))
+        {
+            $params['phone_country'] = $phoneCountry;
+        }
+        return $this->makePairResponse($this->post('pairings/create/sms', $params));
+    }
+
     public function getPairingStatus($pairingId)
     {
         return $this->makePairResponse($this->get('pairings/' . $pairingId));
