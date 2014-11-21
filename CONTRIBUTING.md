@@ -1,5 +1,8 @@
 # ToopherAPI PHP Client
 
+#### PHP Version
+>=5.3.0
+
 #### Installing Dependencies
 Toopher manages dependencies with [Composer](http://getcomposer.org).
 
