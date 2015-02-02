@@ -51,14 +51,29 @@ class ToopherAPI
         $this->httpAdapter = (!is_null($httpAdapter)) ? $httpAdapter : new HTTP_Request2_Adapter_Curl();
     }
 
-    public function pair($pairingPhrase, $userName, $extras = array())
+    public function pair($username, $phrase_or_num = '', $kwargs = array())
     {
-        $params = array(
-            'pairing_phrase' => $pairingPhrase,
-            'user_name' => $userName
-        );
-        $params = array_merge($params, $extras);
-        return $this->makePairResponse($this->post('pairings/create', $params));
+        $params = array('user_name' => $username);
+        $params = array_merge($params, $kwargs);
+        if (!empty($phrase_or_num))
+        {
+            if(preg_match('/\d/', $phrase_or_num, $match))
+            {
+                $url = 'pairings/create/sms';
+                $params['phone_number'] = $phrase_or_num;
+            }
+            else
+            {
+                $url = 'pairings/create';
+                $params['pairing_phrase'] = $phrase_or_num;
+            }
+        }
+        else
+        {
+            $url = 'pairings/create/qr';
+        }
+        $result = $this->post($url, $params);
+        return $this->makePairResponse($result);
     }
 
     public function getPairingStatus($pairingId)
