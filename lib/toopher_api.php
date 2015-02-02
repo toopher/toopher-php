@@ -282,6 +282,14 @@ class Pairing
         return $result['url'];
     }
 
+    public function emailResetLink($email, $kwargs = array())
+    {
+        $params = array('reset_email' => $email);
+        $params = array_merge($params, $kwargs);
+        $url = 'pairings/' . $this->id . '/send_reset_link';
+        $this->api->advanced->raw->post($url, $params);
+    }
+
     private function update($json_response)
     {
         $this->id = $json_response['id'];
