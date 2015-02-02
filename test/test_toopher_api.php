@@ -116,14 +116,14 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $mock->addResponse($resp1);
 
         $toopher = new ToopherAPI('key', 'secret', '', $mock);
-        $auth = $toopher->authenticate($id, 'term name');
-        $this->assertTrue($auth['id'] == $id, 'wrong auth id');
-        $this->assertTrue($auth['pending'] == false, 'wrong auth pending');
-        $this->assertTrue($auth['granted'] == true, 'wrong auth granted');
-        $this->assertTrue($auth['automated'] == true, 'wrong auth automated');
-        $this->assertTrue($auth['reason'] == 'some reason', 'wrong auth reason');
-        $this->assertTrue($auth['terminalId'] == '1', 'wrong auth terminal id');
-        $this->assertTrue($auth['terminalName'] == 'term name', 'wrong auth terminal name');
+        $auth_request = $toopher->authenticate($id, 'term name');
+        $this->assertTrue($auth_request->id == $id, 'wrong auth id');
+        $this->assertTrue($auth_request->pending == false, 'wrong auth pending');
+        $this->assertTrue($auth_request->granted == true, 'wrong auth granted');
+        $this->assertTrue($auth_request->automated == true, 'wrong auth automated');
+        $this->assertTrue($auth_request->reason == 'some reason', 'wrong auth reason');
+        $this->assertTrue($auth_request->terminalId == '1', 'wrong auth terminal id');
+        $this->assertTrue($auth_request->terminalName == 'term name', 'wrong auth terminal name');
     }
 
     public function testGetAuthenticationStatus(){
@@ -136,23 +136,23 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $mock->addResponse($resp2);
 
         $toopher = new ToopherAPI('key', 'secret', '', $mock);
-        $auth = $toopher->getAuthenticationStatus('1');
-        $this->assertTrue($auth['id'] == '1', 'wrong auth id');
-        $this->assertTrue($auth['pending'] == false, 'wrong auth pending');
-        $this->assertTrue($auth['granted'] == true, 'wrong auth granted');
-        $this->assertTrue($auth['automated'] == true, 'wrong auth automated');
-        $this->assertTrue($auth['reason'] == 'some reason', 'wrong auth reason');
-        $this->assertTrue($auth['terminalId'] == '1', 'wrong auth terminal id');
-        $this->assertTrue($auth['terminalName'] == 'term name', 'wrong auth terminal name');
+        $auth_request = $toopher->getAuthenticationStatus('1');
+        $this->assertTrue($auth_request->id == '1', 'wrong auth id');
+        $this->assertTrue($auth_request->pending == false, 'wrong auth pending');
+        $this->assertTrue($auth_request->granted == true, 'wrong auth granted');
+        $this->assertTrue($auth_request->automated == true, 'wrong auth automated');
+        $this->assertTrue($auth_request->reason == 'some reason', 'wrong auth reason');
+        $this->assertTrue($auth_request->terminalId == '1', 'wrong auth terminal id');
+        $this->assertTrue($auth_request->terminalName == 'term name', 'wrong auth terminal name');
 
-        $auth = $toopher->getAuthenticationStatus('2');
-        $this->assertTrue($auth['id'] == '2', 'wrong auth id');
-        $this->assertTrue($auth['pending'] == true, 'wrong auth pending');
-        $this->assertTrue($auth['granted'] == false, 'wrong auth granted');
-        $this->assertTrue($auth['automated'] == false, 'wrong auth automated');
-        $this->assertTrue($auth['reason'] == 'some other reason', 'wrong auth reason');
-        $this->assertTrue($auth['terminalId'] == '2', 'wrong auth terminal id');
-        $this->assertTrue($auth['terminalName'] == 'another term name', 'wrong auth terminal name');
+        $auth_request = $toopher->getAuthenticationStatus('2');
+        $this->assertTrue($auth_request->id == '2', 'wrong auth id');
+        $this->assertTrue($auth_request->pending == true, 'wrong auth pending');
+        $this->assertTrue($auth_request->granted == false, 'wrong auth granted');
+        $this->assertTrue($auth_request->automated == false, 'wrong auth automated');
+        $this->assertTrue($auth_request->reason == 'some other reason', 'wrong auth reason');
+        $this->assertTrue($auth_request->terminalId == '2', 'wrong auth terminal id');
+        $this->assertTrue($auth_request->terminalName == 'another term name', 'wrong auth terminal name');
     }
 
     public function testRawPost(){

@@ -102,26 +102,12 @@ class ToopherAPI
         }
         $params = array_merge($params, $kwargs);
         $result = $this->advanced->raw->post($url, $params);
-        return $this->makeAuthResponse($result);
+        return new AuthenticationRequest($result);
     }
 
     public function getAuthenticationStatus($authenticationRequestId)
     {
-        return $this->makeAuthResponse($this->advanced->raw->get('authentication_requests/' . $authenticationRequestId));
-    }
-
-    private function makeAuthResponse($result)
-    {
-        return array(
-            'id' => $result['id'],
-            'pending' => $result['pending'],
-            'granted' => $result['granted'],
-            'automated' => $result['automated'],
-            'reason' => $result['reason'],
-            'terminalId' => $result['terminal']['id'],
-            'terminalName' => $result['terminal']['name'],
-            'raw' => $result
-        );
+        return new AuthenticationRequest($this->advanced->raw->get('authentication_requests/' . $authenticationRequestId));
     }
 }
 
@@ -274,6 +260,21 @@ class Pairing
         $this->enabled = $json_response['enabled'];
         $this->userId = $json_response['user']['id'];
         $this->userName = $json_response['user']['name'];
+        $this->raw = $json_response;
+    }
+}
+
+class AuthenticationRequest
+{
+    function __construct($json_response)
+    {
+        $this->id = $json_response['id'];
+        $this->pending = $json_response['pending'];
+        $this->granted = $json_response['granted'];
+        $this->automated = $json_response['automated'];
+        $this->reason = $json_response['reason'];
+        $this->terminalId = $json_response['terminal']['id'];
+        $this->terminalName = $json_response['terminal']['name'];
         $this->raw = $json_response;
     }
 }
