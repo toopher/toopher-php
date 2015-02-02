@@ -74,7 +74,7 @@ class ToopherAPI
             $url = 'pairings/create/qr';
         }
         $result = $this->advanced->raw->post($url, $params);
-        return new Pairing($result);
+        return new Pairing($result, $this);
     }
 
     public function authenticate($id_or_username, $terminal, $actionName = '', $kwargs = array())
@@ -243,14 +243,30 @@ class Pairings
 
     public function getById($pairingId)
     {
-        $result = $this->api->advanced->raw->get('pairings/' . $pairingId);
-        return new Pairing($result);
+        $url = 'pairings/' . $pairingId;
+        $result = $this->api->advanced->raw->get($url);
+        return new Pairing($result, $this->api);
     }
 }
 
 class Pairing
 {
-    function __construct($json_response)
+    protected $api;
+
+    function __construct($json_response, $api)
+    {
+        $this->api = $api;
+        $this->update($json_response);
+    }
+
+    public function refreshFromServer()
+    {
+        $url = 'pairings/' . $this->id;
+        $result = $this->api->advanced->raw->get($url);
+        $this->update($result);
+    }
+
+    private function update($json_response)
     {
         $this->id = $json_response['id'];
         $this->enabled = $json_response['enabled'];
@@ -272,7 +288,8 @@ class AuthenticationRequests
 
     public function getById($authenticationRequestId)
     {
-        $result = $this->api->advanced->raw->get('authentication_requests/' . $authenticationRequestId);
+        $url = 'authentication_requests/' . $authenticationRequestId;
+        $result = $this->api->advanced->raw->get($url);
         return new AuthenticationRequest($result);
     }
 }
