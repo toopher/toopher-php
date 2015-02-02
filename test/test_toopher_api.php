@@ -136,7 +136,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $mock->addResponse($resp2);
 
         $toopher = new ToopherAPI('key', 'secret', '', $mock);
-        $auth_request = $toopher->getAuthenticationStatus('1');
+        $auth_request = $toopher->advanced->authenticationRequests->getById('1');
         $this->assertTrue($auth_request->id == '1', 'wrong auth id');
         $this->assertTrue($auth_request->pending == false, 'wrong auth pending');
         $this->assertTrue($auth_request->granted == true, 'wrong auth granted');
@@ -145,7 +145,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $this->assertTrue($auth_request->terminalId == '1', 'wrong auth terminal id');
         $this->assertTrue($auth_request->terminalName == 'term name', 'wrong auth terminal name');
 
-        $auth_request = $toopher->getAuthenticationStatus('2');
+        $auth_request = $toopher->advanced->authenticationRequests->getById('2');
         $this->assertTrue($auth_request->id == '2', 'wrong auth id');
         $this->assertTrue($auth_request->pending == true, 'wrong auth pending');
         $this->assertTrue($auth_request->granted == false, 'wrong auth granted');
@@ -217,7 +217,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
 
 
         $toopher = new ToopherAPI('key', 'secret', '', $mock);
-        $auth = $toopher->getAuthenticationStatus('1');
+        $auth = $toopher->advanced->authenticationRequests->getById('1');
     }
 
     public function testToopherVersionStringExists() {
@@ -236,7 +236,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $resp1 = new HTTP_Request2_Response("HTTP/1.1 403 Forbidden", false, 'https://api.toopher.com/v1/authentication_requests/1');
         $mock->addResponse($resp1);
         $toopher = new ToopherAPI('key', 'secret', '', $mock);
-        $auth = $toopher->getAuthenticationStatus('1');
+        $auth = $toopher->advanced->authenticationRequests->getById('1');
     }
 
     /**
@@ -248,7 +248,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $resp1->appendBody(sprintf('{"error_code":403, "error_message":"%c"}', chr(5)));
         $mock->addResponse($resp1);
         $toopher = new ToopherAPI('key', 'secret', '', $mock);
-        $auth = $toopher->getAuthenticationStatus('1');
+        $auth = $toopher->advanced->authenticationRequests->getById('1');
     }
 }
 

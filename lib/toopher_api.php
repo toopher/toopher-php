@@ -104,11 +104,6 @@ class ToopherAPI
         $result = $this->advanced->raw->post($url, $params);
         return new AuthenticationRequest($result);
     }
-
-    public function getAuthenticationStatus($authenticationRequestId)
-    {
-        return new AuthenticationRequest($this->advanced->raw->get('authentication_requests/' . $authenticationRequestId));
-    }
 }
 
 class AdvancedApiUsageFactory
@@ -117,6 +112,7 @@ class AdvancedApiUsageFactory
     {
         $this->raw = new ApiRawRequester($key, $secret, $baseUrl, $httpAdapter);
         $this->pairings = new Pairings($api);
+        $this->authenticationRequests = new AuthenticationRequests($api);
     }
 }
 
@@ -261,6 +257,23 @@ class Pairing
         $this->userId = $json_response['user']['id'];
         $this->userName = $json_response['user']['name'];
         $this->raw = $json_response;
+    }
+}
+
+class AuthenticationRequests
+{
+    protected $api;
+
+    function __construct($api)
+    {
+        $this->api = $api;
+    }
+
+
+    public function getById($authenticationRequestId)
+    {
+        $result = $this->api->advanced->raw->get('authentication_requests/' . $authenticationRequestId);
+        return new AuthenticationRequest($result);
     }
 }
 
