@@ -49,7 +49,7 @@ class ToopherAPI
         $this->oauthConsumer = new HTTP_OAuth_Consumer($key, $secret);
         $this->baseUrl = (!empty($baseUrl)) ? $baseUrl : 'https://api.toopher.com/v1/';
         $this->httpAdapter = (!is_null($httpAdapter)) ? $httpAdapter : new HTTP_Request2_Adapter_Curl();
-        $this->advanced = new AdvancedApiUsageFactory($key, $secret, $baseUrl, $httpAdapter);
+        $this->advanced = new AdvancedApiUsageFactory($key, $secret, $baseUrl, $httpAdapter, $this);
     }
 
     public function pair($username, $phrase_or_num = '', $kwargs = array())
@@ -75,11 +75,6 @@ class ToopherAPI
         }
         $result = $this->advanced->raw->post($url, $params);
         return new Pairing($result);
-    }
-
-    public function getPairingStatus($pairingId)
-    {
-        return new Pairing($this->advanced->raw->get('pairings/' . $pairingId));
     }
 
     public function authenticate($id_or_username, $terminal, $actionName = '', $kwargs = array())
@@ -132,9 +127,10 @@ class ToopherAPI
 
 class AdvancedApiUsageFactory
 {
-    function __construct($key, $secret, $baseUrl, $httpAdapter)
+    function __construct($key, $secret, $baseUrl, $httpAdapter, $api)
     {
         $this->raw = new ApiRawRequester($key, $secret, $baseUrl, $httpAdapter);
+        $this->pairings = new Pairings($api);
     }
 }
 
@@ -250,6 +246,23 @@ class ApiRawRequester
             default:
                 return 'Unknown error';
         }
+    }
+}
+
+class Pairings
+{
+    protected $api;
+
+    function __construct($api)
+    {
+        $this->api = $api;
+    }
+
+
+    public function getById($pairingId)
+    {
+        $result = $this->api->advanced->raw->get('pairings/' . $pairingId);
+        return new Pairing($result);
     }
 }
 
