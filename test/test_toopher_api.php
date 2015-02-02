@@ -22,6 +22,7 @@ SOFTWARE.
 */
 
 require_once("bootstrap.php");
+use Rhumsaa\Uuid\Uuid;
 
 class ToopherAPITests extends PHPUnit_Framework_TestCase {
 
@@ -108,14 +109,15 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
     }
 
     public function testCreateAuthenticationWithNoAction(){
+        $id = Uuid::uuid4()->toString();
         $mock = new HTTP_Request2_Adapter_Mock();
         $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/initiate');
-        $resp1->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason":"some reason","terminal":{"id":"1","name":"term name"}}');
+        $resp1->appendBody('{"id":"' . $id . '","pending":false,"granted":true,"automated":true,"reason":"some reason","terminal":{"id":"1","name":"term name"}}');
         $mock->addResponse($resp1);
 
         $toopher = new ToopherAPI('key', 'secret', '', $mock);
-        $auth = $toopher->authenticate('1', 'term name');
-        $this->assertTrue($auth['id'] == '1', 'wrong auth id');
+        $auth = $toopher->authenticate($id, 'term name');
+        $this->assertTrue($auth['id'] == $id, 'wrong auth id');
         $this->assertTrue($auth['pending'] == false, 'wrong auth pending');
         $this->assertTrue($auth['granted'] == true, 'wrong auth granted');
         $this->assertTrue($auth['automated'] == true, 'wrong auth automated');

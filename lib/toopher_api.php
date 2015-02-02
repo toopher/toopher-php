@@ -81,18 +81,32 @@ class ToopherAPI
         return $this->makePairResponse($this->get('pairings/' . $pairingId));
     }
 
-    public function authenticate($pairingId, $terminalName, $actionName = '', $extras = array())
+    public function authenticate($id_or_username, $terminal, $actionName = '', $kwargs = array())
     {
-        $params = array(
-            'pairing_id' => $pairingId,
-            'terminal_name' => $terminalName
-        );
+        $url = 'authentication_requests/initiate';
+        $uuid_pattern = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
+        if(preg_match($uuid_pattern, $id_or_username, $match))
+        {
+            $params = array(
+                'pairing_id' => $id_or_username,
+                'terminal_name' => $terminal
+            );
+        }
+        else
+        {
+            $params = array(
+                'user_name' => $id_or_username,
+                'terminal_name_extra' => $terminal
+            );
+        }
+
         if(!empty($actionName))
         {
             $params['action_name'] = $actionName;
         }
-        $params = array_merge($params, $extras);
-        return $this->makeAuthResponse($this->post('authentication_requests/initiate', $params));
+        $params = array_merge($params, $kwargs);
+        $result = $this->post($url, $params);
+        return $this->makeAuthResponse($result);
     }
 
     public function getAuthenticationStatus($authenticationRequestId)

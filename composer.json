@@ -27,7 +27,8 @@
   },
   "require-dev" : {
     "phpunit/phpunit": "3.7.*",
-    "satooshi/php-coveralls": "dev-master"
+    "satooshi/php-coveralls": "dev-master",
+    "rhumsaa/uuid": ">=2.8"
   },
   "autoload":{
     "classmap": ["lib"]
