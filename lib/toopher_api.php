@@ -102,7 +102,7 @@ class ToopherAPI
         }
         $params = array_merge($params, $kwargs);
         $result = $this->advanced->raw->post($url, $params);
-        return new AuthenticationRequest($result);
+        return new AuthenticationRequest($result, $this);
     }
 }
 
@@ -290,13 +290,28 @@ class AuthenticationRequests
     {
         $url = 'authentication_requests/' . $authenticationRequestId;
         $result = $this->api->advanced->raw->get($url);
-        return new AuthenticationRequest($result);
+        return new AuthenticationRequest($result, $this->api);
     }
 }
 
 class AuthenticationRequest
 {
-    function __construct($json_response)
+    protected $api;
+
+    function __construct($json_response, $api)
+    {
+        $this->api = $api;
+        $this->update($json_response);
+    }
+
+    public function refreshFromServer()
+    {
+        $url = 'authentication_requests/' . $this->id;
+        $result = $this->api->advanced->raw->get($url);
+        $this->update($result);
+    }
+
+    private function update($json_response)
     {
         $this->id = $json_response['id'];
         $this->pending = $json_response['pending'];

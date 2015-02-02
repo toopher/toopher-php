@@ -178,6 +178,35 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $this->assertTrue($auth_request->terminalName == 'another term name', 'wrong auth terminal name');
     }
 
+    public function testAuthenticationRequestRefreshFromServer(){
+        $mock = new HTTP_Request2_Adapter_Mock();
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/initiate');
+        $resp1->appendBody('{"id":"1","pending":true,"granted":false,"automated":false,"reason":"some reason","terminal":{"id":"1","name":"term name"}}');
+        $resp2 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/1');
+        $resp2->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason":"some other reason","terminal":{"id":"1","name":"term name changed"}}');
+        $mock->addResponse($resp1);
+        $mock->addResponse($resp2);
+
+        $toopher = new ToopherAPI('key', 'secret', '', $mock);
+        $auth_request = $toopher->authenticate('user', 'term name extra');
+        $this->assertTrue($auth_request->id == '1', 'wrong auth id');
+        $this->assertTrue($auth_request->pending == true, 'wrong auth pending');
+        $this->assertTrue($auth_request->granted == false, 'wrong auth granted');
+        $this->assertTrue($auth_request->automated == false, 'wrong auth automated');
+        $this->assertTrue($auth_request->reason == 'some reason', 'wrong auth reason');
+        $this->assertTrue($auth_request->terminalId == '1', 'wrong auth terminal id');
+        $this->assertTrue($auth_request->terminalName == 'term name', 'wrong auth terminal name');
+
+        $auth_request->refreshFromServer();
+        $this->assertTrue($auth_request->id == '1', 'wrong auth id');
+        $this->assertTrue($auth_request->pending == false, 'wrong auth pending');
+        $this->assertTrue($auth_request->granted == true, 'wrong auth granted');
+        $this->assertTrue($auth_request->automated == true, 'wrong auth automated');
+        $this->assertTrue($auth_request->reason == 'some other reason', 'wrong auth reason');
+        $this->assertTrue($auth_request->terminalId == '1', 'wrong auth terminal id');
+        $this->assertTrue($auth_request->terminalName == 'term name changed', 'wrong auth terminal name');
+    }
+
     public function testRawPost(){
         $id = Uuid::uuid4()->toString();
         $mock = new HTTP_Request2_Adapter_Mock();
