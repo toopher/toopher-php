@@ -155,6 +155,57 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $this->assertTrue($auth['terminalName'] == 'another term name', 'wrong auth terminal name');
     }
 
+    public function testRawPost(){
+        $id = Uuid::uuid4()->toString();
+        $mock = new HTTP_Request2_Adapter_Mock();
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/initiate');
+        $resp1->appendBody('{"id":"' . $id . '","pending":false,"granted":true,"automated":true,"reason":"some reason","terminal":{"id":"1","name":"term name"}}');
+        $mock->addResponse($resp1);
+
+        $toopher = new ToopherAPI('key', 'secret', '', $mock);
+        $params = array('pairing_id' => $id, 'terminal_name' => 'term name');
+        $auth_request = $toopher->advanced->raw->post('authentication_requests/initiate', $params);
+        $this->assertTrue($auth_request['id'] == $id, 'wrong auth id');
+        $this->assertTrue($auth_request['pending'] == false, 'wrong auth pending');
+        $this->assertTrue($auth_request['granted'] == true, 'wrong auth granted');
+        $this->assertTrue($auth_request['automated'] == true, 'wrong auth automated');
+        $this->assertTrue($auth_request['reason'] == 'some reason', 'wrong auth reason');
+        $this->assertTrue($auth_request['terminal']['id'] == '1', 'wrong auth terminal id');
+        $this->assertTrue($auth_request['terminal']['name'] == 'term name', 'wrong auth terminal name');
+    }
+
+
+    public function testRawGet(){
+        $id1 = Uuid::uuid4()->toString();
+        $id2 = Uuid::uuid4()->toString();
+        $mock = new HTTP_Request2_Adapter_Mock();
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/' . $id1);
+        $resp1->appendBody('{"id":"' . $id1 . '","pending":false,"granted":true,"automated":true,"reason":"some reason","terminal":{"id":"1","name":"term name"}}');
+        $resp2 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/' . $id2);
+        $resp2->appendBody('{"id":"' . $id2 . '","pending":true,"granted":false,"automated":false,"reason":"some other reason","terminal":{"id":"2","name":"another term name"}}');
+        $mock->addResponse($resp1);
+        $mock->addResponse($resp2);
+
+        $toopher = new ToopherAPI('key', 'secret', '', $mock);
+        $auth_request = $toopher->advanced->raw->get('authentication_requests/' . $id1);
+        $this->assertTrue($auth_request['id'] == $id1, 'wrong auth id');
+        $this->assertTrue($auth_request['pending'] == false, 'wrong auth pending');
+        $this->assertTrue($auth_request['granted'] == true, 'wrong auth granted');
+        $this->assertTrue($auth_request['automated'] == true, 'wrong auth automated');
+        $this->assertTrue($auth_request['reason'] == 'some reason', 'wrong auth reason');
+        $this->assertTrue($auth_request['terminal']['id'] == '1', 'wrong auth terminal id');
+        $this->assertTrue($auth_request['terminal']['name'] == 'term name', 'wrong auth terminal name');
+
+        $auth_request = $toopher->advanced->raw->get('authentication_requests/' . $id2);
+        $this->assertTrue($auth_request['id'] == $id2, 'wrong auth id');
+        $this->assertTrue($auth_request['pending'] == true, 'wrong auth pending');
+        $this->assertTrue($auth_request['granted'] == false, 'wrong auth granted');
+        $this->assertTrue($auth_request['automated'] == false, 'wrong auth automated');
+        $this->assertTrue($auth_request['reason'] == 'some other reason', 'wrong auth reason');
+        $this->assertTrue($auth_request['terminal']['id'] == '2', 'wrong auth terminal id');
+        $this->assertTrue($auth_request['terminal']['name'] == 'another term name', 'wrong auth terminal name');
+    }
+
     /**
      * @expectedException ToopherRequestException
      */

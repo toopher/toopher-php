@@ -49,6 +49,7 @@ class ToopherAPI
         $this->oauthConsumer = new HTTP_OAuth_Consumer($key, $secret);
         $this->baseUrl = (!empty($baseUrl)) ? $baseUrl : 'https://api.toopher.com/v1/';
         $this->httpAdapter = (!is_null($httpAdapter)) ? $httpAdapter : new HTTP_Request2_Adapter_Curl();
+        $this->advanced = new AdvancedApiUsageFactory($key, $secret, $baseUrl, $httpAdapter);
     }
 
     public function pair($username, $phrase_or_num = '', $kwargs = array())
@@ -72,13 +73,13 @@ class ToopherAPI
         {
             $url = 'pairings/create/qr';
         }
-        $result = $this->post($url, $params);
+        $result = $this->advanced->raw->post($url, $params);
         return $this->makePairResponse($result);
     }
 
     public function getPairingStatus($pairingId)
     {
-        return $this->makePairResponse($this->get('pairings/' . $pairingId));
+        return $this->makePairResponse($this->advanced->raw->get('pairings/' . $pairingId));
     }
 
     public function authenticate($id_or_username, $terminal, $actionName = '', $kwargs = array())
@@ -105,13 +106,13 @@ class ToopherAPI
             $params['action_name'] = $actionName;
         }
         $params = array_merge($params, $kwargs);
-        $result = $this->post($url, $params);
+        $result = $this->advanced->raw->post($url, $params);
         return $this->makeAuthResponse($result);
     }
 
     public function getAuthenticationStatus($authenticationRequestId)
     {
-        return $this->makeAuthResponse($this->get('authentication_requests/' . $authenticationRequestId));
+        return $this->makeAuthResponse($this->advanced->raw->get('authentication_requests/' . $authenticationRequestId));
     }
 
     private function makePairResponse($result)
@@ -138,13 +139,44 @@ class ToopherAPI
             'raw' => $result
         );
     }
+}
 
-    private function post($endpoint, $parameters)
+class AdvancedApiUsageFactory
+{
+    function __construct($key, $secret, $baseUrl, $httpAdapter)
+    {
+        $this->raw = new ApiRawRequester($key, $secret, $baseUrl, $httpAdapter);
+    }
+}
+
+class ApiRawRequester
+{
+    protected $oauthConsumer;
+    protected $baseUrl;
+    protected $httpAdapter;
+
+    function __construct($key, $secret, $baseUrl, $httpAdapter)
+    {
+        if(empty($key))
+        {
+            throw new InvalidArgumentException('Toopher consumer key cannot be empty');
+        }
+        if(empty($secret))
+        {
+            throw new InvalidArgumentException('Toopher consumer secret cannot be empty');
+        }
+
+        $this->oauthConsumer = new HTTP_OAuth_Consumer($key, $secret);
+        $this->baseUrl = (!empty($baseUrl)) ? $baseUrl : 'https://api.toopher.com/v1/';
+        $this->httpAdapter = (!is_null($httpAdapter)) ? $httpAdapter : new HTTP_Request2_Adapter_Curl();
+    }
+
+    public function post($endpoint, $parameters)
     {
         return $this->request('POST', $endpoint, $parameters);
     }
 
-    private function get($endpoint)
+    public function get($endpoint)
     {
         return $this->request('GET', $endpoint);
     }
