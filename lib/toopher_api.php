@@ -266,6 +266,22 @@ class Pairing
         $this->update($result);
     }
 
+    public function getResetLink($kwargs = array())
+    {
+        if(!array_key_exists('security_question', $kwargs))
+        {
+            $kwargs['security_question'] = NULL;
+        }
+        if(!array_key_exists('security_answer', $kwargs))
+        {
+            $kwargs['security_answer'] = NULL;
+        }
+
+        $url = 'pairings/' . $this->id . '/generate_reset_link';
+        $result = $this->api->advanced->raw->post($url, $kwargs);
+        return $result['url'];
+    }
+
     private function update($json_response)
     {
         $this->id = $json_response['id'];
