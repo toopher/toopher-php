@@ -74,12 +74,12 @@ class ToopherAPI
             $url = 'pairings/create/qr';
         }
         $result = $this->advanced->raw->post($url, $params);
-        return $this->makePairResponse($result);
+        return new Pairing($result);
     }
 
     public function getPairingStatus($pairingId)
     {
-        return $this->makePairResponse($this->advanced->raw->get('pairings/' . $pairingId));
+        return new Pairing($this->advanced->raw->get('pairings/' . $pairingId));
     }
 
     public function authenticate($id_or_username, $terminal, $actionName = '', $kwargs = array())
@@ -113,17 +113,6 @@ class ToopherAPI
     public function getAuthenticationStatus($authenticationRequestId)
     {
         return $this->makeAuthResponse($this->advanced->raw->get('authentication_requests/' . $authenticationRequestId));
-    }
-
-    private function makePairResponse($result)
-    {
-        return array(
-            'id' => $result['id'],
-            'enabled' => $result['enabled'],
-            'userId' => $result['user']['id'],
-            'userName' => $result['user']['name'],
-            'raw' => $result
-        );
     }
 
     private function makeAuthResponse($result)
@@ -261,6 +250,18 @@ class ApiRawRequester
             default:
                 return 'Unknown error';
         }
+    }
+}
+
+class Pairing
+{
+    function __construct($json_response)
+    {
+        $this->id = $json_response['id'];
+        $this->enabled = $json_response['enabled'];
+        $this->userId = $json_response['user']['id'];
+        $this->userName = $json_response['user']['name'];
+        $this->raw = $json_response;
     }
 }
 

@@ -53,10 +53,10 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $mock->addResponse($resp);
         $toopher = new ToopherAPI('key', 'secret', '', $mock, $this->oauthParams);
         $pairing = $toopher->pair('user', 'immediate_pair');
-        $this->assertTrue($pairing['id'] == '1', 'bad pairing id');
-        $this->assertTrue($pairing['enabled'] == true, 'pairing not enabled');
-        $this->assertTrue($pairing['userId'] == '1', 'bad user id');
-        $this->assertTrue($pairing['userName'] == 'user', 'bad user name');
+        $this->assertTrue($pairing->id == '1', 'bad pairing id');
+        $this->assertTrue($pairing->enabled == true, 'pairing not enabled');
+        $this->assertTrue($pairing->userId == '1', 'bad user id');
+        $this->assertTrue($pairing->userName == 'user', 'bad user name');
     }
 
     public function testCreateSmsPair(){
@@ -66,10 +66,10 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $mock->addResponse($resp);
         $toopher = new ToopherAPI('key', 'secret', '', $mock, $this->oauthParams);
         $pairing = $toopher->pair('user', '555-555-5555');
-        $this->assertTrue($pairing['id'] == '1', 'bad pairing id');
-        $this->assertTrue($pairing['enabled'] == true, 'pairing not enabled');
-        $this->assertTrue($pairing['userId'] == '1', 'bad user id');
-        $this->assertTrue($pairing['userName'] == 'user', 'bad user name');
+        $this->assertTrue($pairing->id == '1', 'bad pairing id');
+        $this->assertTrue($pairing->enabled == true, 'pairing not enabled');
+        $this->assertTrue($pairing->userId == '1', 'bad user id');
+        $this->assertTrue($pairing->userName == 'user', 'bad user name');
     }
 
     public function testCreateQrPair(){
@@ -79,10 +79,10 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $mock->addResponse($resp);
         $toopher = new ToopherAPI('key', 'secret', '', $mock, $this->oauthParams);
         $pairing = $toopher->pair('user');
-        $this->assertTrue($pairing['id'] == '1', 'bad pairing id');
-        $this->assertTrue($pairing['enabled'] == true, 'pairing not enabled');
-        $this->assertTrue($pairing['userId'] == '1', 'bad user id');
-        $this->assertTrue($pairing['userName'] == 'user', 'bad user name'); 
+        $this->assertTrue($pairing->id == '1', 'bad pairing id');
+        $this->assertTrue($pairing->enabled == true, 'pairing not enabled');
+        $this->assertTrue($pairing->userId == '1', 'bad user id');
+        $this->assertTrue($pairing->userName == 'user', 'bad user name');
     }
 
     public function testGetPairingStatus(){
@@ -96,16 +96,16 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $toopher = new ToopherAPI('key', 'secret', '', $mock);
 
         $pairing = $toopher->getPairingStatus('1');
-        $this->assertTrue($pairing['id'] == '1', 'bad pairing id');
-        $this->assertTrue($pairing['enabled'] == true, 'pairing not enabled');
-        $this->assertTrue($pairing['userId'] == '1', 'bad user id');
-        $this->assertTrue($pairing['userName'] == 'paired user', 'bad user name');
+        $this->assertTrue($pairing->id == '1', 'bad pairing id');
+        $this->assertTrue($pairing->enabled == true, 'pairing not enabled');
+        $this->assertTrue($pairing->userId == '1', 'bad user id');
+        $this->assertTrue($pairing->userName == 'paired user', 'bad user name');
 
         $pairing = $toopher->getPairingStatus('2');
-        $this->assertTrue($pairing['id'] == '2', 'bad pairing id');
-        $this->assertTrue($pairing['enabled'] == false, 'pairing not enabled');
-        $this->assertTrue($pairing['userId'] == '2', 'bad user id');
-        $this->assertTrue($pairing['userName'] == 'unpaired user', 'bad user name');
+        $this->assertTrue($pairing->id == '2', 'bad pairing id');
+        $this->assertTrue($pairing->enabled == false, 'pairing not enabled');
+        $this->assertTrue($pairing->userId == '2', 'bad user id');
+        $this->assertTrue($pairing->userName == 'unpaired user', 'bad user name');
     }
 
     public function testCreateAuthenticationWithNoAction(){
