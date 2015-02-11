@@ -335,6 +335,15 @@ class AuthenticationRequest
         $this->update($result);
     }
 
+    public function grant_with_otp($otp, $kwargs = array())
+    {
+        $url = 'authentication_requests/' . $this->id . '/otp_auth';
+        $params = array('otp' => $otp);
+        $params = array_merge($params, $kwargs);
+        $result = $this->api->advanced->raw->post($url, $params);
+        $this->update($result);
+    }
+
     private function update($json_response)
     {
         $this->id = $json_response['id'];
