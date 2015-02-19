@@ -328,7 +328,15 @@ class AuthenticationRequest
     function __construct($json_response, $api)
     {
         $this->api = $api;
-        $this->update($json_response);
+        $this->id = $json_response['id'];
+        $this->pending = $json_response['pending'];
+        $this->granted = $json_response['granted'];
+        $this->automated = $json_response['automated'];
+        $this->reason_code = $json_response['reason_code'];
+        $this->reason = $json_response['reason'];
+        $this->terminal = new UserTerminal($json_response['terminal'], $api);
+        $this->user = new User($json_response['user'], $api);
+        $this->raw_response = $json_response;
     }
 
     public function refreshFromServer()
@@ -349,14 +357,14 @@ class AuthenticationRequest
 
     private function update($json_response)
     {
-        $this->id = $json_response['id'];
         $this->pending = $json_response['pending'];
         $this->granted = $json_response['granted'];
         $this->automated = $json_response['automated'];
+        $this->reason_code = $json_response['reason_code'];
         $this->reason = $json_response['reason'];
-        $this->terminalId = $json_response['terminal']['id'];
-        $this->terminalName = $json_response['terminal']['name'];
-        $this->raw = $json_response;
+        $this->terminal->update($json_response['terminal']);
+        $this->user->update($json_response['user']);
+        $this->raw_respones = $json_response;
     }
 }
 
