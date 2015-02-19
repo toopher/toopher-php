@@ -447,6 +447,19 @@ class UserTerminals
     $result = $this->api->advanced->raw->get($url);
     return new UserTerminal($result, $this->api);
   }
+
+  public function create($username, $terminalName, $requesterSpecifiedId, $kwargs = array())
+  {
+    $url = 'user_terminals/create';
+    $params = array(
+      'user_name' => $username,
+      'name' => $terminalName,
+      'name_extra' => $requesterSpecifiedId
+    );
+    $params = array_merge($params, $kwargs);
+    $result = $this->api->advanced->raw->post($url, $params);
+    return new UserTerminal($result, $this->api);
+  }
 }
 
 class UserTerminal

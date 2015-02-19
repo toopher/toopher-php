@@ -424,6 +424,39 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
       $this->assertTrue($userTerminal->user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
     }
 
+    public function testUserTerminalCreate(){
+      $mock = new HTTP_Request2_Adapter_Mock();
+      $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/user_terminals/1');
+      $resp1->appendBody('{"id":"1", "name":"terminal one", "requester_specified_id": "requester specified id", "user":{"id":"1","name":"paired user one","toopher_authentication_enabled":true}}');
+      $mock->addResponse($resp1);
+
+      $toopher = new ToopherAPI('key', 'secret', '', $mock);
+      $userTerminal = $toopher->advanced->userTerminals->create('name', 'terminal one', 'requester specified id');
+      $this->assertTrue($userTerminal->id == '1', 'wrong terminal id');
+      $this->assertTrue($userTerminal->name == 'terminal one', 'wrong terminal name');
+      $this->assertTrue($userTerminal->requester_specified_id == 'requester specified id', 'wrong requester specified id');
+      $this->assertTrue($userTerminal->user->id == '1', 'bad user id');
+      $this->assertTrue($userTerminal->user->name == 'paired user one', 'bad user name');
+      $this->assertTrue($userTerminal->user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
+    }
+
+    public function testUserTerminalCreateWithExtras(){
+      $mock = new HTTP_Request2_Adapter_Mock();
+      $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/user_terminals/1');
+      $resp1->appendBody('{"id":"1", "name":"terminal one", "requester_specified_id": "requester specified id", "user":{"id":"1","name":"paired user one","toopher_authentication_enabled":true}}');
+      $mock->addResponse($resp1);
+
+      $toopher = new ToopherAPI('key', 'secret', '', $mock);
+      $userTerminal = $toopher->advanced->userTerminals->create('name', 'terminal one', 'requester specified id', array('foo'=>'bar'));
+      $this->assertTrue($userTerminal->id == '1', 'wrong terminal id');
+      $this->assertTrue($userTerminal->name == 'terminal one', 'wrong terminal name');
+      $this->assertTrue($userTerminal->requester_specified_id == 'requester specified id', 'wrong requester specified id');
+      $this->assertTrue($userTerminal->user->id == '1', 'bad user id');
+      $this->assertTrue($userTerminal->user->name == 'paired user one', 'bad user name');
+      $this->assertTrue($userTerminal->user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
+    }
+
+
     public function testUserTerminal(){
       $toopher = new ToopherAPI('key', 'secret');
       $user_terminal = new UserTerminal(["id" => "1", "name" => "user", "requester_specified_id" => "1", "user" => ["id" => "1","name" => "user", "toopher_authentication_enabled" => true]], $toopher);
