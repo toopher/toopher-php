@@ -114,6 +114,7 @@ class AdvancedApiUsageFactory
         $this->pairings = new Pairings($api);
         $this->authenticationRequests = new AuthenticationRequests($api);
         $this->users = new Users($api);
+        $this->userTerminals = new UserTerminals($api);
     }
 }
 
@@ -428,6 +429,23 @@ class User
     $this->name = $json_response['name'];
     $this->toopher_authentication_enabled = $json_response['toopher_authentication_enabled'];
     $this->raw_response = $json_response;
+  }
+}
+
+class UserTerminals
+{
+  protected $api;
+
+  function __construct($api)
+  {
+      $this->api = $api;
+  }
+
+  public function getById($userTerminalId)
+  {
+    $url = 'user_terminals/' . $userTerminalId;
+    $result = $this->api->advanced->raw->get($url);
+    return new UserTerminal($result, $this->api);
   }
 }
 
