@@ -256,7 +256,11 @@ class Pairing
     function __construct($json_response, $api)
     {
         $this->api = $api;
-        $this->update($json_response);
+        $this->id = $json_response['id'];
+        $this->enabled = $json_response['enabled'];
+        $this->pending = $json_response['pending'];
+        $this->user = new User($json_response['user'], $api);
+        $this->raw_response = $json_response;
     }
 
     public function refreshFromServer()
@@ -292,11 +296,10 @@ class Pairing
 
     private function update($json_response)
     {
-        $this->id = $json_response['id'];
         $this->enabled = $json_response['enabled'];
-        $this->userId = $json_response['user']['id'];
-        $this->userName = $json_response['user']['name'];
-        $this->raw = $json_response;
+        $this->pending = $json_response['pending'];
+        $this->user->update($json_response['user']);
+        $this->raw_response = $json_response;
     }
 }
 
