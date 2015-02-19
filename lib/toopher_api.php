@@ -336,6 +336,7 @@ class AuthenticationRequest
         $this->reason = $json_response['reason'];
         $this->terminal = new UserTerminal($json_response['terminal'], $api);
         $this->user = new User($json_response['user'], $api);
+        $this->action = new Action($json_response['action']);
         $this->raw_response = $json_response;
     }
 
@@ -364,6 +365,7 @@ class AuthenticationRequest
         $this->reason = $json_response['reason'];
         $this->terminal->update($json_response['terminal']);
         $this->user->update($json_response['user']);
+        $this->action->update($json_response['action']);
         $this->raw_respones = $json_response;
     }
 }
@@ -407,6 +409,22 @@ class UserTerminal
     $this->name = $json_response['name'];
     $this->requester_specified_id = $json_response['requester_specified_id'];
     $this->user->update($json_response['user']);
+    $this->raw_response = $json_response;
+  }
+}
+
+class Action
+{
+  function __construct($json_response)
+  {
+    $this->id = $json_response['id'];
+    $this->name = $json_response['name'];
+    $this->raw_response = $json_response;
+  }
+
+  public function update($json_response)
+  {
+    $this->name = $json_response['name'];
     $this->raw_response = $json_response;
   }
 }
