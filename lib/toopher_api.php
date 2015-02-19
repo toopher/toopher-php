@@ -113,6 +113,7 @@ class AdvancedApiUsageFactory
         $this->raw = new ApiRawRequester($key, $secret, $baseUrl, $httpAdapter);
         $this->pairings = new Pairings($api);
         $this->authenticationRequests = new AuthenticationRequests($api);
+        $this->users = new Users($api);
     }
 }
 
@@ -384,6 +385,19 @@ class Users
       $url = 'users/' . $userId;
       $result = $this->api->advanced->raw->get($url);
       return new User($result, $this->api);
+    }
+
+    public function getByName($username)
+    {
+      $url = 'users';
+      $params = array('user_name' => $username);
+      $users = $this->api->advanced->raw->get($url, $params);
+      if (sizeof($users) > 1) {
+        throw new ToopherRequestException(sprintf("Multiple users with name = %s", $username));
+      } elseif (empty ($users)) {
+        throw new ToopherRequestException(sprintf("No users with name = %s", $username));
+      }
+      return new User(array_shift($users), $this->api);
     }
 }
 
