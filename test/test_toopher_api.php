@@ -329,6 +329,14 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $this->assertTrue($auth_request['terminal']['name'] == 'another term name', 'wrong auth terminal name');
     }
 
+    public function testUser(){
+      $toopher = new ToopherAPI('key', 'secret');
+      $user = new User(["id" => "1", "name" => "user", "toopher_authentication_enabled" => true], $toopher);
+      $this->assertTrue($user->id == '1', 'bad user id');
+      $this->assertTrue($user->name == 'user', 'bad user name');
+      $this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
+    }
+
     /**
      * @expectedException ToopherRequestException
      */

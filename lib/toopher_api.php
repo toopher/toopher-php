@@ -357,4 +357,25 @@ class AuthenticationRequest
     }
 }
 
+class User
+{
+  protected $api;
+
+  function __construct($json_response, $api)
+  {
+    $this->api = $api;
+    $this->id = $json_response['id'];
+    $this->name = $json_response['name'];
+    $this->toopher_authentication_enabled = $json_response['toopher_authentication_enabled'];
+    $this->raw_response = $json_response;
+  }
+
+  public function update($json_response)
+  {
+    $this->name = $json_response['name'];
+    $this->toopher_authentication_enabled = $json_response['toopher_authentication_enabled'];
+    $this->raw_response = $json_response;
+  }
+}
+
 ?>
