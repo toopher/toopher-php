@@ -92,7 +92,7 @@ class ToopherAPI
         {
             $params = array(
                 'user_name' => $id_or_username,
-                'terminal_name_extra' => $terminal
+                'requester_specified_terminal_id' => $terminal
             );
         }
 
