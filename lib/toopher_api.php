@@ -347,7 +347,7 @@ class AuthenticationRequest
         $this->update($result);
     }
 
-    public function grant_with_otp($otp, $kwargs = array())
+    public function grantWithOtp($otp, $kwargs = array())
     {
         $url = 'authentication_requests/' . $this->id . '/otp_auth';
         $params = array('otp' => $otp);

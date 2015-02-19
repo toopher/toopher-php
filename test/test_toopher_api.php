@@ -268,7 +268,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $this->assertTrue($auth_request->terminal->id == '1', 'wrong auth terminal id');
         $this->assertTrue($auth_request->terminal->name == 'term name', 'wrong auth terminal name');
 
-        $auth_request->grant_with_otp('otp');
+        $auth_request->grantWithOtp('otp');
         $this->assertTrue($auth_request->id == $id, 'wrong auth id');
         $this->assertTrue($auth_request->pending == false, 'wrong auth pending');
         $this->assertTrue($auth_request->granted == true, 'wrong auth granted');
