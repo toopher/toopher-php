@@ -399,6 +399,15 @@ class Users
       }
       return new User(array_shift($users), $this->api);
     }
+
+    public function create($username, $kwargs = array())
+    {
+      $url = 'users/create';
+      $params = array('name' => $username);
+      $params = array_merge($params, $kwargs);
+      $result = $this->api->advanced->raw->post($url, $params);
+      return new User($result, $this->api);
+    }
 }
 
 class User
