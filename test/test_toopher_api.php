@@ -329,6 +329,27 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         $this->assertTrue($auth_request['terminal']['name'] == 'another term name', 'wrong auth terminal name');
     }
 
+    public function testUsersGetById(){
+      $mock = new HTTP_Request2_Adapter_Mock();
+      $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/users/1');
+      $resp1->appendBody('{"id":"1","name":"paired user one","toopher_authentication_enabled":true}');
+      $resp2 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/users/2');
+      $resp2->appendBody('{"id":"2","name":"paired user two","toopher_authentication_enabled":false}');
+      $mock->addResponse($resp1);
+      $mock->addResponse($resp2);
+
+      $toopher = new ToopherAPI('key', 'secret', '', $mock);
+      $user = $toopher->advanced->users->getById('1');
+      $this->assertTrue($user->id == '1', 'wrong user id');
+      $this->assertTrue($user->name == 'paired user one', 'wrong user name');
+      $this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
+
+      $user = $toopher->advanced->users->getById('2');
+      $this->assertTrue($user->id == '2', 'wrong user id');
+      $this->assertTrue($user->name == 'paired user two', 'wrong user name');
+      $this->assertTrue($user->toopher_authentication_enabled == false, 'toopher authentication not enabled');
+    }
+
     public function testUser(){
       $toopher = new ToopherAPI('key', 'secret');
       $user = new User(["id" => "1", "name" => "user", "toopher_authentication_enabled" => true], $toopher);

@@ -370,6 +370,23 @@ class AuthenticationRequest
     }
 }
 
+class Users
+{
+    protected $api;
+
+    function __construct($api)
+    {
+        $this->api = $api;
+    }
+
+    public function getById($userId)
+    {
+      $url = 'users/' . $userId;
+      $result = $this->api->advanced->raw->get($url);
+      return new User($result, $this->api);
+    }
+}
+
 class User
 {
   protected $api;
