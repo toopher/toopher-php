@@ -381,4 +381,26 @@ class User
   }
 }
 
+class UserTerminal
+{
+  protected $api;
+
+  function __construct($json_response, $api)
+  {
+    $this->id = $json_response['id'];
+    $this->name = $json_response['name'];
+    $this->requester_specified_id = $json_response['requester_specified_id'];
+    $this->user = new User($json_response['user'], $api);
+    $this->raw_response = $json_response;
+  }
+
+  public function update($json_response)
+  {
+    $this->name = $json_response['name'];
+    $this->requester_specified_id = $json_response['requester_specified_id'];
+    $this->user->update($json_response['user']);
+    $this->raw_response = $json_response;
+  }
+}
+
 ?>
