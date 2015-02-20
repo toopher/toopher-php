@@ -140,6 +140,11 @@ class ApiRawRequester
         $this->httpAdapter = (!is_null($httpAdapter)) ? $httpAdapter : new HTTP_Request2_Adapter_Curl();
     }
 
+    public function getOauthConsumer()
+    {
+      return $this->oauthConsumer;
+    }
+
     public function post($endpoint, $parameters)
     {
         return $this->request('POST', $endpoint, $parameters);
@@ -150,7 +155,12 @@ class ApiRawRequester
         return $this->request('GET', $endpoint);
     }
 
-    private function request($method, $endpoint, $parameters = array())
+    public function get_raw($endpoint)
+    {
+      return $this->request('GET', $endpoint, array(), true);
+    }
+
+    private function request($method, $endpoint, $parameters = array(), $raw_request = false)
     {
         $req = new HTTP_Request2();
         $req->setAdapter($this->httpAdapter);
@@ -201,16 +211,21 @@ class ApiRawRequester
             }
         }
 
-        $decoded = json_decode($result->getBody(), true);
-        if ($decoded === NULL) {
-            $json_error = $this->json_error_to_string(json_last_error());
-            if (!empty($json_error)) {
-                error_log(sprintf("Error parsing response body JSON: %s", $json_error));
-                error_log(sprintf("response body: %s", $result->getBody()));
-                throw new ToopherRequestException(sprintf("JSON Parsing Error: %s", $json_error));
-            }
+        if ($raw_request)
+        {
+          return $result->getBody();
+        } else {
+          $decoded = json_decode($result->getBody(), true);
+          if ($decoded === NULL) {
+              $json_error = $this->json_error_to_string(json_last_error());
+              if (!empty($json_error)) {
+                  error_log(sprintf("Error parsing response body JSON: %s", $json_error));
+                  error_log(sprintf("response body: %s", $result->getBody()));
+                  throw new ToopherRequestException(sprintf("JSON Parsing Error: %s", $json_error));
+              }
+          }
+          return $decoded;
         }
-        return $decoded;
     }
 
     private function json_error_to_string($json_error_code) {
@@ -294,6 +309,12 @@ class Pairing
         $params = array_merge($params, $kwargs);
         $url = 'pairings/' . $this->id . '/send_reset_link';
         $this->api->advanced->raw->post($url, $params);
+    }
+
+    public function getQrCodeImage()
+    {
+      $url = 'qr/pairings/' . $this->id;
+      return $this->api->advanced->raw->get_raw($url);
     }
 
     private function update($json_response)

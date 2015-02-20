@@ -170,6 +170,19 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
         }
     }
 
+    public function testPairingGetQrCodeImage(){
+        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/create');
+        $resp1->appendBody('{"id":"1","enabled":true, "pending":false, "user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}}');
+        $resp2 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/qr/pairings/1');
+        $resp2->appendBody('{}');
+        $this->mock->addResponse($resp1);
+        $this->mock->addResponse($resp2);
+        $toopher = new ToopherAPI('key', 'secret', '', $this->mock);
+        $pairing = $toopher->pair('user');
+        $qr_image = $pairing->getQrCodeImage();
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "last called method should be 'GET'");
+    }
+
     public function testCreateAuthenticationWithNoAction(){
         $id = Uuid::uuid4()->toString();
         $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/initiate');
