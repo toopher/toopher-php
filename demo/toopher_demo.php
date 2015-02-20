@@ -37,7 +37,7 @@ if(empty($key) || empty($secret)){
 }
 
 echo ("using key=$key, secret=$secret\n");
-$toopher = new ToopherAPI($key, $secret);
+$toopher = new ToopherApi($key, $secret);
 
 echo("\nSTEP 1: Pair device\n");
 echo("enter pairing phrase:");

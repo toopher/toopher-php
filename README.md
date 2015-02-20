@@ -1,10 +1,10 @@
-# ToopherAPI PHP Client
+# ToopherApi PHP Client
 
 [![Build
 Status](https://travis-ci.org/toopher/toopher-php.png?branch=master)](https://travis-ci.org/toopher/toopher-php)
 
 #### Introduction
-ToopherAPI PHP Client simplifies the task of interfacing with the Toopher API from PHP code.  This project includes all the dependency libraries and handles the required OAuth and JSON functionality so you can focus on just using the API.
+ToopherApi PHP Client simplifies the task of interfacing with the Toopher API from PHP code.  This project includes all the dependency libraries and handles the required OAuth and JSON functionality so you can focus on just using the API.
 
 #### Learn the Toopher API
 Make sure you visit [http://dev.toopher.com](http://dev.toopher.com) to get acquainted with the Toopher API fundamentals.  The documentation there will tell you the details about the operations this API wrapper library provides.
@@ -29,7 +29,7 @@ This library makes it super simple to do the Toopher two-step.  Check it out:
 require_once("toopher_api.php");
 
 // Create an API object using your credentials
-$toopherApi = new ToopherAPI($key, $secret);
+$toopherApi = new ToopherApi($key, $secret);
 
 // Step 1 - Pair with their phone's Toopher app
 $pairing = $toopherApi->pair("pairing phrase", "username@yourservice.com");
