@@ -430,6 +430,21 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
       $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "last called method should be 'POST'");
     }
 
+    public function testUserDisableToopherAuthentication(){
+      $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/users/1');
+      $resp1->appendBody('{"id":"1","name":"user","toopher_authentication_enabled":false}');
+      $this->mock->addResponse($resp1);
+
+      $toopher = new ToopherAPI('key', 'secret', '', $this->mock);
+      $user = new User(["id" => "1", "name" => "user", "toopher_authentication_enabled" => true], $toopher);
+      $this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
+
+      $user->disableToopherAuthentication();
+      $this->assertTrue($user->toopher_authentication_enabled == false, 'toopher authentication should not be enabled');
+      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getBody() == "toopher_authentication_enabled=false", 'post params were incorrect');
+      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "last called method should be 'POST'");
+    }
+
     public function testUserTerminalsGetById(){
       $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/user_terminals/1');
       $resp1->appendBody('{"id":"1", "name":"terminal one", "requester_specified_id": "requester specified id", "user":{"id":"1","name":"paired user one","toopher_authentication_enabled":true}}');
