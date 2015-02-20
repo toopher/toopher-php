@@ -195,10 +195,10 @@ class ApiRawRequester
             throw new ToopherRequestException("Error making Toopher API request", $e->getCode(), $e);
         }
 
+        $resultBody = $result->getBody();
         if ($result->getStatus() != 200)
         {
             error_log(sprintf("Toopher API call returned unexpected HTTP response: %d - %s", $result->getStatus(), $result->getReasonPhrase()));
-            $resultBody = $result->getBody();
             if (empty($resultBody)) {
                 error_log("empty response body");
                 throw new ToopherRequestException($result->getReasonPhrase(), $result->getStatus());
@@ -223,9 +223,9 @@ class ApiRawRequester
 
         if ($raw_request)
         {
-          return $result->getBody();
+          return $resultBody;
         } else {
-          $decoded = json_decode($result->getBody(), true);
+          $decoded = json_decode($resultBody, true);
           if ($decoded === NULL) {
               $json_error = $this->json_error_to_string(json_last_error());
               if (!empty($json_error)) {
