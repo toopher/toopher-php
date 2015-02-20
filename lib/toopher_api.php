@@ -268,6 +268,71 @@ class Pairings extends ToopherObjectFactory
     }
 }
 
+class AuthenticationRequests extends ToopherObjectFactory
+{
+    public function getById($authenticationRequestId)
+    {
+        $url = 'authentication_requests/' . $authenticationRequestId;
+        $result = $this->api->advanced->raw->get($url);
+        return new AuthenticationRequest($result, $this->api);
+    }
+}
+
+class Users extends ToopherObjectFactory
+{
+    public function getById($userId)
+    {
+      $url = 'users/' . $userId;
+      $result = $this->api->advanced->raw->get($url);
+      return new User($result, $this->api);
+    }
+
+    public function getByName($username)
+    {
+      $url = 'users';
+      $params = array('user_name' => $username);
+      $users = $this->api->advanced->raw->get($url, $params);
+      if (sizeof($users) > 1) {
+        throw new ToopherRequestException(sprintf("Multiple users with name = %s", $username));
+      } elseif (empty ($users)) {
+        throw new ToopherRequestException(sprintf("No users with name = %s", $username));
+      }
+      return new User(array_shift($users), $this->api);
+    }
+
+    public function create($username, $kwargs = array())
+    {
+      $url = 'users/create';
+      $params = array('name' => $username);
+      $params = array_merge($params, $kwargs);
+      $result = $this->api->advanced->raw->post($url, $params);
+      return new User($result, $this->api);
+    }
+}
+
+class UserTerminals extends ToopherObjectFactory
+{
+  public function getById($userTerminalId)
+  {
+    $url = 'user_terminals/' . $userTerminalId;
+    $result = $this->api->advanced->raw->get($url);
+    return new UserTerminal($result, $this->api);
+  }
+
+  public function create($username, $terminalName, $requesterSpecifiedId, $kwargs = array())
+  {
+    $url = 'user_terminals/create';
+    $params = array(
+      'user_name' => $username,
+      'name' => $terminalName,
+      'name_extra' => $requesterSpecifiedId
+    );
+    $params = array_merge($params, $kwargs);
+    $result = $this->api->advanced->raw->post($url, $params);
+    return new UserTerminal($result, $this->api);
+  }
+}
+
 class Pairing
 {
     protected $api;
@@ -328,16 +393,6 @@ class Pairing
     }
 }
 
-class AuthenticationRequests extends ToopherObjectFactory
-{
-    public function getById($authenticationRequestId)
-    {
-        $url = 'authentication_requests/' . $authenticationRequestId;
-        $result = $this->api->advanced->raw->get($url);
-        return new AuthenticationRequest($result, $this->api);
-    }
-}
-
 class AuthenticationRequest
 {
     protected $api;
@@ -387,38 +442,6 @@ class AuthenticationRequest
     }
 }
 
-class Users extends ToopherObjectFactory
-{
-    public function getById($userId)
-    {
-      $url = 'users/' . $userId;
-      $result = $this->api->advanced->raw->get($url);
-      return new User($result, $this->api);
-    }
-
-    public function getByName($username)
-    {
-      $url = 'users';
-      $params = array('user_name' => $username);
-      $users = $this->api->advanced->raw->get($url, $params);
-      if (sizeof($users) > 1) {
-        throw new ToopherRequestException(sprintf("Multiple users with name = %s", $username));
-      } elseif (empty ($users)) {
-        throw new ToopherRequestException(sprintf("No users with name = %s", $username));
-      }
-      return new User(array_shift($users), $this->api);
-    }
-
-    public function create($username, $kwargs = array())
-    {
-      $url = 'users/create';
-      $params = array('name' => $username);
-      $params = array_merge($params, $kwargs);
-      $result = $this->api->advanced->raw->post($url, $params);
-      return new User($result, $this->api);
-    }
-}
-
 class User
 {
   protected $api;
@@ -437,29 +460,6 @@ class User
     $this->name = $json_response['name'];
     $this->toopher_authentication_enabled = $json_response['toopher_authentication_enabled'];
     $this->raw_response = $json_response;
-  }
-}
-
-class UserTerminals extends ToopherObjectFactory
-{
-  public function getById($userTerminalId)
-  {
-    $url = 'user_terminals/' . $userTerminalId;
-    $result = $this->api->advanced->raw->get($url);
-    return new UserTerminal($result, $this->api);
-  }
-
-  public function create($username, $terminalName, $requesterSpecifiedId, $kwargs = array())
-  {
-    $url = 'user_terminals/create';
-    $params = array(
-      'user_name' => $username,
-      'name' => $terminalName,
-      'name_extra' => $requesterSpecifiedId
-    );
-    $params = array_merge($params, $kwargs);
-    $result = $this->api->advanced->raw->post($url, $params);
-    return new UserTerminal($result, $this->api);
   }
 }
 
