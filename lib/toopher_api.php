@@ -106,6 +106,16 @@ class ToopherAPI
     }
 }
 
+abstract class ToopherObjectFactory
+{
+  protected $api;
+
+  function __construct($api)
+  {
+    $this->api = $api;
+  }
+}
+
 class AdvancedApiUsageFactory
 {
     function __construct($key, $secret, $baseUrl, $httpAdapter, $api)
@@ -248,16 +258,8 @@ class ApiRawRequester
     }
 }
 
-class Pairings
+class Pairings extends ToopherObjectFactory
 {
-    protected $api;
-
-    function __construct($api)
-    {
-        $this->api = $api;
-    }
-
-
     public function getById($pairingId)
     {
         $url = 'pairings/' . $pairingId;
@@ -326,16 +328,8 @@ class Pairing
     }
 }
 
-class AuthenticationRequests
+class AuthenticationRequests extends ToopherObjectFactory
 {
-    protected $api;
-
-    function __construct($api)
-    {
-        $this->api = $api;
-    }
-
-
     public function getById($authenticationRequestId)
     {
         $url = 'authentication_requests/' . $authenticationRequestId;
@@ -393,15 +387,8 @@ class AuthenticationRequest
     }
 }
 
-class Users
+class Users extends ToopherObjectFactory
 {
-    protected $api;
-
-    function __construct($api)
-    {
-        $this->api = $api;
-    }
-
     public function getById($userId)
     {
       $url = 'users/' . $userId;
@@ -453,15 +440,8 @@ class User
   }
 }
 
-class UserTerminals
+class UserTerminals extends ToopherObjectFactory
 {
-  protected $api;
-
-  function __construct($api)
-  {
-      $this->api = $api;
-  }
-
   public function getById($userTerminalId)
   {
     $url = 'user_terminals/' . $userTerminalId;
