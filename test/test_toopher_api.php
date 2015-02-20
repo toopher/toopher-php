@@ -346,12 +346,12 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
       $user = $toopher->advanced->users->getById('1');
       $this->assertTrue($user->id == '1', 'wrong user id');
       $this->assertTrue($user->name == 'paired user one', 'wrong user name');
-      $this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
+      $this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
 
       $user = $toopher->advanced->users->getById('2');
       $this->assertTrue($user->id == '2', 'wrong user id');
       $this->assertTrue($user->name == 'paired user two', 'wrong user name');
-      $this->assertTrue($user->toopher_authentication_enabled == false, 'toopher authentication not enabled');
+      $this->assertTrue($user->toopher_authentication_enabled == false, 'toopher authentication should not be enabled');
     }
 
     public function testUsersGetByName(){
@@ -363,7 +363,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
       $user = $toopher->advanced->users->getByName('paired user');
       $this->assertTrue($user->id == '1', 'wrong user id');
       $this->assertTrue($user->name == 'paired user', 'wrong user name');
-      $this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
+      $this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
     }
 
     public function testUsersCreate(){
@@ -375,7 +375,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
       $user = $toopher->advanced->users->create('paired user');
       $this->assertTrue($user->id == '1', 'wrong user id');
       $this->assertTrue($user->name == 'paired user', 'wrong user name');
-      $this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
+      $this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
     }
 
     public function testUsersCreateWithExtras(){
@@ -387,7 +387,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
       $user = $toopher->advanced->users->create('paired user', array('foo'=>'bar'));
       $this->assertTrue($user->id == '1', 'wrong user id');
       $this->assertTrue($user->name == 'paired user', 'wrong user name');
-      $this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
+      $this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
     }
 
     public function testUser(){
@@ -395,7 +395,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
       $user = new User(["id" => "1", "name" => "user", "toopher_authentication_enabled" => true], $toopher);
       $this->assertTrue($user->id == '1', 'bad user id');
       $this->assertTrue($user->name == 'user', 'bad user name');
-      $this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
+      $this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
     }
 
     public function testUserRefreshFromServer(){
@@ -445,7 +445,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
       $this->assertTrue($userTerminal->requester_specified_id == 'requester specified id', 'wrong requester specified id');
       $this->assertTrue($userTerminal->user->id == '1', 'bad user id');
       $this->assertTrue($userTerminal->user->name == 'paired user one', 'bad user name');
-      $this->assertTrue($userTerminal->user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
+      $this->assertTrue($userTerminal->user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
 
       $userTerminal = $toopher->advanced->userTerminals->getById('2');
       $this->assertTrue($userTerminal->id == '2', 'wrong terminal id');
@@ -453,7 +453,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
       $this->assertTrue($userTerminal->requester_specified_id == 'requester specified id', 'wrong requester specified id');
       $this->assertTrue($userTerminal->user->id == '2', 'bad user id');
       $this->assertTrue($userTerminal->user->name == 'paired user two', 'bad user name');
-      $this->assertTrue($userTerminal->user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
+      $this->assertTrue($userTerminal->user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
     }
 
     public function testUserTerminalCreate(){
@@ -468,7 +468,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
       $this->assertTrue($userTerminal->requester_specified_id == 'requester specified id', 'wrong requester specified id');
       $this->assertTrue($userTerminal->user->id == '1', 'bad user id');
       $this->assertTrue($userTerminal->user->name == 'paired user one', 'bad user name');
-      $this->assertTrue($userTerminal->user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
+      $this->assertTrue($userTerminal->user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
     }
 
     public function testUserTerminalCreateWithExtras(){
@@ -483,7 +483,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
       $this->assertTrue($userTerminal->requester_specified_id == 'requester specified id', 'wrong requester specified id');
       $this->assertTrue($userTerminal->user->id == '1', 'bad user id');
       $this->assertTrue($userTerminal->user->name == 'paired user one', 'bad user name');
-      $this->assertTrue($userTerminal->user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
+      $this->assertTrue($userTerminal->user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
     }
 
 
@@ -495,7 +495,7 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
       $this->assertTrue($user_terminal->requester_specified_id == '1', 'bad user terminal requester specified is');
       $this->assertTrue($user_terminal->user->id == '1', 'bad user id');
       $this->assertTrue($user_terminal->user->name == 'user', 'bad user name');
-      $this->assertTrue($user_terminal->user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
+      $this->assertTrue($user_terminal->user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
     }
 
     public function testAction(){
