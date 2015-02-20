@@ -398,6 +398,23 @@ class ToopherAPITests extends PHPUnit_Framework_TestCase {
       $this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication not enabled');
     }
 
+    public function testUserRefreshFromServer(){
+      $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/users/1');
+      $resp1->appendBody('{"id":"1","name":"user changed","toopher_authentication_enabled":true}');
+      $this->mock->addResponse($resp1);
+
+      $toopher = new ToopherAPI('key', 'secret', '', $this->mock);
+      $user = new User(["id" => "1", "name" => "user", "toopher_authentication_enabled" => false], $toopher);
+      $this->assertTrue($user->id == '1', 'bad user id');
+      $this->assertTrue($user->name == 'user', 'bad user name');
+      $this->assertTrue($user->toopher_authentication_enabled == false, 'toopher authentication should not be enabled');
+
+      $user->refreshFromServer();
+      $this->assertTrue($user->id == '1', 'bad user id');
+      $this->assertTrue($user->name == 'user changed', 'bad user name');
+      $this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
+    }
+
     public function testUserTerminalsGetById(){
       $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/user_terminals/1');
       $resp1->appendBody('{"id":"1", "name":"terminal one", "requester_specified_id": "requester specified id", "user":{"id":"1","name":"paired user one","toopher_authentication_enabled":true}}');

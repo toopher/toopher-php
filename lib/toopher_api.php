@@ -455,6 +455,13 @@ class User
     $this->raw_response = $json_response;
   }
 
+  public function refreshFromServer()
+  {
+    $url = 'users/' . $this->id;
+    $result = $this->api->advanced->raw->get($url);
+    $this->update($result);
+  }
+
   public function update($json_response)
   {
     $this->name = $json_response['name'];
