@@ -462,6 +462,13 @@ class User
     $this->update($result);
   }
 
+  public function enableToopherAuthentication()
+  {
+    $url = 'users/' . $this->id;
+    $result = $this->api->advanced->raw->post($url, array("toopher_authentication_enabled" => "true"));
+    $this->update($result);
+  }
+
   public function update($json_response)
   {
     $this->name = $json_response['name'];
