@@ -26,12 +26,39 @@ use Rhumsaa\Uuid\Uuid;
 
 class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
-    protected $oauthParams = array('oauth_nonce' => 'nonce', 'oauth_timestamp' => '0');
+    const OAUTH_NONCE = '12345678';
+    const IFRAME_KEY = 'abcdefg';
+    const IFRAME_SECRET = 'hijklmnop';
+
+    public static function getOauthTimestamp()
+    {
+      return mktime(0, 16, 40, 1, 1, 1970);
+    }
+
+    public static function getOauthNonce()
+    {
+      return self::OAUTH_NONCE;
+    }
+
+    public static function getIframeKey()
+    {
+      return self::IFRAME_KEY;
+    }
+
+    public static function getIframeSecret()
+    {
+      return self::IFRAME_SECRET;
+    }
 
     protected function setUp()
     {
       date_default_timezone_set('UTC');
       $this->mock = new HTTP_Request2_Adapter_Mock();
+    }
+
+    public function getToopherIframe()
+    {
+      return new ToopherIframe($this->getIframeKey(), $this->getIframeSecret(), 'https://api.toopher.test/v1/');
     }
 
     public function compareToDefaultUserTerminal($userTerminal)
@@ -531,10 +558,10 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
     public function testToopherIframeValidatePostbackWithGoodSignatureIsSuccessful()
     {
       $toopherIframe = new ToopherIframe('abcdefg', 'hijklmnop', 'https://api.toopher.test/v1/');
-      $toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 1, 1, 1970));
+      $toopherIframe->setTimestampOverride($this->getOauthTimestamp());
       $data = array(
         'foo' => array('bar'),
-        'timestamp' => array(mktime(0, 16, 40, 1, 1, 1970)),
+        'timestamp' => array($this->getOauthTimestamp()),
         'session_token' => array('s9s7vsb'),
         'toopher_sig' => array('6d2c7GlQssGmeYYGpcf+V/kirOI=')
       );
@@ -552,7 +579,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
     public function testToopherIframeValidatePostbackWithBadSignatureFails()
     {
       $toopherIframe = new ToopherIframe('abcdefg', 'hijklmnop', 'https://api.toopher.test/v1/');
-      $toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 1, 1, 1970));
+      $toopherIframe->setTimestampOverride($this->getOauthTimestamp());
       $data = array(
         'foo' => array('bar'),
         'timestamp' => array(mktime(0, 16, 40, 1, 1, 1970)),
@@ -572,7 +599,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
       $toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 2, 1, 1970));
       $data = array(
         'foo' => array('bar'),
-        'timestamp' => array(mktime(0, 16, 40, 1, 1, 1970)),
+        'timestamp' => array($this->getOauthTimestamp()),
         'session_token' => array('s9s7vsb'),
         'toopher_sig' => array('6d2c7GlQssGmeYYGpcf+V/kirOI=')
       );
@@ -586,7 +613,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
     public function testToopherIframeValidatePostbackWithInvalidSessionTokenFails()
     {
       $toopherIframe = new ToopherIframe('abcdefg', 'hijklmnop', 'https://api.toopher.test/v1/');
-      $toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 1, 1, 1970));
+      $toopherIframe->setTimeStampOverride($this->getOauthTimestamp());
       $data = array(
         'foo' => array('bar'),
         'timestamp' => array(mktime(0, 16, 40, 1, 1, 1970)),
@@ -603,7 +630,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
     public function testToopherIframeValidatePostbackMissingTimestampFails()
     {
       $toopherIframe = new ToopherIframe('abcdefg', 'hijklmnop', 'https://api.toopher.test/v1/');
-      $toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 1, 1, 1970));
+      $toopherIframe->setTimeStampOverride($this->getOauthTimestamp());
       $data = array(
         'foo' => array('bar'),
         'session_token' => array('s9s7vsb'),
@@ -619,7 +646,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
     public function testToopherIframeValidatePostbackMissingSignatureFails()
     {
       $toopherIframe = new ToopherIframe('abcdefg', 'hijklmnop', 'https://api.toopher.test/v1/');
-      $toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 1, 1, 1970));
+      $toopherIframe->setTimeStampOverride($this->getOauthTimestamp());
       $data = array(
         'foo' => array('bar'),
         'session_token' => array('s9s7vsb'),
@@ -635,10 +662,10 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
     public function testToopherIframeValidatePostbackMissingSessionTokenFails()
     {
       $toopherIframe = new ToopherIframe('abcdefg', 'hijklmnop', 'https://api.toopher.test/v1/');
-      $toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 1, 1, 1970));
+      $toopherIframe->setTimeStampOverride($this->getOauthTimestamp());
       $data = array(
         'foo' => array('bar'),
-        'timestamp' => array(mktime(0, 16, 40, 1, 1, 1970)),
+        'timestamp' => array($this->getOauthTimestamp()),
         'toopher_sig' => array('6d2c7GlQssGmeYYGpcf+V/kirOI=')
       );
       $toopherIframe->validatePostback($data, 's9s7vsb', 5);

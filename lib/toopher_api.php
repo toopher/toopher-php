@@ -39,11 +39,17 @@ class ToopherIframe
     $this->oauthConsumer = new HTTP_OAuth_Consumer($key, $secret);
     $this->baseUrl = $baseUrl;
     $this->timestampOverride = NULL;
+    $this->nonceOverride = NULL;
   }
 
   public function setTimestampOverride($timestampOverride)
   {
     $this->timestampOverride = $timestampOverride;
+  }
+
+  public function setNonceOverride($nonceOverride)
+  {
+    $this->nonceOverride = $nonceOverride;
   }
 
   private function getUnixTimestamp()
