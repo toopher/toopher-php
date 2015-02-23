@@ -61,6 +61,48 @@ class ToopherIframe
     }
   }
 
+  public function getAuthenticationUrl($username, $resetEmail, $requestToken, $actionName = 'Log In', $requesterMetadata = 'None', $kwargs = array())
+  {
+    if (array_key_exists('ttl', $kwargs)) {
+      $ttl = $kwargs['ttl'];
+      unset($kwargs['ttl']);
+    } else {
+      $ttl = 300;
+    }
+
+    $params = array(
+      'v' => '2',
+      'username' => $username,
+      'reset_email' => $resetEmail,
+      'action_name' => $actionName,
+      'session_token' => $requestToken,
+      'requester_metadata' => $requesterMetadata,
+      'expires' => $this->getUnixTimestamp() + $ttl
+    );
+    $params = array_merge($params, $kwargs);
+
+    return $this->getOauthSignedUrl($this->baseUrl . 'web/authenticate', $params);
+  }
+
+  public function getUserManagementUrl($username, $resetEmail, $kwargs = array())
+  {
+    if (array_key_exists('ttl', $kwargs)) {
+      $ttl = $kwargs['ttl'];
+      unset($kwargs['ttl']);
+    } else {
+      $ttl = 300;
+    }
+
+    $params = array(
+      'v' => '2',
+      'username' => $username,
+      'reset_email' => $resetEmail,
+      'expires' => $this->getUnixTimestamp() + $ttl
+    );
+    $params = array_merge($params, $kwargs);
+    return $this->getOauthSignedUrl($this->baseUrl . 'web/manage_user', $params);
+  }
+
   public function validatePostback($parameters, $sessionToken, $ttl)
   {
     try {
@@ -121,6 +163,26 @@ class ToopherIframe
     $key = mb_convert_encoding($secret, "UTF-8");
     $sig = hash_hmac('sha1', $params, $secret, true);
     return base64_encode($sig);
+  }
+
+  private function getOauthSignedUrl($url, $params)
+  {
+    if (!is_null($this->timestampOverride)) {
+      $this->oauthConsumer->setTimestamp($this->timestampOverride);
+    }
+    if (!is_null($this->nonceOverride)) {
+      $this->oauthConsumer->setNonce($this->nonceOverride);
+    }
+
+    $oauthHeaderString = $this->oauthConsumer->getRequestHeader('GET', $url, $params);
+    $oauthHeaderArray = explode(",", str_replace("OAuth ", "", $oauthHeaderString));
+    $oauthParams = array();
+    foreach ($oauthHeaderArray as $value) {
+      $oauthParams[] = str_replace("\"", "", $value);
+    }
+    $oauthParams = implode("&", $oauthParams);
+    $queryParams = http_build_query($params);
+    return $url . '?' . $queryParams . '&' . $oauthParams;
   }
 }
 

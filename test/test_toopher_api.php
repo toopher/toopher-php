@@ -29,6 +29,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
     const OAUTH_NONCE = '12345678';
     const IFRAME_KEY = 'abcdefg';
     const IFRAME_SECRET = 'hijklmnop';
+    const REQUEST_TOKEN = 's9s7vsb';
 
     public static function getOauthTimestamp()
     {
@@ -48,6 +49,11 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
     public static function getIframeSecret()
     {
       return self::IFRAME_SECRET;
+    }
+
+    public static function getRequestToken()
+    {
+      return self::REQUEST_TOKEN;
     }
 
     protected function setUp()
@@ -553,6 +559,48 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
       $action = new Action(["id" => "1", "name" => "action"]);
       $this->assertTrue($action->id == '1', 'bad action id');
       $this->assertTrue($action->name == 'action', 'bad action name');
+    }
+
+    public function testToopherIframeGetAuthenticationUrl()
+    {
+        $toopherIframe = $this->getToopherIframe();
+        $toopherIframe->setTimestampOverride($this->getOauthTimestamp());
+        $toopherIframe->setNonceOverride($this->getOauthNonce());
+        $expectedUrl = "https://api.toopher.test/v1/web/authenticate?v=2&username=jdoe&reset_email=jdoe%40example.com&action_name=Log+In&session_token=s9s7vsb&requester_metadata=None&expires=1300&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_nonce=12345678&oauth_timestamp=1000&oauth_version=1.0&oauth_signature=YN%2BkKNTaoypsB37fsjvMS8vsG5A%3D";
+        $authenticationUrl = $toopherIframe->getAuthenticationUrl('jdoe', 'jdoe@example.com', $this->getRequestToken());
+        $this->assertTrue($authenticationUrl == $expectedUrl, 'authentication url is incorrect');
+    }
+
+    public function testToopherIframeGetAuthenticationUrlWithExtras()
+    {
+      $extras = array("allow_inline_pairing" => "false");
+      $toopherIframe = $this->getToopherIframe();
+      $toopherIframe->setTimestampOverride($this->getOauthTimestamp());
+      $toopherIframe->setNonceOverride($this->getOauthNonce());
+      $expectedUrl = "https://api.toopher.test/v1/web/authenticate?v=2&username=jdoe&reset_email=jdoe%40example.com&action_name=it+is+a+test&session_token=s9s7vsb&requester_metadata=None&expires=1300&allow_inline_pairing=false&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_nonce=12345678&oauth_timestamp=1000&oauth_version=1.0&oauth_signature=W%2F2dcdsVc7YgdSCZuEo8ViHLlOo%3D";
+      $authenticationUrl = $toopherIframe->getAuthenticationUrl('jdoe', 'jdoe@example.com', $this->getRequestToken(), 'it is a test', 'None', $extras);
+      $this->assertTrue($authenticationUrl == $expectedUrl, 'authentication url is incorrect');
+    }
+
+    public function testToopherIframeGetUserManagementUrl()
+    {
+      $toopherIframe = $this->getToopherIframe();
+      $toopherIframe->setTimestampOverride($this->getOauthTimestamp());
+      $toopherIframe->setNonceOverride($this->getOauthNonce());
+      $expectedUrl = "https://api.toopher.test/v1/web/manage_user?v=2&username=jdoe&reset_email=jdoe%40example.com&expires=1300&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_nonce=12345678&oauth_timestamp=1000&oauth_version=1.0&oauth_signature=NjwH5yWPE2CCJL8v%2FMNknL%2BeTpE%3D";
+      $userManagementUrl = $toopherIframe->getUserManagementUrl('jdoe', 'jdoe@example.com');
+      $this->assertTrue($userManagementUrl == $expectedUrl, 'user management url is incorrect');
+    }
+
+    public function testToopherIframeGetUserManagementUrlWithExtras()
+    {
+      $extras = array("ttl" => "100");
+      $toopherIframe = $this->getToopherIframe();
+      $toopherIframe->setTimestampOverride($this->getOauthTimestamp());
+      $toopherIframe->setNonceOverride($this->getOauthNonce());
+      $expectedUrl = "https://api.toopher.test/v1/web/manage_user?v=2&username=jdoe&reset_email=jdoe%40example.com&expires=1100&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_nonce=12345678&oauth_timestamp=1000&oauth_version=1.0&oauth_signature=sV8qoKnxJ3fxfP6AHNa0eNFxzJs%3D";
+      $userManagementUrl = $toopherIframe->getUserManagementUrl('jdoe', 'jdoe@example.com', $extras);
+      $this->assertTrue($userManagementUrl == $expectedUrl, 'user management url is incorrect');
     }
 
     public function testToopherIframeValidatePostbackWithGoodSignatureIsSuccessful()
