@@ -506,13 +506,13 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
       $userTerminal = new UserTerminal(["id" => "1", "name" => "terminal name", "requester_specified_id" => "requester specified id", "user" => ["id" => "1","name" => "user name","toopher_authentication_enabled" => true]], $toopher);
       $this->compareToDefaultUserTerminal($userTerminal);
 
-      // $userTerminal->refreshFromServer();
-      // $this->assertTrue($userTerminal->id == '1', 'wrong terminal id');
-      // $this->assertTrue($userTerminal->name == 'terminal name changed', 'wrong terminal name');
-      // $this->assertTrue($userTerminal->requester_specified_id == 'requester specified id changed', 'wrong requester specified id');
-      // $this->assertTrue($userTerminal->user->id == '1', 'bad user id');
-      // $this->assertTrue($userTerminal->user->name == 'user name changed', 'bad user name');
-      // $this->assertTrue($userTerminal->user->toopher_authentication_enabled == false, 'toopher authentication should not be enabled');
+      $userTerminal->refreshFromServer();
+      $this->assertTrue($userTerminal->id == '1', 'wrong terminal id');
+      $this->assertTrue($userTerminal->name == 'terminal name changed', 'wrong terminal name');
+      $this->assertTrue($userTerminal->requester_specified_id == 'requester specified id changed', 'wrong requester specified id');
+      $this->assertTrue($userTerminal->user->id == '1', 'bad user id');
+      $this->assertTrue($userTerminal->user->name == 'user name changed', 'bad user name');
+      $this->assertTrue($userTerminal->user->toopher_authentication_enabled == false, 'toopher authentication should not be enabled');
     }
 
     public function testUserTerminal(){

@@ -580,6 +580,7 @@ class UserTerminal
 
   function __construct($json_response, $api)
   {
+    $this->api = $api;
     $this->id = $json_response['id'];
     $this->name = $json_response['name'];
     $this->requester_specified_id = $json_response['requester_specified_id'];
