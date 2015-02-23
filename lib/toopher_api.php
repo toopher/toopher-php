@@ -188,7 +188,7 @@ class ToopherIframe
 
 class ToopherApi
 {
-    const VERSION = '1.0.6';
+  const VERSION = '2.0.0';
 
     protected $baseUrl;
     protected $oauthConsumer;
