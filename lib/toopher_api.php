@@ -36,7 +36,7 @@ class ToopherIframe
   {
     $this->consumerSecret = $secret;
     $this->consumerKey = $key;
-    $this->oauthConsumer = new HTTP_OAuth_Consumer($key, $secret);
+    $this->oauthConsumer = new OAuth($key, $secret);
     $this->baseUrl = $baseUrl;
     $this->timestampOverride = NULL;
     $this->nonceOverride = NULL;
@@ -116,7 +116,8 @@ class ToopherIframe
 
   private function signature($secret, $parameters)
   {
-    $params = $this->oauthConsumer->buildHttpQuery($parameters);
+    $oauthConsumer = new HTTP_OAuth_Consumer($this->consumerKey, $this->consumerSecret);
+    $params = $oauthConsumer->buildHttpQuery($parameters);
     $key = mb_convert_encoding($secret, "UTF-8");
     $sig = hash_hmac('sha1', $params, $secret, true);
     return base64_encode($sig);
