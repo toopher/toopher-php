@@ -24,7 +24,97 @@ SOFTWARE.
 
 class ToopherRequestException extends Exception
 {
+}
 
+class SignatureValidationError extends Exception
+{
+}
+
+class ToopherIframe
+{
+  function __construct($key, $secret, $baseUrl = 'https://api.toopher.com/v1/')
+  {
+    $this->consumerSecret = $secret;
+    $this->consumerKey = $key;
+    $this->oauthConsumer = new HTTP_OAuth_Consumer($key, $secret);
+    $this->baseUrl = $baseUrl;
+    $this->timestampOverride = NULL;
+  }
+
+  public function setTimestampOverride($timestampOverride)
+  {
+    $this->timestampOverride = $timestampOverride;
+  }
+
+  private function getUnixTimestamp()
+  {
+    if (!is_null($this->timestampOverride)) {
+      return $this->timestampOverride;
+    } else {
+      return time();
+    }
+  }
+
+  public function validatePostback($parameters, $sessionToken, $ttl)
+  {
+    try {
+      $data = array();
+
+      foreach ($parameters as $key => $value) {
+        $data[$key] = $value[0];
+      }
+
+      $missingKeys = array();
+      if (!array_key_exists('toopher_sig', $data)) {
+        $missingKeys[] = 'toopher_sig';
+      }
+      if (!array_key_exists('timestamp', $data)) {
+        $missingKeys[] = 'timestamp';
+      }
+      if (!array_key_exists('session_token', $data)) {
+        $missingKeys[] = 'session_token';
+      }
+      if (count($missingKeys) > 0) {
+        $keys = implode(',', $missingKeys);
+        throw new SignatureValidationError('Missing required keys: ' . $keys);
+      }
+
+      if ($data['session_token'] != $sessionToken) {
+        throw new SignatureValidationError('Session token does not match expected value');
+      }
+
+      $maybeSignature = $data['toopher_sig'];
+      unset($data['toopher_sig']);
+      $signatureValid = false;
+      try {
+        $computedSignature = $this->signature($this->consumerSecret, $data);
+        $signatureValid = $maybeSignature == $computedSignature;
+      } catch (Exception $e) {
+        throw new SignatureValidationError('Error while calculating signature: ' . $e);
+      }
+
+      if (!$signatureValid) {
+        throw new SignatureValidationError('Computed signature does not match');
+      }
+
+      $ttlValid = ($this->getUnixTimestamp() - $ttl) < $data['timestamp'];
+      if (!$ttlValid) {
+        throw new SignatureValidationError('TTL Expired');
+      }
+
+      return $data;
+    } catch (Exception $e) {
+      throw new SignatureValidationError ('Exception while validating toopher signature: ' . $e);
+    }
+  }
+
+  private function signature($secret, $parameters)
+  {
+    $params = $this->oauthConsumer->buildHttpQuery($parameters);
+    $key = mb_convert_encoding($secret, "UTF-8");
+    $sig = hash_hmac('sha1', $params, $secret, true);
+    return base64_encode($sig);
+  }
 }
 
 class ToopherApi

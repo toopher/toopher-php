@@ -30,6 +30,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
     protected function setUp()
     {
+      date_default_timezone_set('UTC');
       $this->mock = new HTTP_Request2_Adapter_Mock();
     }
 
@@ -527,6 +528,121 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
       $this->assertTrue($action->name == 'action', 'bad action name');
     }
 
+    public function testToopherIframeValidatePostbackWithGoodSignatureIsSuccessful()
+    {
+      $toopherIframe = new ToopherIframe('abcdefg', 'hijklmnop', 'https://api.toopher.test/v1/');
+      $toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 1, 1, 1970));
+      $data = array(
+        'foo' => array('bar'),
+        'timestamp' => array(mktime(0, 16, 40, 1, 1, 1970)),
+        'session_token' => array('s9s7vsb'),
+        'toopher_sig' => array('6d2c7GlQssGmeYYGpcf+V/kirOI=')
+      );
+      try {
+        $toopherIframe->validatePostback($data, 's9s7vsb', 5);
+      } catch (Exception $e) {
+        $this->fail('Valid signature, timestamp, and session token did not return validated data');
+      }
+    }
+
+    /**
+     * @expectedException         SignatureValidationError
+     * @expectedExceptionMessage  Computed signature does not match
+     */
+    public function testToopherIframeValidatePostbackWithBadSignatureFails()
+    {
+      $toopherIframe = new ToopherIframe('abcdefg', 'hijklmnop', 'https://api.toopher.test/v1/');
+      $toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 1, 1, 1970));
+      $data = array(
+        'foo' => array('bar'),
+        'timestamp' => array(mktime(0, 16, 40, 1, 1, 1970)),
+        'session_token' => array('s9s7vsb'),
+        'toopher_sig' => array('invalid')
+      );
+      $toopherIframe->validatePostback($data, 's9s7vsb', 5);
+    }
+
+    /**
+     * @expectedException         SignatureValidationError
+     * @expectedExceptionMessage  TTL Expired
+     */
+    public function testToopherIframeValidatePostbackWithExpiredSignatureFails()
+    {
+      $toopherIframe = new ToopherIframe('abcdefg', 'hijklmnop', 'https://api.toopher.test/v1/');
+      $toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 2, 1, 1970));
+      $data = array(
+        'foo' => array('bar'),
+        'timestamp' => array(mktime(0, 16, 40, 1, 1, 1970)),
+        'session_token' => array('s9s7vsb'),
+        'toopher_sig' => array('6d2c7GlQssGmeYYGpcf+V/kirOI=')
+      );
+      $toopherIframe->validatePostback($data, 's9s7vsb', 5);
+    }
+
+    /**
+    * @expectedException        SignatureValidationError
+    * @expectedExceptionMessage Session token does not match expected value
+    */
+    public function testToopherIframeValidatePostbackWithInvalidSessionTokenFails()
+    {
+      $toopherIframe = new ToopherIframe('abcdefg', 'hijklmnop', 'https://api.toopher.test/v1/');
+      $toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 1, 1, 1970));
+      $data = array(
+        'foo' => array('bar'),
+        'timestamp' => array(mktime(0, 16, 40, 1, 1, 1970)),
+        'session_token' => array('invalid token'),
+        'toopher_sig' => array('6d2c7GlQssGmeYYGpcf+V/kirOI=')
+      );
+      $toopherIframe->validatePostback($data, 's9s7vsb', 5);
+    }
+
+    /**
+    * @expectedException        SignatureValidationError
+    * @expectedExceptionMessage Missing required keys: timestamp
+    */
+    public function testToopherIframeValidatePostbackMissingTimestampFails()
+    {
+      $toopherIframe = new ToopherIframe('abcdefg', 'hijklmnop', 'https://api.toopher.test/v1/');
+      $toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 1, 1, 1970));
+      $data = array(
+        'foo' => array('bar'),
+        'session_token' => array('s9s7vsb'),
+        'toopher_sig' => array('6d2c7GlQssGmeYYGpcf+V/kirOI=')
+      );
+      $toopherIframe->validatePostback($data, 's9s7vsb', 5);
+    }
+
+    /**
+    * @expectedException        SignatureValidationError
+    * @expectedExceptionMessage Missing required keys: toopher_sig
+    */
+    public function testToopherIframeValidatePostbackMissingSignatureFails()
+    {
+      $toopherIframe = new ToopherIframe('abcdefg', 'hijklmnop', 'https://api.toopher.test/v1/');
+      $toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 1, 1, 1970));
+      $data = array(
+        'foo' => array('bar'),
+        'session_token' => array('s9s7vsb'),
+        'timestamp' => mktime(0, 16, 40, 1, 1, 1970)
+      );
+      $toopherIframe->validatePostback($data, 's9s7vsb', 5);
+    }
+
+    /**
+    * @expectedException        SignatureValidationError
+    * @expectedExceptionMessage Missing required keys: session_token
+    */
+    public function testToopherIframeValidatePostbackMissingSessionTokenFails()
+    {
+      $toopherIframe = new ToopherIframe('abcdefg', 'hijklmnop', 'https://api.toopher.test/v1/');
+      $toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 1, 1, 1970));
+      $data = array(
+        'foo' => array('bar'),
+        'timestamp' => array(mktime(0, 16, 40, 1, 1, 1970)),
+        'toopher_sig' => array('6d2c7GlQssGmeYYGpcf+V/kirOI=')
+      );
+      $toopherIframe->validatePostback($data, 's9s7vsb', 5);
+    }
 
     /**
      * @expectedException ToopherRequestException
