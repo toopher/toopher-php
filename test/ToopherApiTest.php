@@ -310,11 +310,6 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
       $this->compareToDefaultUserTerminal($userTerminal);
     }
 
-    public function testAction(){
-      $toopher = new ToopherApi('key', 'secret');
-      $action = new Action(["id" => "1", "name" => "action"]);
-      $this->assertTrue($action->id == '1', 'bad action id');
-      $this->assertTrue($action->name == 'action', 'bad action name');
     }
 
     /**
