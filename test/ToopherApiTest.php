@@ -141,7 +141,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
         $this->mock->addResponse($resp);
 
         $toopher = $this->getToopherApi($this->mock);
-        $authRequest = $toopher->authenticate('user', '1');
+        $authRequest = $toopher->authenticate('user', 'term name', '1');
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
         $this->compareToDefaultAuthenticationRequest($authRequest);
     }

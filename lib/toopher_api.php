@@ -236,28 +236,30 @@ class ToopherApi
         return new Pairing($result, $this);
     }
 
-    public function authenticate($pairingIdOrUsername, $terminal, $actionName = '', $kwargs = array())
+    public function authenticate($pairingIdOrUsername, $terminalName = NULL, $requesterSpecifiedId = NULL, $actionName = NULL, $kwargs = array())
     {
         $url = 'authentication_requests/initiate';
         $uuidPattern = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
         if(preg_match($uuidPattern, $pairingIdOrUsername, $match))
         {
-            $params = array(
-                'pairing_id' => $pairingIdOrUsername,
-                'terminal_name' => $terminal
-            );
+            $params = array('pairing_id' => $pairingIdOrUsername);
         }
         else
         {
-            $params = array(
-                'user_name' => $pairingIdOrUsername,
-                'requester_specified_terminal_id' => $terminal
-            );
+            $params = array('user_name' => $pairingIdOrUsername);
         }
 
         if(!empty($actionName))
         {
             $params['action_name'] = $actionName;
+        }
+        if(!empty($terminalName))
+        {
+          $params['terminal_name'] = $terminalName;
+        }
+        if(!empty($requesterSpecifiedId))
+        {
+          $params['requester_specified_terminal_id'] = $requesterSpecifiedId;
         }
         $params = array_merge($params, $kwargs);
         $result = $this->advanced->raw->post($url, $params);
