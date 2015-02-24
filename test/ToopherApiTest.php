@@ -28,7 +28,6 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
     protected function setUp()
     {
-      date_default_timezone_set('UTC');
       $this->mock = new HTTP_Request2_Adapter_Mock();
     }
 
@@ -116,80 +115,6 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
         $this->assertTrue($pairing->enabled == false, 'pairing not enabled');
         $this->assertTrue($pairing->user->id == '2', 'bad user id');
         $this->assertTrue($pairing->user->name == 'unpaired user', 'bad user name');
-    }
-
-    public function testPairingRefreshFromServer(){
-        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/create');
-        $resp1->appendBody('{"id":"1","enabled":false, "pending":false, "user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}}');
-        $resp2 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1');
-        $resp2->appendBody('{"id":"1","enabled":true,"pending":false,"user":{"id":"1","name":"user name changed", "toopher_authentication_enabled":"true"}}');
-        $this->mock->addResponse($resp1);
-        $this->mock->addResponse($resp2);
-        $toopher = new ToopherApi('key', 'secret', '', $this->mock);
-
-        $pairing = $toopher->pair('user', 'pairing phrase');
-        $this->assertTrue($pairing->id == '1', 'bad pairing id');
-        $this->assertTrue($pairing->enabled == false, 'pairing not enabled');
-        $this->assertTrue($pairing->user->id == '1', 'bad user id');
-        $this->assertTrue($pairing->user->name == 'user', 'bad user name');
-
-        $pairing->refreshFromServer();
-        $this->assertTrue($pairing->id == '1', 'bad pairing id');
-        $this->assertTrue($pairing->enabled == true, 'pairing not enabled');
-        $this->assertTrue($pairing->user->id == '1', 'bad user id');
-        $this->assertTrue($pairing->user->name == 'user name changed', 'bad user name');
-    }
-
-    public function testGetPairingResetLink(){
-        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/create');
-        $resp1->appendBody('{"id":"1","enabled":true, "pending":false, "user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}}');
-        $resp2 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1/generate_reset_link');
-        $resp2->appendBody('{"url":"http://api.toopher.test/v1/pairings/1/reset?reset_authorization=abcde"}');
-        $this->mock->addResponse($resp1);
-        $this->mock->addResponse($resp2);
-        $toopher = new ToopherApi('key', 'secret', '', $this->mock);
-        $pairing = $toopher->pair('user', 'immediate_pair');
-        $this->assertTrue($pairing->id == '1', 'bad pairing id');
-        $this->assertTrue($pairing->enabled == true, 'pairing not enabled');
-        $this->assertTrue($pairing->user->id == '1', 'bad user id');
-        $this->assertTrue($pairing->user->name == 'user', 'bad user name');
-
-        $resetLink = $pairing->getResetLink();
-        $this->assertTrue($resetLink == "http://api.toopher.test/v1/pairings/1/reset?reset_authorization=abcde");
-    }
-
-    public function testEmailPairingResetLink(){
-        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/create');
-        $resp1->appendBody('{"id":"1","enabled":true, "pending":false, "user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}}');
-        $resp2 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1/send_reset_link');
-        $this->mock->addResponse($resp1);
-        $this->mock->addResponse($resp2);
-        $toopher = new ToopherApi('key', 'secret', '', $this->mock);
-        $pairing = $toopher->pair('user', 'immediate_pair');
-        $this->assertTrue($pairing->id == '1', 'bad pairing id');
-        $this->assertTrue($pairing->enabled == true, 'pairing not enabled');
-        $this->assertTrue($pairing->user->id == '1', 'bad user id');
-        $this->assertTrue($pairing->user->name == 'user', 'bad user name');
-
-        try {
-            $pairing->emailResetLink('email@domain.com');
-        }
-        catch(Exception $e) {
-            $this->fail('Unexpected exception has been raised: ' . $e);
-        }
-    }
-
-    public function testPairingGetQrCodeImage(){
-        $resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/create');
-        $resp1->appendBody('{"id":"1","enabled":true, "pending":false, "user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}}');
-        $resp2 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/qr/pairings/1');
-        $resp2->appendBody('{}');
-        $this->mock->addResponse($resp1);
-        $this->mock->addResponse($resp2);
-        $toopher = new ToopherApi('key', 'secret', '', $this->mock);
-        $pairing = $toopher->pair('user');
-        $qr_image = $pairing->getQrCodeImage();
-        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "last called method should be 'GET'");
     }
 
     public function testCreateAuthenticationWithNoAction(){
