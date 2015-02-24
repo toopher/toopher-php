@@ -59,6 +59,7 @@ class PairingTests extends PHPUnit_Framework_TestCase {
 			$pairing = $this->getPairing($toopher);
 
 			$pairing->refreshFromServer();
+			$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
 			$this->assertTrue($pairing->enabled == false, 'Pairing should not be enabled');
 			$this->assertTrue($pairing->pending == true, 'Pairing should be pending');
 			$this->assertTrue($pairing->user->name == 'user name changed', 'User name was incorrect');
@@ -74,6 +75,7 @@ class PairingTests extends PHPUnit_Framework_TestCase {
 			$pairing = $this->getPairing($toopher);
 
 			$resetLink = $pairing->getResetLink();
+			$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
 			$this->assertTrue($resetLink == "http://api.toopher.test/v1/pairings/1/reset?reset_authorization=abcde", 'Pairing reset link was incorrect');
 	}
 
@@ -85,10 +87,11 @@ class PairingTests extends PHPUnit_Framework_TestCase {
 			$pairing = $this->getPairing($toopher);
 
 			try {
-					$pairing->emailResetLink('jdoe@example.com');
+				$pairing->emailResetLink('jdoe@example.com');
+				$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
 			}
 			catch(Exception $e) {
-					$this->fail('Unexpected exception has been raised: ' . $e);
+				$this->fail('Unexpected exception has been raised: ' . $e);
 			}
 	}
 

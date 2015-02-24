@@ -56,6 +56,7 @@ class UserTerminalTests extends PHPUnit_Framework_TestCase {
 		$userTerminal = $this->getUserTerminal($toopher);
 
 		$userTerminal->refreshFromServer();
+		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
 		$this->assertTrue($userTerminal->name == 'terminal name changed', 'Terminal name was wrong');
 		$this->assertTrue($userTerminal->requester_specified_id == 'requester specified id changed', 'Terminal requester_specified_id was incorrect');
 		$this->assertTrue($userTerminal->user->name == 'user name changed', 'User name was incorrect');

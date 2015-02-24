@@ -65,6 +65,7 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 			$auth_request = $this->getAuthenticationRequest($toopher);
 
 			$auth_request->refreshFromServer();
+			$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
 			$this->assertTrue($auth_request->pending == false, 'Authentication request should not be pending');
 			$this->assertTrue($auth_request->granted == true, 'Authentication request should be granted');
 			$this->assertTrue($auth_request->automated == true, 'Authentication request should be automated');
@@ -83,6 +84,7 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 			$auth_request = $this->getAuthenticationRequest($toopher);
 
 			$auth_request->grantWithOtp('otp');
+			$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
 			$this->assertTrue($auth_request->pending == false, 'wrong auth pending');
 			$this->assertTrue($auth_request->granted == true, 'wrong auth granted');
 			$this->assertTrue($auth_request->automated == true, 'wrong auth automated');
