@@ -52,6 +52,7 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($auth_request->terminal->requester_specified_id == '1', 'Terminal requester_specified_id was incorrect');
 		$this->assertTrue($auth_request->user->id == '1', 'User id was incorrect');
 		$this->assertTrue($auth_request->user->name == 'user', 'User name was incorrect');
+		$this->assertTrue($auth_request->user->toopher_authentication_enabled == true, 'User should be toopher_authentication_enabled');
 		$this->assertTrue($auth_request->action->id == '1', 'Action id was incorrect');
 		$this->assertTrue($auth_request->action->name == 'test', 'Action name was incorrect');
 	}

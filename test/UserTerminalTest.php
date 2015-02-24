@@ -52,7 +52,7 @@ class UserTerminalTests extends PHPUnit_Framework_TestCase {
 		$resp->appendBody('{"id":"1", "name":"terminal name changed", "requester_specified_id":"requester specified id changed", "user":{"id":"1", "name":"user name changed", "toopher_authentication_enabled":false}}');
 		$this->mock->addResponse($resp);
 
-		$toopher = new ToopherApi('key', 'secret', '', $this->mock);
+		$toopher = $this->getToopherApi($this->mock);
 		$userTerminal = $this->getUserTerminal($toopher);
 
 		$userTerminal->refreshFromServer();
