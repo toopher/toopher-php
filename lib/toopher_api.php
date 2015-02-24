@@ -211,21 +211,21 @@ class ToopherApi
         $this->advanced = new AdvancedApiUsageFactory($key, $secret, $baseUrl, $httpAdapter, $this);
     }
 
-    public function pair($username, $phrase_or_num = '', $kwargs = array())
+    public function pair($username, $phraseOrNumber = '', $kwargs = array())
     {
         $params = array('user_name' => $username);
         $params = array_merge($params, $kwargs);
-        if (!empty($phrase_or_num))
+        if (!empty($phraseOrNumber))
         {
-            if(preg_match('/\d/', $phrase_or_num, $match))
+            if(preg_match('/\d/', $phraseOrNumber, $match))
             {
                 $url = 'pairings/create/sms';
-                $params['phone_number'] = $phrase_or_num;
+                $params['phone_number'] = $phraseOrNumber;
             }
             else
             {
                 $url = 'pairings/create';
-                $params['pairing_phrase'] = $phrase_or_num;
+                $params['pairing_phrase'] = $phraseOrNumber;
             }
         }
         else
@@ -236,21 +236,21 @@ class ToopherApi
         return new Pairing($result, $this);
     }
 
-    public function authenticate($id_or_username, $terminal, $actionName = '', $kwargs = array())
+    public function authenticate($pairingIdOrUsername, $terminal, $actionName = '', $kwargs = array())
     {
         $url = 'authentication_requests/initiate';
-        $uuid_pattern = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
-        if(preg_match($uuid_pattern, $id_or_username, $match))
+        $uuidPattern = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
+        if(preg_match($uuidPattern, $pairingIdOrUsername, $match))
         {
             $params = array(
-                'pairing_id' => $id_or_username,
+                'pairing_id' => $pairingIdOrUsername,
                 'terminal_name' => $terminal
             );
         }
         else
         {
             $params = array(
-                'user_name' => $id_or_username,
+                'user_name' => $pairingIdOrUsername,
                 'requester_specified_terminal_id' => $terminal
             );
         }
@@ -329,7 +329,7 @@ class ApiRawRequester
       return $this->request('GET', $endpoint, array(), true);
     }
 
-    private function request($method, $endpoint, $parameters = array(), $raw_request = false)
+    private function request($method, $endpoint, $parameters = array(), $rawRequest = false)
     {
         $req = new HTTP_Request2();
         $req->setAdapter($this->httpAdapter);
@@ -365,11 +365,11 @@ class ApiRawRequester
 
             $err = json_decode($resultBody, true);
             if ($err === NULL) {
-                $json_error = $this->json_error_to_string(json_last_error());
-                if (!empty($json_error)) {
-                    error_log(sprintf("Error parsing response body JSON: %s", $json_error));
+                $jsonError = $this->json_error_to_string(json_last_error());
+                if (!empty($jsonError)) {
+                    error_log(sprintf("Error parsing response body JSON: %s", $jsonError));
                     error_log(sprintf("response body: %s", $result->getBody()));
-                    throw new ToopherRequestException(sprintf("JSON Parsing Error: %s", $json_error));
+                    throw new ToopherRequestException(sprintf("JSON Parsing Error: %s", $jsonError));
                 }
             } else {
                 if(array_key_exists("error_message", $err)) {
@@ -380,25 +380,25 @@ class ApiRawRequester
             }
         }
 
-        if ($raw_request)
+        if ($rawRequest)
         {
           return $resultBody;
         } else {
           $decoded = json_decode($resultBody, true);
           if ($decoded === NULL) {
-              $json_error = $this->json_error_to_string(json_last_error());
-              if (!empty($json_error)) {
-                  error_log(sprintf("Error parsing response body JSON: %s", $json_error));
+              $jsonError = $this->json_error_to_string(json_last_error());
+              if (!empty($jsonError)) {
+                  error_log(sprintf("Error parsing response body JSON: %s", $jsonError));
                   error_log(sprintf("response body: %s", $result->getBody()));
-                  throw new ToopherRequestException(sprintf("JSON Parsing Error: %s", $json_error));
+                  throw new ToopherRequestException(sprintf("JSON Parsing Error: %s", $jsonError));
               }
           }
           return $decoded;
         }
     }
 
-    private function json_error_to_string($json_error_code) {
-        switch ($json_error_code) {
+    private function json_error_to_string($jsonErrorCode) {
+        switch ($jsonErrorCode) {
             case JSON_ERROR_NONE:
                 return NULL;
             case JSON_ERROR_DEPTH:
@@ -496,14 +496,14 @@ class Pairing
 {
     protected $api;
 
-    function __construct($json_response, $api)
+    function __construct($jsonResponse, $api)
     {
         $this->api = $api;
-        $this->id = $json_response['id'];
-        $this->enabled = $json_response['enabled'];
-        $this->pending = $json_response['pending'];
-        $this->user = new User($json_response['user'], $api);
-        $this->raw_response = $json_response;
+        $this->id = $jsonResponse['id'];
+        $this->enabled = $jsonResponse['enabled'];
+        $this->pending = $jsonResponse['pending'];
+        $this->user = new User($jsonResponse['user'], $api);
+        $this->raw_response = $jsonResponse;
     }
 
     public function refreshFromServer()
@@ -543,12 +543,12 @@ class Pairing
       return $this->api->advanced->raw->get_raw($url);
     }
 
-    private function update($json_response)
+    private function update($jsonResponse)
     {
-        $this->enabled = $json_response['enabled'];
-        $this->pending = $json_response['pending'];
-        $this->user->update($json_response['user']);
-        $this->raw_response = $json_response;
+        $this->enabled = $jsonResponse['enabled'];
+        $this->pending = $jsonResponse['pending'];
+        $this->user->update($jsonResponse['user']);
+        $this->raw_response = $jsonResponse;
     }
 }
 
@@ -556,19 +556,19 @@ class AuthenticationRequest
 {
     protected $api;
 
-    function __construct($json_response, $api)
+    function __construct($jsonResponse, $api)
     {
         $this->api = $api;
-        $this->id = $json_response['id'];
-        $this->pending = $json_response['pending'];
-        $this->granted = $json_response['granted'];
-        $this->automated = $json_response['automated'];
-        $this->reason_code = $json_response['reason_code'];
-        $this->reason = $json_response['reason'];
-        $this->terminal = new UserTerminal($json_response['terminal'], $api);
-        $this->user = new User($json_response['user'], $api);
-        $this->action = new Action($json_response['action']);
-        $this->raw_response = $json_response;
+        $this->id = $jsonResponse['id'];
+        $this->pending = $jsonResponse['pending'];
+        $this->granted = $jsonResponse['granted'];
+        $this->automated = $jsonResponse['automated'];
+        $this->reason_code = $jsonResponse['reason_code'];
+        $this->reason = $jsonResponse['reason'];
+        $this->terminal = new UserTerminal($jsonResponse['terminal'], $api);
+        $this->user = new User($jsonResponse['user'], $api);
+        $this->action = new Action($jsonResponse['action']);
+        $this->raw_response = $jsonResponse;
     }
 
     public function refreshFromServer()
@@ -587,17 +587,17 @@ class AuthenticationRequest
         $this->update($result);
     }
 
-    private function update($json_response)
+    private function update($jsonResponse)
     {
-        $this->pending = $json_response['pending'];
-        $this->granted = $json_response['granted'];
-        $this->automated = $json_response['automated'];
-        $this->reason_code = $json_response['reason_code'];
-        $this->reason = $json_response['reason'];
-        $this->terminal->update($json_response['terminal']);
-        $this->user->update($json_response['user']);
-        $this->action->update($json_response['action']);
-        $this->raw_respones = $json_response;
+        $this->pending = $jsonResponse['pending'];
+        $this->granted = $jsonResponse['granted'];
+        $this->automated = $jsonResponse['automated'];
+        $this->reason_code = $jsonResponse['reason_code'];
+        $this->reason = $jsonResponse['reason'];
+        $this->terminal->update($jsonResponse['terminal']);
+        $this->user->update($jsonResponse['user']);
+        $this->action->update($jsonResponse['action']);
+        $this->raw_respones = $jsonResponse;
     }
 }
 
@@ -605,13 +605,13 @@ class User
 {
   protected $api;
 
-  function __construct($json_response, $api)
+  function __construct($jsonResponse, $api)
   {
     $this->api = $api;
-    $this->id = $json_response['id'];
-    $this->name = $json_response['name'];
-    $this->toopher_authentication_enabled = $json_response['toopher_authentication_enabled'];
-    $this->raw_response = $json_response;
+    $this->id = $jsonResponse['id'];
+    $this->name = $jsonResponse['name'];
+    $this->toopher_authentication_enabled = $jsonResponse['toopher_authentication_enabled'];
+    $this->raw_response = $jsonResponse;
   }
 
   public function refreshFromServer()
@@ -635,11 +635,11 @@ class User
     $this->update($result);
   }
 
-  public function update($json_response)
+  public function update($jsonResponse)
   {
-    $this->name = $json_response['name'];
-    $this->toopher_authentication_enabled = $json_response['toopher_authentication_enabled'];
-    $this->raw_response = $json_response;
+    $this->name = $jsonResponse['name'];
+    $this->toopher_authentication_enabled = $jsonResponse['toopher_authentication_enabled'];
+    $this->raw_response = $jsonResponse;
   }
 }
 
@@ -647,14 +647,14 @@ class UserTerminal
 {
   protected $api;
 
-  function __construct($json_response, $api)
+  function __construct($jsonResponse, $api)
   {
     $this->api = $api;
-    $this->id = $json_response['id'];
-    $this->name = $json_response['name'];
-    $this->requester_specified_id = $json_response['requester_specified_id'];
-    $this->user = new User($json_response['user'], $api);
-    $this->raw_response = $json_response;
+    $this->id = $jsonResponse['id'];
+    $this->name = $jsonResponse['name'];
+    $this->requester_specified_id = $jsonResponse['requester_specified_id'];
+    $this->user = new User($jsonResponse['user'], $api);
+    $this->raw_response = $jsonResponse;
   }
 
   public function refreshFromServer()
@@ -664,28 +664,28 @@ class UserTerminal
     $this->update($result);
   }
 
-  public function update($json_response)
+  public function update($jsonResponse)
   {
-    $this->name = $json_response['name'];
-    $this->requester_specified_id = $json_response['requester_specified_id'];
-    $this->user->update($json_response['user']);
-    $this->raw_response = $json_response;
+    $this->name = $jsonResponse['name'];
+    $this->requester_specified_id = $jsonResponse['requester_specified_id'];
+    $this->user->update($jsonResponse['user']);
+    $this->raw_response = $jsonResponse;
   }
 }
 
 class Action
 {
-  function __construct($json_response)
+  function __construct($jsonResponse)
   {
-    $this->id = $json_response['id'];
-    $this->name = $json_response['name'];
-    $this->raw_response = $json_response;
+    $this->id = $jsonResponse['id'];
+    $this->name = $jsonResponse['name'];
+    $this->raw_response = $jsonResponse;
   }
 
-  public function update($json_response)
+  public function update($jsonResponse)
   {
-    $this->name = $json_response['name'];
-    $this->raw_response = $json_response;
+    $this->name = $jsonResponse['name'];
+    $this->raw_response = $jsonResponse;
   }
 }
 

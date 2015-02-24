@@ -103,7 +103,7 @@ class PairingTests extends PHPUnit_Framework_TestCase {
 			$toopher = $this->getToopherApi($this->mock);
 			$pairing = $this->getPairing($toopher);
 
-			$qr_image = $pairing->getQrCodeImage();
+			$pairing->getQrCodeImage();
 			$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
 			$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == 'https://api.toopher.com/v1/qr/pairings/1', "Last called url should be 'https://api.toopher.com/v1/qr/pairings/1'");
 	}

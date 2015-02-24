@@ -40,21 +40,21 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 
 	public function testAuthenticationRequest()
 	{
-		$auth_request = $this->getAuthenticationRequest($this->getToopherApi());
-		$this->assertTrue($auth_request->id == '1', 'Authentication request id was incorrect');
-		$this->assertTrue($auth_request->pending == true, 'Authentication request should be pending');
-		$this->assertTrue($auth_request->granted == false, 'Authentication request should not be granted');
-		$this->assertTrue($auth_request->automated == false, 'Authentication request should not be automated');
-		$this->assertTrue($auth_request->reason_code == '1', 'Authentication request reason code was incorrect');
-		$this->assertTrue($auth_request->reason == 'some reason', 'Authentication request reason was incorrect');
-		$this->assertTrue($auth_request->terminal->id == '1', 'Terminal id was incorrect');
-		$this->assertTrue($auth_request->terminal->name == 'term name', 'Terminal name was incorrect');
-		$this->assertTrue($auth_request->terminal->requester_specified_id == '1', 'Terminal requester_specified_id was incorrect');
-		$this->assertTrue($auth_request->user->id == '1', 'User id was incorrect');
-		$this->assertTrue($auth_request->user->name == 'user', 'User name was incorrect');
-		$this->assertTrue($auth_request->user->toopher_authentication_enabled == true, 'User should be toopher_authentication_enabled');
-		$this->assertTrue($auth_request->action->id == '1', 'Action id was incorrect');
-		$this->assertTrue($auth_request->action->name == 'test', 'Action name was incorrect');
+		$authRequest = $this->getAuthenticationRequest($this->getToopherApi());
+		$this->assertTrue($authRequest->id == '1', 'Authentication request id was incorrect');
+		$this->assertTrue($authRequest->pending == true, 'Authentication request should be pending');
+		$this->assertTrue($authRequest->granted == false, 'Authentication request should not be granted');
+		$this->assertTrue($authRequest->automated == false, 'Authentication request should not be automated');
+		$this->assertTrue($authRequest->reason_code == '1', 'Authentication request reason code was incorrect');
+		$this->assertTrue($authRequest->reason == 'some reason', 'Authentication request reason was incorrect');
+		$this->assertTrue($authRequest->terminal->id == '1', 'Terminal id was incorrect');
+		$this->assertTrue($authRequest->terminal->name == 'term name', 'Terminal name was incorrect');
+		$this->assertTrue($authRequest->terminal->requester_specified_id == '1', 'Terminal requester_specified_id was incorrect');
+		$this->assertTrue($authRequest->user->id == '1', 'User id was incorrect');
+		$this->assertTrue($authRequest->user->name == 'user', 'User name was incorrect');
+		$this->assertTrue($authRequest->user->toopher_authentication_enabled == true, 'User should be toopher_authentication_enabled');
+		$this->assertTrue($authRequest->action->id == '1', 'Action id was incorrect');
+		$this->assertTrue($authRequest->action->name == 'test', 'Action name was incorrect');
 	}
 
 	public function testAuthenticationRequestRefreshFromServer(){
@@ -63,17 +63,17 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 			$this->mock->addResponse($resp);
 
 			$toopher = $this->getToopherApi($this->mock);
-			$auth_request = $this->getAuthenticationRequest($toopher);
+			$authRequest = $this->getAuthenticationRequest($toopher);
 
-			$auth_request->refreshFromServer();
+			$authRequest->refreshFromServer();
 			$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
-			$this->assertTrue($auth_request->pending == false, 'Authentication request should not be pending');
-			$this->assertTrue($auth_request->granted == true, 'Authentication request should be granted');
-			$this->assertTrue($auth_request->automated == true, 'Authentication request should be automated');
-			$this->assertTrue($auth_request->reason == 'some other reason', 'Authentication request reason was incorrect');
-			$this->assertTrue($auth_request->terminal->name == 'term name changed', 'Terminal name was incorrect');
-			$this->assertTrue($auth_request->user->name == 'user changed', 'User name was incorrect');
-			$this->assertTrue($auth_request->action->name == 'test changed', 'Action name was incorrect');
+			$this->assertTrue($authRequest->pending == false, 'Authentication request should not be pending');
+			$this->assertTrue($authRequest->granted == true, 'Authentication request should be granted');
+			$this->assertTrue($authRequest->automated == true, 'Authentication request should be automated');
+			$this->assertTrue($authRequest->reason == 'some other reason', 'Authentication request reason was incorrect');
+			$this->assertTrue($authRequest->terminal->name == 'term name changed', 'Terminal name was incorrect');
+			$this->assertTrue($authRequest->user->name == 'user changed', 'User name was incorrect');
+			$this->assertTrue($authRequest->action->name == 'test changed', 'Action name was incorrect');
 	}
 
 	public function testGrantAuthenticationRequestWithOtp(){
@@ -82,13 +82,13 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 			$this->mock->addResponse($resp);
 
 			$toopher = $this->getToopherApi($this->mock);
-			$auth_request = $this->getAuthenticationRequest($toopher);
+			$authRequest = $this->getAuthenticationRequest($toopher);
 
-			$auth_request->grantWithOtp('otp');
+			$authRequest->grantWithOtp('otp');
 			$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-			$this->assertTrue($auth_request->pending == false, 'wrong auth pending');
-			$this->assertTrue($auth_request->granted == true, 'wrong auth granted');
-			$this->assertTrue($auth_request->automated == true, 'wrong auth automated');
+			$this->assertTrue($authRequest->pending == false, 'wrong auth pending');
+			$this->assertTrue($authRequest->granted == true, 'wrong auth granted');
+			$this->assertTrue($authRequest->automated == true, 'wrong auth automated');
 	}
 }
 
