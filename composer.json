@@ -22,7 +22,7 @@
   "require":{
     "php": ">=5.3.0",
     "ext-json": "*",
-    "ext-oauth": "*",
+    "vclayton/unpecl-oauth": "dev-master",
     "pear-pear.php.net/HTTP_Request2": ">=2.1.1",
     "pear-pear.php.net/HTTP_OAuth": ">=0.2.3"
   },

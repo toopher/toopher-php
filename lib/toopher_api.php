@@ -40,6 +40,8 @@ class ToopherIframe
     $this->baseUrl = $baseUrl;
     $this->timestampOverride = NULL;
     $this->nonceOverride = NULL;
+    $this->oauthVersion = '1.0';
+    $this->signatureMethod = 'HMAC-SHA1';
   }
 
   public function setTimestampOverride($timestampOverride)
@@ -165,24 +167,48 @@ class ToopherIframe
     return base64_encode($sig);
   }
 
-  private function getOauthSignedUrl($url, $params)
+  private function getOauthSignedUrl($url, $queryParams)
   {
-    if (!is_null($this->timestampOverride)) {
-      $this->oauthConsumer->setTimestamp($this->timestampOverride);
-    }
-    if (!is_null($this->nonceOverride)) {
-      $this->oauthConsumer->setNonce($this->nonceOverride);
-    }
+    $oauthParams = $this->getOauthParams();
+    $encodedParams = $this->encodeParamsForSignature(array_merge($queryParams, $oauthParams));
+    $signature = $this->oauthConsumer->generateSignature('GET', $url, $encodedParams);
+    $oauthParams['oauth_signature'] = $signature;
+    return $this->buildUrl($url, $queryParams, $oauthParams);
+  }
 
-    $oauthHeaderString = $this->oauthConsumer->getRequestHeader('GET', $url, $params);
-    $oauthHeaderArray = explode(",", str_replace("OAuth ", "", $oauthHeaderString));
-    $oauthParams = array();
-    foreach ($oauthHeaderArray as $value) {
-      $oauthParams[] = str_replace("\"", "", $value);
+  private function encodeParamsForSignature($params)
+  {
+    foreach ($params as $key => $value) {
+      $params[$key] = oauth_urlencode($value);
+    };
+    return $params;
+  }
+
+  private function getOauthParams()
+  {
+    $oauthParams = array(
+      'oauth_consumer_key' => $this->consumerKey,
+      'oauth_signature_method' => $this->signatureMethod,
+      'oauth_version' => $this->oauthVersion
+    );
+    if (!is_null($this->nonceOverride)) {
+      $oauthParams['oauth_nonce'] = $this->nonceOverride;
+    } else {
+      $oauthParams['oauth_nonce'] = uniqid().'.'.time();
     }
-    $oauthParams = implode("&", $oauthParams);
-    $queryParams = http_build_query($params);
-    return $url . '?' . $queryParams . '&' . $oauthParams;
+    if (!is_null($this->timestampOverride)) {
+      $oauthParams['oauth_timestamp'] = $this->timestampOverride;
+    } else {
+      $oauthParams['oauth_timestamp'] = time();
+    }
+    return $oauthParams;
+  }
+
+  private function buildUrl($url, $queryParams, $oauthParams)
+  {
+    $query = http_build_query($queryParams);
+    $oauthQuery = http_build_query($oauthParams);
+    return $url . '?' . $query . '&' . $oauthQuery;
   }
 }
 

@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "aa7afd273d0e396bc4d44cf727aaa41b",
+    "hash": "584d9805081fa7f847fac815ad93ecea",
     "packages": [
         {
             "name": "pear-pear.php.net/Archive_Tar",
@@ -246,6 +246,47 @@
                 "BSD License"
             ],
             "description": "Selection of methods that are often needed when working with XML documents.  Functionality includes creating of attribute lists from arrays, creation of tags, validation of XML names and more."
+        },
+        {
+            "name": "vclayton/unpecl-oauth",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/vclayton/unpecl-oauth.git",
+                "reference": "4ecff17a564d50fc874f86729d611a46088d42cf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/vclayton/unpecl-oauth/zipball/4ecff17a564d50fc874f86729d611a46088d42cf",
+                "reference": "4ecff17a564d50fc874f86729d611a46088d42cf",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-hash": "*",
+                "ext-openssl": "*",
+                "php": ">=5.1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "": "src/"
+                },
+                "files": [
+                    "src/functions.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Native PHP drop-in replacement for the PECL OAuth extension",
+            "homepage": "https://github.com/vclayton/unpecl-oauth",
+            "keywords": [
+                "oauth",
+                "pecl"
+            ],
+            "time": "2014-09-30 13:23:17"
         }
     ],
     "packages-dev": [
@@ -1194,14 +1235,14 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "vclayton/unpecl-oauth": 20,
         "satooshi/php-coveralls": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=5.3.0",
-        "ext-json": "*",
-        "ext-oauth": "*"
+        "ext-json": "*"
     },
     "platform-dev": []
 }
