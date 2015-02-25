@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "2c3bc139cd3c8e3a096ed8c14f2b50c3",
+    "hash": "aa7afd273d0e396bc4d44cf727aaa41b",
     "packages": [
         {
             "name": "pear-pear.php.net/Archive_Tar",
