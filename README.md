@@ -29,23 +29,28 @@ This library makes it super simple to do the Toopher two-step.  Check it out:
 require_once("toopher_api.php");
 
 // Create an API object using your credentials
-$toopherApi = new ToopherApi($key, $secret);
+$toopherApi = new ToopherApi("<your consumer key>", "<your consumer secret>");
 
 // Step 1 - Pair with their phone's Toopher app
-$pairing = $toopherApi->pair("pairing phrase", "username@yourservice.com");
+// With pairing phrase
+$pairing = $toopherApi->pair("username@yourservice.com", "pairing phrase");
+// With SMS
+$pairing = $toopherApi->pair("username@yourservice.com", "555-555-5555");
+// With QR code
+$pairing = $toopherApi->pair("username@yourservice.com");
+
 
 // Step 2 - Authenticate a log in
-$authStatus = $toopherApi->authenticate($pairingStatus['id'], "my computer");
+// With a pairing id and terminal name
+$authRequest = $toopherApi->authenticate($pairing->id, "my computer");
+// With a username, terminal name and requester specified terminal id
+$authRequest = $toopherApi->authenticate("username", "my computer", "requester specified id");
+
 
 // Once they've responded you can then check the status
-while($authStatus['pending']){
-    $authStatus = $toopherApi->getAuthenticationStatus($authStatus['id']);
-    sleep(1);
-}
-if($authStatus['granted']){
-    // Success!
-} else {
-    // user declined the authorization!
+$authRequest->refreshFromServer();
+if ($authRequest->pending == false && $authRequest->granted == true) {
+  // Success!
 }
 ```
 
