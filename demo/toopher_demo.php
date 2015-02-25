@@ -84,18 +84,6 @@ while(true) {
       echo ("Could not check pairing status (Reason: $e)");
     }
   }
-
-  // while($pairing['pending']){
-  //     echo("Waiting for authorization...\n");
-  //     sleep(2);
-  //     $pairing->refreshFromServer();
-  // }
-  //
-  // if ($pairing->granted){
-  //   echo("Pairing complete!\n");
-  // } else {
-  //   echo("The pairing has been denied.\n");
-  // }
 }
 
 while(true){
