@@ -51,19 +51,19 @@ class PairingTests extends PHPUnit_Framework_TestCase {
 
 
 	public function testPairingRefreshFromServer(){
-			$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1');
-			$resp->appendBody('{"id":"1","enabled":false,"pending":true,"user":{"id":"1","name":"user name changed", "toopher_authentication_enabled":false}}');
-			$this->mock->addResponse($resp);
+		$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1');
+		$resp->appendBody('{"id":"1","enabled":false,"pending":true,"user":{"id":"1","name":"user name changed", "toopher_authentication_enabled":false}}');
+		$this->mock->addResponse($resp);
 
-			$toopher = $this->getToopherApi($this->mock);
-			$pairing = $this->getPairing($toopher);
+		$toopher = $this->getToopherApi($this->mock);
+		$pairing = $this->getPairing($toopher);
 
-			$pairing->refreshFromServer();
-			$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
-			$this->assertTrue($pairing->enabled == false, 'Pairing should not be enabled');
-			$this->assertTrue($pairing->pending == true, 'Pairing should be pending');
-			$this->assertTrue($pairing->user->name == 'user name changed', 'User name was incorrect');
-			$this->assertTrue($pairing->user->toopher_authentication_enabled == false, 'User should not be toopher_authentication_enabled');
+		$pairing->refreshFromServer();
+		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
+		$this->assertTrue($pairing->enabled == false, 'Pairing should not be enabled');
+		$this->assertTrue($pairing->pending == true, 'Pairing should be pending');
+		$this->assertTrue($pairing->user->name == 'user name changed', 'User name was incorrect');
+		$this->assertTrue($pairing->user->toopher_authentication_enabled == false, 'User should not be toopher_authentication_enabled');
 	}
 
 	public function testGetPairingResetLink(){
@@ -86,13 +86,8 @@ class PairingTests extends PHPUnit_Framework_TestCase {
 			$toopher = $this->getToopherApi($this->mock);
 			$pairing = $this->getPairing($toopher);
 
-			try {
-				$pairing->emailResetLink('jdoe@example.com');
-				$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-			}
-			catch(Exception $e) {
-				$this->fail('Unexpected exception has been raised: ' . $e);
-			}
+		$pairing->emailResetLink('jdoe@example.com');
+		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
 	}
 
 	public function testPairingGetQrCodeImage(){
