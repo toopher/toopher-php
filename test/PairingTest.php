@@ -67,40 +67,40 @@ class PairingTests extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testGetPairingResetLink(){
-			$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1/generate_reset_link');
-			$resp->appendBody('{"url":"http://api.toopher.test/v1/pairings/1/reset?reset_authorization=abcde"}');
-			$this->mock->addResponse($resp);
+		$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1/generate_reset_link');
+		$resp->appendBody('{"url":"http://api.toopher.test/v1/pairings/1/reset?reset_authorization=abcde"}');
+		$this->mock->addResponse($resp);
 
-			$toopher = $this->getToopherApi($this->mock);
-			$pairing = $this->getPairing($toopher);
+		$toopher = $this->getToopherApi($this->mock);
+		$pairing = $this->getPairing($toopher);
 
-			$resetLink = $pairing->getResetLink();
-			$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-			$this->assertTrue($resetLink == "http://api.toopher.test/v1/pairings/1/reset?reset_authorization=abcde", 'Pairing reset link was incorrect');
+		$resetLink = $pairing->getResetLink();
+		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+		$this->assertTrue($resetLink == "http://api.toopher.test/v1/pairings/1/reset?reset_authorization=abcde", 'Pairing reset link was incorrect');
 	}
 
 	public function testEmailPairingResetLink(){
-			$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1/send_reset_link');
-			$this->mock->addResponse($resp);
+		$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1/send_reset_link');
+		$this->mock->addResponse($resp);
 
-			$toopher = $this->getToopherApi($this->mock);
-			$pairing = $this->getPairing($toopher);
+		$toopher = $this->getToopherApi($this->mock);
+		$pairing = $this->getPairing($toopher);
 
 		$pairing->emailResetLink('jdoe@example.com');
 		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
 	}
 
 	public function testPairingGetQrCodeImage(){
-			$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/qr/pairings/1');
-			$resp->appendBody('{}');
-			$this->mock->addResponse($resp);
+		$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/qr/pairings/1');
+		$resp->appendBody('{}');
+		$this->mock->addResponse($resp);
 
-			$toopher = $this->getToopherApi($this->mock);
-			$pairing = $this->getPairing($toopher);
+		$toopher = $this->getToopherApi($this->mock);
+		$pairing = $this->getPairing($toopher);
 
-			$pairing->getQrCodeImage();
-			$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
-			$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == 'https://api.toopher.com/v1/qr/pairings/1', "Last called url should be 'https://api.toopher.com/v1/qr/pairings/1'");
+		$pairing->getQrCodeImage();
+		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
+		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == 'https://api.toopher.com/v1/qr/pairings/1', "Last called url should be 'https://api.toopher.com/v1/qr/pairings/1'");
 	}
 }
 

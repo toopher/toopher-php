@@ -58,37 +58,37 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testAuthenticationRequestRefreshFromServer(){
-			$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/1');
-			$resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some other reason","terminal":{"id":"1","name":"term name changed","requester_specified_id":"1","user":{"id":"1","name":"user changed", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user changed", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test changed"}}');
-			$this->mock->addResponse($resp);
+		$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/1');
+		$resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some other reason","terminal":{"id":"1","name":"term name changed","requester_specified_id":"1","user":{"id":"1","name":"user changed", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user changed", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test changed"}}');
+		$this->mock->addResponse($resp);
 
-			$toopher = $this->getToopherApi($this->mock);
-			$authRequest = $this->getAuthenticationRequest($toopher);
+		$toopher = $this->getToopherApi($this->mock);
+		$authRequest = $this->getAuthenticationRequest($toopher);
 
-			$authRequest->refreshFromServer();
-			$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
-			$this->assertTrue($authRequest->pending == false, 'Authentication request should not be pending');
-			$this->assertTrue($authRequest->granted == true, 'Authentication request should be granted');
-			$this->assertTrue($authRequest->automated == true, 'Authentication request should be automated');
-			$this->assertTrue($authRequest->reason == 'some other reason', 'Authentication request reason was incorrect');
-			$this->assertTrue($authRequest->terminal->name == 'term name changed', 'Terminal name was incorrect');
-			$this->assertTrue($authRequest->user->name == 'user changed', 'User name was incorrect');
-			$this->assertTrue($authRequest->action->name == 'test changed', 'Action name was incorrect');
+		$authRequest->refreshFromServer();
+		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
+		$this->assertTrue($authRequest->pending == false, 'Authentication request should not be pending');
+		$this->assertTrue($authRequest->granted == true, 'Authentication request should be granted');
+		$this->assertTrue($authRequest->automated == true, 'Authentication request should be automated');
+		$this->assertTrue($authRequest->reason == 'some other reason', 'Authentication request reason was incorrect');
+		$this->assertTrue($authRequest->terminal->name == 'term name changed', 'Terminal name was incorrect');
+		$this->assertTrue($authRequest->user->name == 'user changed', 'User name was incorrect');
+		$this->assertTrue($authRequest->action->name == 'test changed', 'Action name was incorrect');
 	}
 
 	public function testGrantAuthenticationRequestWithOtp(){
-			$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/1/otp_auth');
-			$resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test"}}');
-			$this->mock->addResponse($resp);
+		$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/1/otp_auth');
+		$resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test"}}');
+		$this->mock->addResponse($resp);
 
-			$toopher = $this->getToopherApi($this->mock);
-			$authRequest = $this->getAuthenticationRequest($toopher);
+		$toopher = $this->getToopherApi($this->mock);
+		$authRequest = $this->getAuthenticationRequest($toopher);
 
-			$authRequest->grantWithOtp('otp');
-			$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-			$this->assertTrue($authRequest->pending == false, 'wrong auth pending');
-			$this->assertTrue($authRequest->granted == true, 'wrong auth granted');
-			$this->assertTrue($authRequest->automated == true, 'wrong auth automated');
+		$authRequest->grantWithOtp('otp');
+		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+		$this->assertTrue($authRequest->pending == false, 'wrong auth pending');
+		$this->assertTrue($authRequest->granted == true, 'wrong auth granted');
+		$this->assertTrue($authRequest->automated == true, 'wrong auth automated');
 	}
 }
 

@@ -64,11 +64,11 @@ class ToopherIframeTests extends PHPUnit_Framework_TestCase {
 
 	public function testToopherIframeGetAuthenticationUrl()
 	{
-			$this->toopherIframe->setTimestampOverride($this->getOauthTimestamp());
-			$this->toopherIframe->setNonceOverride($this->getOauthNonce());
-			$expectedUrl = "https://api.toopher.test/v1/web/authenticate?v=2&username=jdoe&reset_email=jdoe%40example.com&action_name=Log+In&session_token=s9s7vsb&requester_metadata=None&expires=1300&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_nonce=12345678&oauth_timestamp=1000&oauth_signature=YN%2BkKNTaoypsB37fsjvMS8vsG5A%3D";
-			$authenticationUrl = $this->toopherIframe->getAuthenticationUrl('jdoe', 'jdoe@example.com', $this->getRequestToken());
-			$this->assertTrue($authenticationUrl == $expectedUrl, 'Authentication url was incorrect');
+		$this->toopherIframe->setTimestampOverride($this->getOauthTimestamp());
+		$this->toopherIframe->setNonceOverride($this->getOauthNonce());
+		$expectedUrl = "https://api.toopher.test/v1/web/authenticate?v=2&username=jdoe&reset_email=jdoe%40example.com&action_name=Log+In&session_token=s9s7vsb&requester_metadata=None&expires=1300&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_nonce=12345678&oauth_timestamp=1000&oauth_signature=YN%2BkKNTaoypsB37fsjvMS8vsG5A%3D";
+		$authenticationUrl = $this->toopherIframe->getAuthenticationUrl('jdoe', 'jdoe@example.com', $this->getRequestToken());
+		$this->assertTrue($authenticationUrl == $expectedUrl, 'Authentication url was incorrect');
 	}
 
 	public function testToopherIframeGetAuthenticationUrlWithExtras()
