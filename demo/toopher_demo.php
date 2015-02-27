@@ -60,7 +60,7 @@ while(true) {
       $pairing = $toopher->pair($userName, $phrase);
       break;
     } catch (Exception $e) {
-      echo ("The pairing phrase was not accepted (Reason:$e)");
+      echo ("The pairing phrase was not accepted. Please try pairing again.\n");
     }
   }
 
@@ -78,10 +78,10 @@ while(true) {
         break 2;
       } else {
         echo("The pairing has been denied.\n");
-        exit(0);
+        break;
       }
     } catch (Exception $e) {
-      echo ("Could not check pairing status (Reason: $e)");
+      echo ("Could not check pairing status. Please try authorizing again.)\n");
     }
   }
 }
