@@ -97,11 +97,29 @@ class UserTests extends PHPUnit_Framework_TestCase {
 
 	public function testUserUpdateChangesUser()
 	{
-		$toopher = $this->getToopherApi($this->mock);
-		$user = $this->getUser($toopher);
+		$user = $this->getUser($this->getToopherApi());
 		$user->update(['id' => '1', 'name' => 'user changed', 'toopher_authentication_enabled' => false]);
 		$this->assertTrue($user->name == 'user changed', 'User name was incorrect');
 		$this->assertTrue($user->toopher_authentication_enabled == false, 'User should not be toopher_authentication_enabled');
+	}
+
+	/**
+	* @expectedException		ToopherRequestException
+	* @expectedExceptionMessage	Could not parse user from response
+	*/
+	public function testUserMissingKeyFails()
+	{
+		$user = new User(['name' => 'user', 'toopher_authentication_enabled' => true], $this->getToopherApi());
+	}
+
+	/**
+	* @expectedException		ToopherRequestException
+	* @expectedExceptionMessage	Could not parse user from response
+	*/
+	public function testUserUpdateMissingKeyFails()
+	{
+		$user = $this->getUser($this->getToopherApi());
+		$user->update(['id' => '1', 'toopher_authentication_enabled' => false]);
 	}
 }
 

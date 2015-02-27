@@ -28,11 +28,15 @@ class User
 
     function __construct($jsonResponse, $api)
     {
-        $this->api = $api;
-        $this->id = $jsonResponse['id'];
-        $this->name = $jsonResponse['name'];
-        $this->toopher_authentication_enabled = $jsonResponse['toopher_authentication_enabled'];
-        $this->raw_response = $jsonResponse;
+        try {
+            $this->api = $api;
+            $this->id = $jsonResponse['id'];
+            $this->name = $jsonResponse['name'];
+            $this->toopher_authentication_enabled = $jsonResponse['toopher_authentication_enabled'];
+            $this->raw_response = $jsonResponse;
+        } catch (Exception $e) {
+            throw new ToopherRequestException('Could not parse user from response: ' . $e->getMessage());
+        }
     }
 
     public function refreshFromServer()
@@ -58,9 +62,14 @@ class User
 
     public function update($jsonResponse)
     {
-        $this->name = $jsonResponse['name'];
-        $this->toopher_authentication_enabled = $jsonResponse['toopher_authentication_enabled'];
-        $this->raw_response = $jsonResponse;
+        try {
+            $this->name = $jsonResponse['name'];
+            $this->toopher_authentication_enabled = $jsonResponse['toopher_authentication_enabled'];
+            $this->raw_response = $jsonResponse;
+        } catch (Exception $e) {
+            throw new ToopherRequestException('Could not parse user from response: ' . $e->getMessage());
+        }
+
     }
 }
 
