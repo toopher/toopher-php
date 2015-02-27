@@ -94,7 +94,7 @@ class ToopherIframe
     }
 
     $params = array(
-      'v' => '2',
+      'v' => ToopherIframe::VERSION,
       'username' => $username,
       'reset_email' => $resetEmail,
       'expires' => $this->getUnixTimestamp() + $ttl
