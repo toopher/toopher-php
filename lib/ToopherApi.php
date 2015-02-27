@@ -173,14 +173,14 @@ class ApiRawRequester
             $result = $this->oauthConsumer->sendRequest($this->baseUrl . $endpoint, $parameters, $method);
         } catch (Exception $e) {
             error_log($e);
-            throw new ToopherRequestException("Error making Toopher API request", $e->getCode(), $e);
+            throw new ToopherRequestException('Error making Toopher API request', $e->getCode(), $e);
         }
 
         $resultBody = $result->getBody();
         if ($result->getStatus() >= 400) {
-            error_log(sprintf("Toopher API call returned unexpected HTTP response: %d - %s", $result->getStatus(), $result->getReasonPhrase()));
+            error_log(sprintf('Toopher API call returned unexpected HTTP response: %d - %s', $result->getStatus(), $result->getReasonPhrase()));
             if (empty($resultBody)) {
-                error_log("empty response body");
+                error_log('empty response body');
                 throw new ToopherRequestException($result->getReasonPhrase(), $result->getStatus());
             }
 
@@ -189,16 +189,16 @@ class ApiRawRequester
                 $jsonError = $this->json_error_to_string(json_last_error());
                 if (!empty($jsonError))
                 {
-                    error_log(sprintf("Error parsing response body JSON: %s", $jsonError));
-                    error_log(sprintf("response body: %s", $result->getBody()));
-                    throw new ToopherRequestException(sprintf("JSON Parsing Error: %s", $jsonError));
+                    error_log(sprintf('Error parsing response body JSON: %s', $jsonError));
+                    error_log(sprintf('response body: %s', $result->getBody()));
+                    throw new ToopherRequestException(sprintf('JSON Parsing Error: %s', $jsonError));
                 }
             } else {
-                if(array_key_exists("error_message", $err))
+                if(array_key_exists('error_message', $err))
                 {
                     throw new ToopherRequestException($err['error_message'], $err['error_code']);
                 } else {
-                    throw new ToopherRequestException(sprintf("%s - %s", $result->getReasonPhrase(), $resultBody), $result->getStatus());
+                    throw new ToopherRequestException(sprintf('%s - %s', $result->getReasonPhrase(), $resultBody), $result->getStatus());
                 }
             }
         }
@@ -210,9 +210,9 @@ class ApiRawRequester
             if ($decoded === NULL) {
                 $jsonError = $this->json_error_to_string(json_last_error());
                 if (!empty($jsonError)) {
-                    error_log(sprintf("Error parsing response body JSON: %s", $jsonError));
-                    error_log(sprintf("response body: %s", $result->getBody()));
-                    throw new ToopherRequestException(sprintf("JSON Parsing Error: %s", $jsonError));
+                    error_log(sprintf('Error parsing response body JSON: %s', $jsonError));
+                    error_log(sprintf('response body: %s', $result->getBody()));
+                    throw new ToopherRequestException(sprintf('JSON Parsing Error: %s', $jsonError));
                 }
             }
         return $decoded;
@@ -275,9 +275,9 @@ class Users extends ToopherObjectFactory
         $params = array('user_name' => $username);
         $users = $this->api->advanced->raw->get($url, $params);
         if (sizeof($users) > 1) {
-            throw new ToopherRequestException(sprintf("Multiple users with name = %s", $username));
+            throw new ToopherRequestException(sprintf('Multiple users with name = %s', $username));
         } elseif (empty($users)) {
-            throw new ToopherRequestException(sprintf("No users with name = %s", $username));
+            throw new ToopherRequestException(sprintf('No users with name = %s', $username));
         }
         return new User(array_shift($users), $this->api);
     }

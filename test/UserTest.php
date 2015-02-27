@@ -35,7 +35,7 @@ class UserTests extends PHPUnit_Framework_TestCase {
 
 	protected function getUser($api)
 	{
-		return new User(["id" => "1", "name" => "user", "toopher_authentication_enabled" => true], $api);
+		return new User(['id' => '1', 'name' => 'user', 'toopher_authentication_enabled' => true], $api);
 	}
 
 	public function testUser()
@@ -48,7 +48,7 @@ class UserTests extends PHPUnit_Framework_TestCase {
 
 	public function testUserRefreshFromServer()
 	{
-		$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/users/1');
+		$resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/users/1');
 		$resp->appendBody('{"id":"1","name":"user changed","toopher_authentication_enabled":true}');
 		$this->mock->addResponse($resp);
 
@@ -63,23 +63,23 @@ class UserTests extends PHPUnit_Framework_TestCase {
 
 	public function testUserEnableToopherAuthentication()
 	{
-		$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/users/1');
+		$resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/users/1');
 		$resp->appendBody('{"id":"1","name":"user","toopher_authentication_enabled":true}');
 		$this->mock->addResponse($resp);
 
 		$toopher = $this->getToopherApi($this->mock);
-		$user = new User(["id" => "1", "name" => "user", "toopher_authentication_enabled" => false], $toopher);
+		$user = new User(['id' => '1', 'name' => 'user', 'toopher_authentication_enabled' => false], $toopher);
 		$this->assertTrue($user->toopher_authentication_enabled == false, 'User should not be toopher_authentication_enabled');
 
 		$user->enableToopherAuthentication();
 		$this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
-		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getBody() == "toopher_authentication_enabled=true", "Post params should include 'toopher_authentication_enabled=true'");
+		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getBody() == 'toopher_authentication_enabled=true', "Post params should include 'toopher_authentication_enabled=true'");
 		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
 	}
 
 	public function testUserDisableToopherAuthentication()
 	{
-		$resp1 = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/users/1');
+		$resp1 = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/users/1');
 		$resp1->appendBody('{"id":"1","name":"user","toopher_authentication_enabled":false}');
 		$this->mock->addResponse($resp1);
 
@@ -89,7 +89,7 @@ class UserTests extends PHPUnit_Framework_TestCase {
 
 		$user->disableToopherAuthentication();
 		$this->assertTrue($user->toopher_authentication_enabled == false, 'toopher authentication should not be enabled');
-		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getBody() == "toopher_authentication_enabled=false", "Post params should include'toopher_authentication_enabled=false");
+		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getBody() == 'toopher_authentication_enabled=false', "Post params should include'toopher_authentication_enabled=false'");
 		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
 	}
 
@@ -97,7 +97,7 @@ class UserTests extends PHPUnit_Framework_TestCase {
 	{
 		$toopher = $this->getToopherApi($this->mock);
 		$user = $this->getUser($toopher);
-		$user->update(["id" => "1", "name" => "user changed", "toopher_authentication_enabled" => false]);
+		$user->update(['id' => '1', 'name' => 'user changed', 'toopher_authentication_enabled' => false]);
 		$this->assertTrue($user->name == 'user changed', 'User name was incorrect');
 		$this->assertTrue($user->toopher_authentication_enabled == false, 'User should not be toopher_authentication_enabled');
 	}

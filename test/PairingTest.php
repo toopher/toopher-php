@@ -36,7 +36,7 @@ class PairingTests extends PHPUnit_Framework_TestCase {
 
 	protected function getPairing($api)
 	{
-		return new Pairing(["id" => "1","enabled" => true, "pending" => false, "user" => ["id" => "1","name" => "user", "toopher_authentication_enabled" => "true"]], $api);
+		return new Pairing(['id' => '1','enabled' => true, 'pending' => false, 'user' => ['id' => '1','name' => 'user', 'toopher_authentication_enabled' => 'true']], $api);
 	}
 
 	public function testPairing(){
@@ -51,7 +51,7 @@ class PairingTests extends PHPUnit_Framework_TestCase {
 
 
 	public function testPairingRefreshFromServer(){
-		$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1');
+		$resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/pairings/1');
 		$resp->appendBody('{"id":"1","enabled":false,"pending":true,"user":{"id":"1","name":"user name changed", "toopher_authentication_enabled":false}}');
 		$this->mock->addResponse($resp);
 
@@ -67,7 +67,7 @@ class PairingTests extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testGetPairingResetLink(){
-		$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1/generate_reset_link');
+		$resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/pairings/1/generate_reset_link');
 		$resp->appendBody('{"url":"http://api.toopher.test/v1/pairings/1/reset?reset_authorization=abcde"}');
 		$this->mock->addResponse($resp);
 
@@ -76,11 +76,11 @@ class PairingTests extends PHPUnit_Framework_TestCase {
 
 		$resetLink = $pairing->getResetLink();
 		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-		$this->assertTrue($resetLink == "http://api.toopher.test/v1/pairings/1/reset?reset_authorization=abcde", 'Pairing reset link was incorrect');
+		$this->assertTrue($resetLink == 'http://api.toopher.test/v1/pairings/1/reset?reset_authorization=abcde', 'Pairing reset link was incorrect');
 	}
 
 	public function testEmailPairingResetLink(){
-		$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1/send_reset_link');
+		$resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/pairings/1/send_reset_link');
 		$this->mock->addResponse($resp);
 
 		$toopher = $this->getToopherApi($this->mock);
@@ -91,7 +91,7 @@ class PairingTests extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testPairingGetQrCodeImage(){
-		$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/qr/pairings/1');
+		$resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/qr/pairings/1');
 		$resp->appendBody('{}');
 		$this->mock->addResponse($resp);
 

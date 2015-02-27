@@ -160,7 +160,7 @@ class ToopherIframe
     {
         $oauthConsumer = new HTTP_OAuth_Consumer($this->consumerKey, $this->consumerSecret);
         $params = $oauthConsumer->buildHttpQuery($parameters);
-        $key = mb_convert_encoding($secret, "UTF-8");
+        $key = mb_convert_encoding($secret, 'UTF-8');
         $sig = hash_hmac('sha1', $params, $secret, true);
         return base64_encode($sig);
     }

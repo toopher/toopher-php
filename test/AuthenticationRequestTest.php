@@ -35,7 +35,7 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 
 	protected function getAuthenticationRequest($api)
 	{
-		return new AuthenticationRequest(["id"=>"1","pending"=>true,"granted"=>false,"automated"=>false,"reason_code"=>"1","reason"=>"some reason","terminal"=>["id"=>"1","name"=>"term name","requester_specified_id"=>"1","user"=>["id"=>"1","name"=>"user","toopher_authentication_enabled"=>"true"]],"user"=>["id"=>"1","name"=>"user", "toopher_authentication_enabled"=>"true"],"action"=>["id"=>"1","name"=>"test"]], $api);
+		return new AuthenticationRequest(['id'=>'1','pending'=>true,'granted'=>false,'automated'=>false,'reason_code'=>'1','reason'=>'some reason','terminal'=>['id'=>'1','name'=>'term name','requester_specified_id'=>'1','user'=>['id'=>'1','name'=>'user','toopher_authentication_enabled'=>'true']],'user'=>['id'=>'1','name'=>'user', 'toopher_authentication_enabled'=>'true'],'action'=>['id'=>'1','name'=>'test']], $api);
 	}
 
 	public function testAuthenticationRequest()
@@ -58,8 +58,8 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testAuthenticationRequestRefreshFromServer(){
-		$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/1');
-		$resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some other reason","terminal":{"id":"1","name":"term name changed","requester_specified_id":"1","user":{"id":"1","name":"user changed", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user changed", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test changed"}}');
+		$resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/authentication_requests/1');
+		$resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some other reason","terminal":{"id":"1","name":"term name changed","requester_specified_id":"1","user":{"id":"1","name":"user changed", "toopher_authentication_enabled":true}},"user":{"id":"1","name":"user changed", "toopher_authentication_enabled":true},"action":{"id":"1","name":"test changed"}}');
 		$this->mock->addResponse($resp);
 
 		$toopher = $this->getToopherApi($this->mock);
@@ -77,8 +77,8 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 	}
 
 	public function testGrantAuthenticationRequestWithOtp(){
-		$resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/1/otp_auth');
-		$resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test"}}');
+		$resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/authentication_requests/1/otp_auth');
+		$resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":true}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":true},"action":{"id":"1","name":"test"}}');
 		$this->mock->addResponse($resp);
 
 		$toopher = $this->getToopherApi($this->mock);

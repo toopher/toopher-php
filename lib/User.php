@@ -45,14 +45,14 @@ class User
     public function enableToopherAuthentication()
     {
         $url = 'users/' . $this->id;
-        $result = $this->api->advanced->raw->post($url, array("toopher_authentication_enabled" => "true"));
+        $result = $this->api->advanced->raw->post($url, array('toopher_authentication_enabled' => 'true'));
         $this->update($result);
     }
 
     public function disableToopherAuthentication()
     {
         $url = 'users/' . $this->id;
-        $result = $this->api->advanced->raw->post($url, array("toopher_authentication_enabled" => "false"));
+        $result = $this->api->advanced->raw->post($url, array('toopher_authentication_enabled' => 'false'));
         $this->update($result);
     }
 
