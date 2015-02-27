@@ -28,12 +28,16 @@ class UserTerminal
 
     function __construct($jsonResponse, $api)
     {
-        $this->api = $api;
-        $this->id = $jsonResponse['id'];
-        $this->name = $jsonResponse['name'];
-        $this->requester_specified_id = $jsonResponse['requester_specified_id'];
-        $this->user = new User($jsonResponse['user'], $api);
-        $this->raw_response = $jsonResponse;
+        try {
+            $this->api = $api;
+            $this->id = $jsonResponse['id'];
+            $this->name = $jsonResponse['name'];
+            $this->requester_specified_id = $jsonResponse['requester_specified_id'];
+            $this->user = new User($jsonResponse['user'], $api);
+            $this->raw_response = $jsonResponse;
+        } catch (Exception $e) {
+            throw new ToopherRequestException('Could not parse user terminal from response: ' . $e->getMessage());
+        }
     }
 
     public function refreshFromServer()
@@ -45,10 +49,14 @@ class UserTerminal
 
     public function update($jsonResponse)
     {
-        $this->name = $jsonResponse['name'];
-        $this->requester_specified_id = $jsonResponse['requester_specified_id'];
-        $this->user->update($jsonResponse['user']);
-        $this->raw_response = $jsonResponse;
+        try {
+            $this->name = $jsonResponse['name'];
+            $this->requester_specified_id = $jsonResponse['requester_specified_id'];
+            $this->user->update($jsonResponse['user']);
+            $this->raw_response = $jsonResponse;
+        } catch (Exception $e) {
+            throw new ToopherRequestException('Could not parse user terminal from response: ' . $e->getMessage());
+        }
     }
 }
 

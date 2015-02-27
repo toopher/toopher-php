@@ -27,6 +27,20 @@ class UserTerminalTests extends PHPUnit_Framework_TestCase {
 		$this->mock = new HTTP_Request2_Adapter_Mock();
 	}
 
+	protected function getUserTerminalJson()
+	{
+		return [
+			'id' => '1',
+			'name' => 'terminal name',
+			'requester_specified_id' => 'requester specified id',
+			'user' => [
+				'id' => '1',
+				'name' => 'user name',
+				'toopher_authentication_enabled' => true
+			]
+		];
+	}
+
 	protected function getToopherApi($mock = NULL)
 	{
 		return new ToopherApi('key', 'secret', '', $mock);
@@ -34,7 +48,7 @@ class UserTerminalTests extends PHPUnit_Framework_TestCase {
 
 	protected function getUserTerminal($api)
 	{
-		return new UserTerminal(['id' => '1', 'name' => 'terminal name', 'requester_specified_id' => 'requester specified id', 'user' => ['id' => '1','name' => 'user name', 'toopher_authentication_enabled' => true]], $api);
+		return new UserTerminal($this->getUserTerminalJson(), $api);
 	}
 
 	public function testUserTerminalCreatesUserTerminal(){
@@ -71,6 +85,28 @@ class UserTerminalTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($userTerminal->user->name == 'user name changed', 'User name was incorrect');
 		$this->assertTrue($userTerminal->user->toopher_authentication_enabled == false, 'User should not be toopher_authentication_enabled');
 	}
+
+	/**
+	* @expectedException		ToopherRequestException
+	* @expectedExceptionMessage	Could not parse user terminal from response
+	*/
+	public function testUserTerminalMissingKeyFails()
+	{
+		$userTerminalJson = $this->getUserTerminalJson();
+		unset($userTerminalJson['id']);
+		new UserTerminal($userTerminalJson, $this->getToopherApi());
+	}
+
+	/**
+	* @expectedException		ToopherRequestException
+	* @expectedExceptionMessage	Could not parse user terminal from response
+	*/
+	public function testUserTerminalUpdateMissingKeyFails()
+	{
+		$userTerminal = $this->getUserTerminal($this->getToopherApi());
+		$userTerminal->update(['id'=>'1', 'requester_specified_id'=>'requester specified id changed', 'user'=>['id'=>'1', 'name'=>'user name changed', 'toopher_authentication_enabled'=>false]]);
+	}
+
 }
 
 ?>
