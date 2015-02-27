@@ -74,10 +74,10 @@ To avoid being prompted for your Toopher API key and secret, you can define them
 #### Tests
 To run all unit tests:
 ```shell
-$ phpunit test/test_toopher_api.php
+$ phpunit test
 ```
 Note: `phpunit` may be found in `vendor/bin/php` so your test command
 would be
 ```shell
-$ vendor/bin/phpunit test/test_toopher_api.php
+$ vendor/bin/phpunit test
 ```
