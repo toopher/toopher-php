@@ -124,6 +124,33 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($authRequest->granted == true, 'Authentication request should be granted');
 		$this->assertTrue($authRequest->automated == true, 'Authentication request should be automated');
 	}
+
+	/**
+	* @expectedException		ToopherRequestException
+	* @expectedExceptionMessage	Could not parse authentication request from response
+	*/
+	public function testAuthenticationRequestMissingKeyFails()
+	{
+		$authJson = $this->getAuthenticationRequestJson();
+		unset($authJson['id']);
+		new AuthenticationRequest($authJson, $this->getToopherApi());
+	}
+
+	/**
+	* @expectedException		ToopherRequestException
+	* @expectedExceptionMessage	Could not parse authentication request from response
+	*/
+	public function testAuthenticationRequestUpdateMissingKeyFails()
+	{
+		$resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/authentication_requests/1');
+		$resp->appendBody('{"id":"1","granted":true,"automated":true,"reason_code":"1","reason":"some other reason","terminal":{"id":"1","name":"term name changed","requester_specified_id":"1","user":{"id":"1","name":"user changed", "toopher_authentication_enabled":true}},"user":{"id":"1","name":"user changed", "toopher_authentication_enabled":true},"action":{"id":"1","name":"test changed"}}');
+		$this->mock->addResponse($resp);
+
+		$toopher = $this->getToopherApi($this->mock);
+		$authRequest = $this->getAuthenticationRequest($toopher);
+
+		$authRequest->refreshFromServer();
+	}
 }
 
 ?>

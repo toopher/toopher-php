@@ -28,17 +28,21 @@ class AuthenticationRequest
 
     function __construct($jsonResponse, $api)
     {
-        $this->api = $api;
-        $this->id = $jsonResponse['id'];
-        $this->pending = $jsonResponse['pending'];
-        $this->granted = $jsonResponse['granted'];
-        $this->automated = $jsonResponse['automated'];
-        $this->reason_code = $jsonResponse['reason_code'];
-        $this->reason = $jsonResponse['reason'];
-        $this->terminal = new UserTerminal($jsonResponse['terminal'], $api);
-        $this->user = new User($jsonResponse['user'], $api);
-        $this->action = new Action($jsonResponse['action']);
-        $this->raw_response = $jsonResponse;
+        try {
+            $this->api = $api;
+            $this->id = $jsonResponse['id'];
+            $this->pending = $jsonResponse['pending'];
+            $this->granted = $jsonResponse['granted'];
+            $this->automated = $jsonResponse['automated'];
+            $this->reason_code = $jsonResponse['reason_code'];
+            $this->reason = $jsonResponse['reason'];
+            $this->terminal = new UserTerminal($jsonResponse['terminal'], $api);
+            $this->user = new User($jsonResponse['user'], $api);
+            $this->action = new Action($jsonResponse['action']);
+            $this->raw_response = $jsonResponse;
+        } catch (Exception $e) {
+            throw new ToopherRequestException('Could not parse authentication request from response: ' . $e->getMessage());
+        }
     }
 
     public function refreshFromServer()
@@ -59,15 +63,19 @@ class AuthenticationRequest
 
     private function update($jsonResponse)
     {
-        $this->pending = $jsonResponse['pending'];
-        $this->granted = $jsonResponse['granted'];
-        $this->automated = $jsonResponse['automated'];
-        $this->reason_code = $jsonResponse['reason_code'];
-        $this->reason = $jsonResponse['reason'];
-        $this->terminal->update($jsonResponse['terminal']);
-        $this->user->update($jsonResponse['user']);
-        $this->action->update($jsonResponse['action']);
-        $this->raw_respones = $jsonResponse;
+        try {
+            $this->pending = $jsonResponse['pending'];
+            $this->granted = $jsonResponse['granted'];
+            $this->automated = $jsonResponse['automated'];
+            $this->reason_code = $jsonResponse['reason_code'];
+            $this->reason = $jsonResponse['reason'];
+            $this->terminal->update($jsonResponse['terminal']);
+            $this->user->update($jsonResponse['user']);
+            $this->action->update($jsonResponse['action']);
+            $this->raw_respones = $jsonResponse;
+        } catch (Exception $e) {
+            throw new ToopherRequestException('Could not parse authentication request from response: ' . $e->getMessage());
+        }
     }
 }
 
