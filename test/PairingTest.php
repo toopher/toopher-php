@@ -117,6 +117,33 @@ class PairingTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
 		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == 'https://api.toopher.com/v1/qr/pairings/1', "Last called url should be 'https://api.toopher.com/v1/qr/pairings/1'");
 	}
+
+	/**
+	* @expectedException		ToopherRequestException
+	* @expectedExceptionMessage	Could not parse pairing from response
+	*/
+	public function testPairingMissingKeyFails()
+	{
+		$pairingJson = $this->getPairingJson();
+		unset($pairingJson['id']);
+		new Pairing($pairingJson, $this->getToopherApi());
+	}
+
+	/**
+	* @expectedException		ToopherRequestException
+	* @expectedExceptionMessage	Could not parse pairing from response
+	*/
+	public function testPairingUpdateMissingKeyFails()
+	{
+		$resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/pairings/1');
+		$resp->appendBody('{"id":"1","pending":true,"user":{"id":"1","name":"user name changed", "toopher_authentication_enabled":false}}');
+		$this->mock->addResponse($resp);
+
+		$toopher = $this->getToopherApi($this->mock);
+		$pairing = $this->getPairing($toopher);
+
+		$pairing->refreshFromServer();
+	}
 }
 
 ?>

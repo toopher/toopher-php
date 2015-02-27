@@ -28,12 +28,17 @@ class Pairing
 
     function __construct($jsonResponse, $api)
     {
-        $this->api = $api;
-        $this->id = $jsonResponse['id'];
-        $this->enabled = $jsonResponse['enabled'];
-        $this->pending = $jsonResponse['pending'];
-        $this->user = new User($jsonResponse['user'], $api);
-        $this->raw_response = $jsonResponse;
+        try {
+            $this->api = $api;
+            $this->id = $jsonResponse['id'];
+            $this->enabled = $jsonResponse['enabled'];
+            $this->pending = $jsonResponse['pending'];
+            $this->user = new User($jsonResponse['user'], $api);
+            $this->raw_response = $jsonResponse;
+        } catch (Exception $e) {
+            throw new ToopherRequestException('Could not parse pairing from response: ' . $e->getMessage());
+        }
+
     }
 
     public function refreshFromServer()
@@ -72,10 +77,15 @@ class Pairing
 
     private function update($jsonResponse)
     {
-        $this->enabled = $jsonResponse['enabled'];
-        $this->pending = $jsonResponse['pending'];
-        $this->user->update($jsonResponse['user']);
-        $this->raw_response = $jsonResponse;
+        try {
+            $this->enabled = $jsonResponse['enabled'];
+            $this->pending = $jsonResponse['pending'];
+            $this->user->update($jsonResponse['user']);
+            $this->raw_response = $jsonResponse;
+        } catch (Exception $e) {
+            throw new ToopherRequestException('Could not parse pairing from response: ' . $e->getMessage());
+        }
+
     }
 }
 
