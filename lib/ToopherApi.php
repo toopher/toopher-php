@@ -28,7 +28,7 @@ class ToopherRequestException extends Exception
 
 class ToopherApi
 {
-  const VERSION = '2.0.0';
+    const VERSION = '2.0.0';
 
     protected $baseUrl;
     protected $oauthConsumer;
@@ -36,12 +36,10 @@ class ToopherApi
 
     function __construct($key, $secret, $baseUrl = '', $httpAdapter = NULL)
     {
-        if(empty($key))
-        {
+        if (empty($key)) {
             throw new InvalidArgumentException('Toopher consumer key cannot be empty');
         }
-        if(empty($secret))
-        {
+        if (empty($secret)) {
             throw new InvalidArgumentException('Toopher consumer secret cannot be empty');
         }
 
@@ -55,21 +53,15 @@ class ToopherApi
     {
         $params = array('user_name' => $username);
         $params = array_merge($params, $kwargs);
-        if (!empty($phraseOrNumber))
-        {
-            if(preg_match('/\d/', $phraseOrNumber, $match))
-            {
+        if (!empty($phraseOrNumber)) {
+            if (preg_match('/\d/', $phraseOrNumber, $match)) {
                 $url = 'pairings/create/sms';
                 $params['phone_number'] = $phraseOrNumber;
-            }
-            else
-            {
+            } else {
                 $url = 'pairings/create';
                 $params['pairing_phrase'] = $phraseOrNumber;
             }
-        }
-        else
-        {
+        } else {
             $url = 'pairings/create/qr';
         }
         $result = $this->advanced->raw->post($url, $params);
@@ -80,26 +72,19 @@ class ToopherApi
     {
         $url = 'authentication_requests/initiate';
         $uuidPattern = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
-        if (preg_match($uuidPattern, $pairingIdOrUsername, $match))
-        {
+        if (preg_match($uuidPattern, $pairingIdOrUsername, $match)) {
             $params = array('pairing_id' => $pairingIdOrUsername);
-        }
-        else
-        {
+        } else {
             $params = array('user_name' => $pairingIdOrUsername);
         }
-
-        if(!empty($actionName))
-        {
+        if (!empty($actionName)) {
             $params['action_name'] = $actionName;
         }
-        if(!empty($terminalName))
-        {
-          $params['terminal_name'] = $terminalName;
+        if (!empty($terminalName)) {
+            $params['terminal_name'] = $terminalName;
         }
-        if(!empty($requesterSpecifiedId))
-        {
-          $params['requester_specified_terminal_id'] = $requesterSpecifiedId;
+        if (!empty($requesterSpecifiedId)) {
+            $params['requester_specified_terminal_id'] = $requesterSpecifiedId;
         }
         $params = array_merge($params, $kwargs);
         $result = $this->advanced->raw->post($url, $params);
@@ -109,12 +94,12 @@ class ToopherApi
 
 abstract class ToopherObjectFactory
 {
-  protected $api;
+    protected $api;
 
-  function __construct($api)
-  {
-    $this->api = $api;
-  }
+    function __construct($api)
+    {
+        $this->api = $api;
+    }
 }
 
 class AdvancedApiUsageFactory
@@ -137,12 +122,10 @@ class ApiRawRequester
 
     function __construct($key, $secret, $baseUrl, $httpAdapter)
     {
-        if(empty($key))
-        {
+        if (empty($key)) {
             throw new InvalidArgumentException('Toopher consumer key cannot be empty');
         }
-        if(empty($secret))
-        {
+        if (empty($secret)) {
             throw new InvalidArgumentException('Toopher consumer secret cannot be empty');
         }
 
@@ -153,7 +136,7 @@ class ApiRawRequester
 
     public function getOauthConsumer()
     {
-      return $this->oauthConsumer;
+        return $this->oauthConsumer;
     }
 
     public function post($endpoint, $parameters)
@@ -168,21 +151,18 @@ class ApiRawRequester
 
     public function get_raw($endpoint)
     {
-      return $this->request('GET', $endpoint, array(), true);
+        return $this->request('GET', $endpoint, array(), true);
     }
 
     private function request($method, $endpoint, $parameters = array(), $rawRequest = false)
     {
         $req = new HTTP_Request2();
         $req->setAdapter($this->httpAdapter);
-        $req->setHeader(array('User-Agent' =>
-            sprintf('Toopher-PHP/%s (PHP %s)', ToopherApi::VERSION, phpversion())));
+        $req->setHeader(array('User-Agent' => sprintf('Toopher-PHP/%s (PHP %s)', ToopherApi::VERSION, phpversion())));
         $req->setMethod($method);
         $req->setUrl($this->baseUrl . $endpoint);
-        if(!is_null($parameters))
-        {
-            foreach($parameters as $key => $value)
-            {
+        if (!is_null($parameters)) {
+            foreach($parameters as $key => $value) {
                 $req->addPostParameter($key, $value);
             }
         }
@@ -197,8 +177,7 @@ class ApiRawRequester
         }
 
         $resultBody = $result->getBody();
-        if ($result->getStatus() >= 400)
-        {
+        if ($result->getStatus() >= 400) {
             error_log(sprintf("Toopher API call returned unexpected HTTP response: %d - %s", $result->getStatus(), $result->getReasonPhrase()));
             if (empty($resultBody)) {
                 error_log("empty response body");
@@ -208,13 +187,15 @@ class ApiRawRequester
             $err = json_decode($resultBody, true);
             if ($err === NULL) {
                 $jsonError = $this->json_error_to_string(json_last_error());
-                if (!empty($jsonError)) {
+                if (!empty($jsonError))
+                {
                     error_log(sprintf("Error parsing response body JSON: %s", $jsonError));
                     error_log(sprintf("response body: %s", $result->getBody()));
                     throw new ToopherRequestException(sprintf("JSON Parsing Error: %s", $jsonError));
                 }
             } else {
-                if(array_key_exists("error_message", $err)) {
+                if(array_key_exists("error_message", $err))
+                {
                     throw new ToopherRequestException($err['error_message'], $err['error_code']);
                 } else {
                     throw new ToopherRequestException(sprintf("%s - %s", $result->getReasonPhrase(), $resultBody), $result->getStatus());
@@ -222,24 +203,24 @@ class ApiRawRequester
             }
         }
 
-        if ($rawRequest)
-        {
-          return $resultBody;
+        if ($rawRequest) {
+            return $resultBody;
         } else {
-          $decoded = json_decode($resultBody, true);
-          if ($decoded === NULL) {
-              $jsonError = $this->json_error_to_string(json_last_error());
-              if (!empty($jsonError)) {
-                  error_log(sprintf("Error parsing response body JSON: %s", $jsonError));
-                  error_log(sprintf("response body: %s", $result->getBody()));
-                  throw new ToopherRequestException(sprintf("JSON Parsing Error: %s", $jsonError));
-              }
-          }
-          return $decoded;
+            $decoded = json_decode($resultBody, true);
+            if ($decoded === NULL) {
+                $jsonError = $this->json_error_to_string(json_last_error());
+                if (!empty($jsonError)) {
+                    error_log(sprintf("Error parsing response body JSON: %s", $jsonError));
+                    error_log(sprintf("response body: %s", $result->getBody()));
+                    throw new ToopherRequestException(sprintf("JSON Parsing Error: %s", $jsonError));
+                }
+            }
+        return $decoded;
         }
     }
 
-    private function json_error_to_string($jsonErrorCode) {
+    private function json_error_to_string($jsonErrorCode)
+    {
         switch ($jsonErrorCode) {
             case JSON_ERROR_NONE:
                 return NULL;
@@ -283,55 +264,55 @@ class Users extends ToopherObjectFactory
 {
     public function getById($userId)
     {
-      $url = 'users/' . $userId;
-      $result = $this->api->advanced->raw->get($url);
-      return new User($result, $this->api);
+        $url = 'users/' . $userId;
+        $result = $this->api->advanced->raw->get($url);
+        return new User($result, $this->api);
     }
 
     public function getByName($username)
     {
-      $url = 'users';
-      $params = array('user_name' => $username);
-      $users = $this->api->advanced->raw->get($url, $params);
-      if (sizeof($users) > 1) {
-        throw new ToopherRequestException(sprintf("Multiple users with name = %s", $username));
-      } elseif (empty($users)) {
-        throw new ToopherRequestException(sprintf("No users with name = %s", $username));
-      }
-      return new User(array_shift($users), $this->api);
+        $url = 'users';
+        $params = array('user_name' => $username);
+        $users = $this->api->advanced->raw->get($url, $params);
+        if (sizeof($users) > 1) {
+            throw new ToopherRequestException(sprintf("Multiple users with name = %s", $username));
+        } elseif (empty($users)) {
+            throw new ToopherRequestException(sprintf("No users with name = %s", $username));
+        }
+        return new User(array_shift($users), $this->api);
     }
 
     public function create($username, $kwargs = array())
     {
-      $url = 'users/create';
-      $params = array('name' => $username);
-      $params = array_merge($params, $kwargs);
-      $result = $this->api->advanced->raw->post($url, $params);
-      return new User($result, $this->api);
+        $url = 'users/create';
+        $params = array('name' => $username);
+        $params = array_merge($params, $kwargs);
+        $result = $this->api->advanced->raw->post($url, $params);
+        return new User($result, $this->api);
     }
 }
 
 class UserTerminals extends ToopherObjectFactory
 {
-  public function getById($userTerminalId)
-  {
-    $url = 'user_terminals/' . $userTerminalId;
-    $result = $this->api->advanced->raw->get($url);
-    return new UserTerminal($result, $this->api);
-  }
+    public function getById($userTerminalId)
+    {
+        $url = 'user_terminals/' . $userTerminalId;
+        $result = $this->api->advanced->raw->get($url);
+        return new UserTerminal($result, $this->api);
+    }
 
-  public function create($username, $terminalName, $requesterSpecifiedId, $kwargs = array())
-  {
-    $url = 'user_terminals/create';
-    $params = array(
-      'user_name' => $username,
-      'name' => $terminalName,
-      'name_extra' => $requesterSpecifiedId
-    );
-    $params = array_merge($params, $kwargs);
-    $result = $this->api->advanced->raw->post($url, $params);
-    return new UserTerminal($result, $this->api);
-  }
+    public function create($username, $terminalName, $requesterSpecifiedId, $kwargs = array())
+    {
+        $url = 'user_terminals/create';
+        $params = array(
+            'user_name' => $username,
+            'name' => $terminalName,
+            'name_extra' => $requesterSpecifiedId
+        );
+        $params = array_merge($params, $kwargs);
+        $result = $this->api->advanced->raw->post($url, $params);
+        return new UserTerminal($result, $this->api);
+    }
 }
 
 ?>

@@ -28,306 +28,306 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
     protected function setUp()
     {
-      $this->mock = new HTTP_Request2_Adapter_Mock();
+        $this->mock = new HTTP_Request2_Adapter_Mock();
     }
 
     protected function getToopherApi($mock)
     {
-      return new ToopherApi('key', 'secret', '', $mock);
+        return new ToopherApi('key', 'secret', '', $mock);
     }
 
     public function compareToDefaultPairing($pairing)
     {
-      $this->assertTrue($pairing->id == '1', 'Pairing id was incorrect');
-      $this->assertTrue($pairing->enabled == true, 'Pairing should be enabled');
-      $this->assertTrue($pairing->pending == false, 'Pairing should not be pending');
-      $this->assertTrue($pairing->user->id == '1', 'User id was incorrect');
-      $this->assertTrue($pairing->user->name == 'user', 'User name was wrong');
-      $this->assertTrue($pairing->user->toopher_authentication_enabled == true, 'User should be toopher_authentication_enabled');
+        $this->assertTrue($pairing->id == '1', 'Pairing id was incorrect');
+        $this->assertTrue($pairing->enabled == true, 'Pairing should be enabled');
+        $this->assertTrue($pairing->pending == false, 'Pairing should not be pending');
+        $this->assertTrue($pairing->user->id == '1', 'User id was incorrect');
+        $this->assertTrue($pairing->user->name == 'user', 'User name was wrong');
+        $this->assertTrue($pairing->user->toopher_authentication_enabled == true, 'User should be toopher_authentication_enabled');
     }
 
     public function compareToDefaultAuthenticationRequest($authRequest, $id = '1')
     {
-      $this->assertTrue($authRequest->id == $id, 'Authentiation request id was incorrect');
-      $this->assertTrue($authRequest->pending == false, 'Authentication request should not be pending');
-      $this->assertTrue($authRequest->granted == true, 'Authentication request should be granted');
-      $this->assertTrue($authRequest->automated == true, 'Authentiation request should be automated');
-      $this->assertTrue($authRequest->reason_code == '1', 'Authentication request reason code was incorrect');
-      $this->assertTrue($authRequest->reason == 'some reason', 'Authentication request reason was incorrect');
-      $this->assertTrue($authRequest->terminal->id == '1', 'Terminal id was incorrect');
-      $this->assertTrue($authRequest->terminal->name == 'term name', 'Terminal name was incorrect');
-      $this->assertTrue($authRequest->terminal->requester_specified_id == '1', 'Terminal requester_specified_id was incorrect');
-      $this->assertTrue($authRequest->user->id == '1', 'User id was incorrect');
-      $this->assertTrue($authRequest->user->name == 'user', 'User name was incorrect');
-      $this->assertTrue($authRequest->user->toopher_authentication_enabled == true, 'User should be toopher_authentication_enabled');
-      $this->assertTrue($authRequest->action->id == '1', 'Action id was incorrect');
-      $this->assertTrue($authRequest->action->name == 'test', 'Action name was incorrect');
+        $this->assertTrue($authRequest->id == $id, 'Authentiation request id was incorrect');
+        $this->assertTrue($authRequest->pending == false, 'Authentication request should not be pending');
+        $this->assertTrue($authRequest->granted == true, 'Authentication request should be granted');
+        $this->assertTrue($authRequest->automated == true, 'Authentiation request should be automated');
+        $this->assertTrue($authRequest->reason_code == '1', 'Authentication request reason code was incorrect');
+        $this->assertTrue($authRequest->reason == 'some reason', 'Authentication request reason was incorrect');
+        $this->assertTrue($authRequest->terminal->id == '1', 'Terminal id was incorrect');
+        $this->assertTrue($authRequest->terminal->name == 'term name', 'Terminal name was incorrect');
+        $this->assertTrue($authRequest->terminal->requester_specified_id == '1', 'Terminal requester_specified_id was incorrect');
+        $this->assertTrue($authRequest->user->id == '1', 'User id was incorrect');
+        $this->assertTrue($authRequest->user->name == 'user', 'User name was incorrect');
+        $this->assertTrue($authRequest->user->toopher_authentication_enabled == true, 'User should be toopher_authentication_enabled');
+        $this->assertTrue($authRequest->action->id == '1', 'Action id was incorrect');
+        $this->assertTrue($authRequest->action->name == 'test', 'Action name was incorrect');
     }
 
     public function compareToDefaultUser($user)
     {
-      $this->assertTrue($user->id == '1', 'User id was incorrect');
-      $this->assertTrue($user->name == 'user', 'User name was incorrect');
-      $this->assertTrue($user->toopher_authentication_enabled == true, 'User should be toopher_authentication_enabled');
+        $this->assertTrue($user->id == '1', 'User id was incorrect');
+        $this->assertTrue($user->name == 'user', 'User name was incorrect');
+        $this->assertTrue($user->toopher_authentication_enabled == true, 'User should be toopher_authentication_enabled');
     }
 
     public function compareToDefaultUserTerminal($userTerminal)
     {
-      $this->assertTrue($userTerminal->id == '1', 'wrong terminal id');
-      $this->assertTrue($userTerminal->name == 'terminal name', 'wrong terminal name');
-      $this->assertTrue($userTerminal->requester_specified_id == 'requester specified id', 'wrong requester specified id');
-      $this->assertTrue($userTerminal->user->id == '1', 'bad user id');
-      $this->assertTrue($userTerminal->user->name == 'user name', 'bad user name');
-      $this->assertTrue($userTerminal->user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
+        $this->assertTrue($userTerminal->id == '1', 'wrong terminal id');
+        $this->assertTrue($userTerminal->name == 'terminal name', 'wrong terminal name');
+        $this->assertTrue($userTerminal->requester_specified_id == 'requester specified id', 'wrong requester specified id');
+        $this->assertTrue($userTerminal->user->id == '1', 'bad user id');
+        $this->assertTrue($userTerminal->user->name == 'user name', 'bad user name');
+        $this->assertTrue($userTerminal->user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
     }
 
     public function testCanCreateToopherApiWithArguments() {
-      $toopher = new ToopherApi('key', 'secret');
+        $toopher = new ToopherApi('key', 'secret');
     }
 
     public function testToopherVersionStringExists() {
-      $this->assertNotEmpty(ToopherApi::VERSION, 'no version string');
-      list($major, $minor, $patch) = explode('.', ToopherApi::VERSION);
-      $this->assertGreaterThanOrEqual(1, (int)$major);
-      $this->assertGreaterThanOrEqual(0, (int)$minor);
-      $this->assertGreaterThanOrEqual(0, (int)$patch);
+        $this->assertNotEmpty(ToopherApi::VERSION, 'no version string');
+        list($major, $minor, $patch) = explode('.', ToopherApi::VERSION);
+        $this->assertGreaterThanOrEqual(1, (int)$major);
+        $this->assertGreaterThanOrEqual(0, (int)$minor);
+        $this->assertGreaterThanOrEqual(0, (int)$patch);
     }
 
     public function testPair(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/create');
-      $resp->appendBody('{"id":"1","enabled":true,"pending":false,"user":{"id":"1","name":"user", "toopher_authentication_enabled":true}}');
-      $this->mock->addResponse($resp);
-      $toopher = $this->getToopherApi($this->mock);
-      $pairing = $toopher->pair('user', 'immediate_pair');
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-      $this->compareToDefaultPairing($pairing);
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/create');
+        $resp->appendBody('{"id":"1","enabled":true,"pending":false,"user":{"id":"1","name":"user", "toopher_authentication_enabled":true}}');
+        $this->mock->addResponse($resp);
+        $toopher = $this->getToopherApi($this->mock);
+        $pairing = $toopher->pair('user', 'immediate_pair');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+        $this->compareToDefaultPairing($pairing);
     }
 
     public function testPairSms(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/create/sms');
-      $resp->appendBody('{"id":"1", "enabled":true, "pending":false, "user":{"id":"1", "name":"user", "toopher_authentication_enabled":true}}');
-      $this->mock->addResponse($resp);
-      $toopher = $this->getToopherApi($this->mock);
-      $pairing = $toopher->pair('user', '555-555-5555');
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-      $this->compareToDefaultPairing($pairing);
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/create/sms');
+        $resp->appendBody('{"id":"1", "enabled":true, "pending":false, "user":{"id":"1", "name":"user", "toopher_authentication_enabled":true}}');
+        $this->mock->addResponse($resp);
+        $toopher = $this->getToopherApi($this->mock);
+        $pairing = $toopher->pair('user', '555-555-5555');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+        $this->compareToDefaultPairing($pairing);
     }
 
     public function testPairQr(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/create/qr');
-      $resp->appendBody('{"id":"1", "enabled":true, "pending":false, "user":{"id":"1", "name":"user", "toopher_authentication_enabled":true}}');
-      $this->mock->addResponse($resp);
-      $toopher = $this->getToopherApi($this->mock);
-      $pairing = $toopher->pair('user');
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-      $this->compareToDefaultPairing($pairing);
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/create/qr');
+        $resp->appendBody('{"id":"1", "enabled":true, "pending":false, "user":{"id":"1", "name":"user", "toopher_authentication_enabled":true}}');
+        $this->mock->addResponse($resp);
+        $toopher = $this->getToopherApi($this->mock);
+        $pairing = $toopher->pair('user');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+        $this->compareToDefaultPairing($pairing);
     }
 
     public function testAuthenticateWithPairingId(){
-      $id = Uuid::uuid4()->toString();
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/initiate');
-      $resp->appendBody('{"id":"' . $id . '","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test"}}');
-      $this->mock->addResponse($resp);
+        $id = Uuid::uuid4()->toString();
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/initiate');
+        $resp->appendBody('{"id":"' . $id . '","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test"}}');
+        $this->mock->addResponse($resp);
 
-      $toopher = $this->getToopherApi($this->mock);
-      $authRequest = $toopher->authenticate($id, 'term name');
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-      $this->compareToDefaultAuthenticationRequest($authRequest, $id);
+        $toopher = $this->getToopherApi($this->mock);
+        $authRequest = $toopher->authenticate($id, 'term name');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+        $this->compareToDefaultAuthenticationRequest($authRequest, $id);
     }
 
     public function testAuthenticateWithUsername(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/initiate');
-      $resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test"}}');
-      $this->mock->addResponse($resp);
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/initiate');
+        $resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test"}}');
+        $this->mock->addResponse($resp);
 
-      $toopher = $this->getToopherApi($this->mock);
-      $authRequest = $toopher->authenticate('user', 'term name', '1');
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-      $this->compareToDefaultAuthenticationRequest($authRequest);
+        $toopher = $this->getToopherApi($this->mock);
+        $authRequest = $toopher->authenticate('user', 'term name', '1');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+        $this->compareToDefaultAuthenticationRequest($authRequest);
     }
 
     public function testRawPost(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/initiate');
-      $resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test"}}');
-      $this->mock->addResponse($resp);
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/initiate');
+        $resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test"}}');
+        $this->mock->addResponse($resp);
 
-      $toopher = $this->getToopherApi($this->mock);
-      $params = array('pairing_id' => '1', 'terminal_name' => 'term name');
-      $authRequest = $toopher->advanced->raw->post('authentication_requests/initiate', $params);
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-      $this->assertTrue($authRequest['id'] == '1', 'Authentication request id was incorrect');
-      $this->assertTrue($authRequest['pending'] == false, 'Authentication request should not be pending');
-      $this->assertTrue($authRequest['granted'] == true, 'Authentication request should be granted');
-      $this->assertTrue($authRequest['automated'] == true, 'Authentication request should be automated');
-      $this->assertTrue($authRequest['reason_code'] == '1', 'Authentication request reason code was incorrect');
-      $this->assertTrue($authRequest['reason'] == 'some reason', 'Authentication request reason was incorrect');
-      $this->assertTrue($authRequest['terminal'] == array('id'=>'1', 'name'=>'term name', 'requester_specified_id'=>'1', 'user'=>array('id'=>'1', 'name'=>'user', 'toopher_authentication_enabled'=>true)), 'Terminal data was incorrect');
-      $this->assertTrue($authRequest['user'] == array('id'=>'1', 'name'=>'user', 'toopher_authentication_enabled'=>true), 'User data was incorrect');
-      $this->assertTrue($authRequest['action'] == array('id'=>'1', 'name'=>'test'), 'Action data was incorrect');
+        $toopher = $this->getToopherApi($this->mock);
+        $params = array('pairing_id' => '1', 'terminal_name' => 'term name');
+        $authRequest = $toopher->advanced->raw->post('authentication_requests/initiate', $params);
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+        $this->assertTrue($authRequest['id'] == '1', 'Authentication request id was incorrect');
+        $this->assertTrue($authRequest['pending'] == false, 'Authentication request should not be pending');
+        $this->assertTrue($authRequest['granted'] == true, 'Authentication request should be granted');
+        $this->assertTrue($authRequest['automated'] == true, 'Authentication request should be automated');
+        $this->assertTrue($authRequest['reason_code'] == '1', 'Authentication request reason code was incorrect');
+        $this->assertTrue($authRequest['reason'] == 'some reason', 'Authentication request reason was incorrect');
+        $this->assertTrue($authRequest['terminal'] == array('id'=>'1', 'name'=>'term name', 'requester_specified_id'=>'1', 'user'=>array('id'=>'1', 'name'=>'user', 'toopher_authentication_enabled'=>true)), 'Terminal data was incorrect');
+        $this->assertTrue($authRequest['user'] == array('id'=>'1', 'name'=>'user', 'toopher_authentication_enabled'=>true), 'User data was incorrect');
+        $this->assertTrue($authRequest['action'] == array('id'=>'1', 'name'=>'test'), 'Action data was incorrect');
     }
 
     public function testRawGet(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/1');
-      $resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test"}}');
-      $this->mock->addResponse($resp);
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/1');
+        $resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test"}}');
+        $this->mock->addResponse($resp);
 
-      $toopher = $this->getToopherApi($this->mock);
-      $authRequest = $toopher->advanced->raw->get('authentication_requests/1');
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
-      $this->assertTrue($authRequest['id'] == '1', 'Authentication request id was incorrect');
-      $this->assertTrue($authRequest['pending'] == false, 'Authentication request should not be pending');
-      $this->assertTrue($authRequest['granted'] == true, 'Authentication request should be granted');
-      $this->assertTrue($authRequest['automated'] == true, 'Authentication request should be automated');
-      $this->assertTrue($authRequest['reason_code'] == '1', 'Authentication request reason code was incorrect');
-      $this->assertTrue($authRequest['reason'] == 'some reason', 'Authentication request reason was incorrect');
-      $this->assertTrue($authRequest['terminal'] == array('id'=>'1', 'name'=>'term name', 'requester_specified_id'=>'1', 'user'=>array('id'=>'1', 'name'=>'user', 'toopher_authentication_enabled'=>true)), 'Terminal data was incorrect');
-      $this->assertTrue($authRequest['user'] == array('id'=>'1', 'name'=>'user', 'toopher_authentication_enabled'=>true), 'User data was incorrect');
-      $this->assertTrue($authRequest['action'] == array('id'=>'1', 'name'=>'test'), 'Action data was incorrect');
+        $toopher = $this->getToopherApi($this->mock);
+        $authRequest = $toopher->advanced->raw->get('authentication_requests/1');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
+        $this->assertTrue($authRequest['id'] == '1', 'Authentication request id was incorrect');
+        $this->assertTrue($authRequest['pending'] == false, 'Authentication request should not be pending');
+        $this->assertTrue($authRequest['granted'] == true, 'Authentication request should be granted');
+        $this->assertTrue($authRequest['automated'] == true, 'Authentication request should be automated');
+        $this->assertTrue($authRequest['reason_code'] == '1', 'Authentication request reason code was incorrect');
+        $this->assertTrue($authRequest['reason'] == 'some reason', 'Authentication request reason was incorrect');
+        $this->assertTrue($authRequest['terminal'] == array('id'=>'1', 'name'=>'term name', 'requester_specified_id'=>'1', 'user'=>array('id'=>'1', 'name'=>'user', 'toopher_authentication_enabled'=>true)), 'Terminal data was incorrect');
+        $this->assertTrue($authRequest['user'] == array('id'=>'1', 'name'=>'user', 'toopher_authentication_enabled'=>true), 'User data was incorrect');
+        $this->assertTrue($authRequest['action'] == array('id'=>'1', 'name'=>'test'), 'Action data was incorrect');
     }
 
     public function testPairingsGetById(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1');
-      $resp->appendBody('{"id":"1","enabled":true, "pending":false, "user":{"id":"1","name":"user", "toopher_authentication_enabled":true}}');
-      $this->mock->addResponse($resp);
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/pairings/1');
+        $resp->appendBody('{"id":"1","enabled":true, "pending":false, "user":{"id":"1","name":"user", "toopher_authentication_enabled":true}}');
+        $this->mock->addResponse($resp);
 
-      $toopher = $this->getToopherApi($this->mock);
-      $pairing = $toopher->advanced->pairings->getById('1');
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
-      $this->compareToDefaultPairing($pairing);
+        $toopher = $this->getToopherApi($this->mock);
+        $pairing = $toopher->advanced->pairings->getById('1');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
+        $this->compareToDefaultPairing($pairing);
     }
 
     public function testAuthenticationRequestsGetById(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/1');
-      $resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test"}}');
-      $this->mock->addResponse($resp);
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/authentication_requests/1');
+        $resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":"true"},"action":{"id":"1","name":"test"}}');
+        $this->mock->addResponse($resp);
 
-      $toopher = $this->getToopherApi($this->mock);
-      $authRequest = $toopher->advanced->authenticationRequests->getById('1');
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
-      $this->compareToDefaultAuthenticationRequest($authRequest);
+        $toopher = $this->getToopherApi($this->mock);
+        $authRequest = $toopher->advanced->authenticationRequests->getById('1');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
+        $this->compareToDefaultAuthenticationRequest($authRequest);
     }
 
     public function testUsersGetById(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/users/1');
-      $resp->appendBody('{"id":"1","name":"user","toopher_authentication_enabled":true}');
-      $this->mock->addResponse($resp);
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/users/1');
+        $resp->appendBody('{"id":"1","name":"user","toopher_authentication_enabled":true}');
+        $this->mock->addResponse($resp);
 
-      $toopher = $this->getToopherApi($this->mock);
-      $user = $toopher->advanced->users->getById('1');
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
-      $this->compareToDefaultUser($user);
+        $toopher = $this->getToopherApi($this->mock);
+        $user = $toopher->advanced->users->getById('1');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
+        $this->compareToDefaultUser($user);
     }
 
     public function testUsersGetByName(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/users');
-      $resp->appendBody('[{"id":"1","name":"user","toopher_authentication_enabled":true}]');
-      $this->mock->addResponse($resp);
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/users');
+        $resp->appendBody('[{"id":"1","name":"user","toopher_authentication_enabled":true}]');
+        $this->mock->addResponse($resp);
 
-      $toopher = $this->getToopherApi($this->mock);
-      $user = $toopher->advanced->users->getByName('paired user');
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
-      $this->compareToDefaultUser($user);
+        $toopher = $this->getToopherApi($this->mock);
+        $user = $toopher->advanced->users->getByName('paired user');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
+        $this->compareToDefaultUser($user);
     }
 
     public function testUsersCreate(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/users/create');
-      $resp->appendBody('{"id":"1","name":"user","toopher_authentication_enabled":true}');
-      $this->mock->addResponse($resp);
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/users/create');
+        $resp->appendBody('{"id":"1","name":"user","toopher_authentication_enabled":true}');
+        $this->mock->addResponse($resp);
 
-      $toopher = $this->getToopherApi($this->mock);
-      $user = $toopher->advanced->users->create('paired user');
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-      $this->compareToDefaultUser($user);
+        $toopher = $this->getToopherApi($this->mock);
+        $user = $toopher->advanced->users->create('paired user');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+        $this->compareToDefaultUser($user);
     }
 
     public function testUsersCreateWithExtras(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/users/create');
-      $resp->appendBody('{"id":"1","name":"user","toopher_authentication_enabled":true}');
-      $this->mock->addResponse($resp);
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/users/create');
+        $resp->appendBody('{"id":"1","name":"user","toopher_authentication_enabled":true}');
+        $this->mock->addResponse($resp);
 
-      $toopher = $this->getToopherApi($this->mock);
-      $user = $toopher->advanced->users->create('paired user', array('foo'=>'bar'));
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-      $this->compareToDefaultUser($user);
+        $toopher = $this->getToopherApi($this->mock);
+        $user = $toopher->advanced->users->create('paired user', array('foo'=>'bar'));
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+        $this->compareToDefaultUser($user);
     }
 
     public function testUserTerminalsGetById(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/user_terminals/1');
-      $resp->appendBody('{"id":"1", "name":"terminal name", "requester_specified_id": "requester specified id", "user":{"id":"1","name":"user name","toopher_authentication_enabled":true}}');
-      $this->mock->addResponse($resp);
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/user_terminals/1');
+        $resp->appendBody('{"id":"1", "name":"terminal name", "requester_specified_id": "requester specified id", "user":{"id":"1","name":"user name","toopher_authentication_enabled":true}}');
+        $this->mock->addResponse($resp);
 
-      $toopher = new ToopherApi('key', 'secret', '', $this->mock);
-      $userTerminal = $toopher->advanced->userTerminals->getById('1');
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
-      $this->compareToDefaultUserTerminal($userTerminal);
+        $toopher = new ToopherApi('key', 'secret', '', $this->mock);
+        $userTerminal = $toopher->advanced->userTerminals->getById('1');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
+        $this->compareToDefaultUserTerminal($userTerminal);
     }
 
     public function testUserTerminalCreate(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/user_terminals/create');
-      $resp->appendBody('{"id":"1", "name":"terminal name", "requester_specified_id": "requester specified id", "user":{"id":"1","name":"user name","toopher_authentication_enabled":true}}');
-      $this->mock->addResponse($resp);
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/user_terminals/create');
+        $resp->appendBody('{"id":"1", "name":"terminal name", "requester_specified_id": "requester specified id", "user":{"id":"1","name":"user name","toopher_authentication_enabled":true}}');
+        $this->mock->addResponse($resp);
 
-      $toopher = new ToopherApi('key', 'secret', '', $this->mock);
-      $userTerminal = $toopher->advanced->userTerminals->create('name', 'terminal one', 'requester specified id');
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-      $this->compareToDefaultUserTerminal($userTerminal);
+        $toopher = new ToopherApi('key', 'secret', '', $this->mock);
+        $userTerminal = $toopher->advanced->userTerminals->create('name', 'terminal one', 'requester specified id');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+        $this->compareToDefaultUserTerminal($userTerminal);
     }
 
     public function testUserTerminalCreateWithExtras(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/user_terminals/create');
-      $resp->appendBody('{"id":"1", "name":"terminal name", "requester_specified_id": "requester specified id", "user":{"id":"1","name":"user name","toopher_authentication_enabled":true}}');
-      $this->mock->addResponse($resp);
+        $resp = new HTTP_Request2_Response("HTTP/1.1 200 OK", false, 'https://api.toopher.com/v1/user_terminals/create');
+        $resp->appendBody('{"id":"1", "name":"terminal name", "requester_specified_id": "requester specified id", "user":{"id":"1","name":"user name","toopher_authentication_enabled":true}}');
+        $this->mock->addResponse($resp);
 
-      $toopher = new ToopherApi('key', 'secret', '', $this->mock);
-      $userTerminal = $toopher->advanced->userTerminals->create('name', 'terminal one', 'requester specified id', array('foo'=>'bar'));
-      $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-      $this->compareToDefaultUserTerminal($userTerminal);
+        $toopher = new ToopherApi('key', 'secret', '', $this->mock);
+        $userTerminal = $toopher->advanced->userTerminals->create('name', 'terminal one', 'requester specified id', array('foo'=>'bar'));
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+        $this->compareToDefaultUserTerminal($userTerminal);
     }
 
     /**
      * @expectedException InvalidArgumentException
      */
     public function testEmptyKeyThrowsException() {
-      $toopher = new ToopherApi('', 'secret');
+        $toopher = new ToopherApi('', 'secret');
     }
 
     /**
      * @expectedException InvalidArgumentException
      */
     public function testEmptySecretThrowsException() {
-      $toopher = new ToopherApi('key', '');
+        $toopher = new ToopherApi('key', '');
     }
 
     /**
      * @expectedException ToopherRequestException
      */
     public function testToopherRequestException(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 401 Unauthorized", false, 'https://api.toopher.com/v1/authentication_requests/1');
-      $resp->appendBody('{"error_code":401, "error_message":"Not a valid OAuth signed request"}');
-      $this->mock->addResponse($resp);
-      $toopher = $this->getToopherApi($this->mock);
-      $auth = $toopher->advanced->authenticationRequests->getById('1');
+        $resp = new HTTP_Request2_Response("HTTP/1.1 401 Unauthorized", false, 'https://api.toopher.com/v1/authentication_requests/1');
+        $resp->appendBody('{"error_code":401, "error_message":"Not a valid OAuth signed request"}');
+        $this->mock->addResponse($resp);
+        $toopher = $this->getToopherApi($this->mock);
+        $auth = $toopher->advanced->authenticationRequests->getById('1');
     }
 
     /**
      * @expectedException ToopherRequestException
      */
     public function test400WithEmptyBodyRaisesToopherRequestException(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 403 Forbidden", false, 'https://api.toopher.com/v1/authentication_requests/1');
-      $this->mock->addResponse($resp);
-      $toopher = $this->getToopherApi($this->mock);
-      $auth = $toopher->advanced->authenticationRequests->getById('1');
+        $resp = new HTTP_Request2_Response("HTTP/1.1 403 Forbidden", false, 'https://api.toopher.com/v1/authentication_requests/1');
+        $this->mock->addResponse($resp);
+        $toopher = $this->getToopherApi($this->mock);
+        $auth = $toopher->advanced->authenticationRequests->getById('1');
     }
 
     /**
      * @expectedException ToopherRequestException
      */
     public function test400WithUnprintableBodyRaisesToopherRequestException(){
-      $resp = new HTTP_Request2_Response("HTTP/1.1 403 Forbidden", false, 'https://api.toopher.com/v1/authentication_requests/1');
-      $resp->appendBody(sprintf('{"error_code":403, "error_message":"%c"}', chr(5)));
-      $this->mock->addResponse($resp);
-      $toopher = $this->getToopherApi($this->mock);
-      $auth = $toopher->advanced->authenticationRequests->getById('1');
+        $resp = new HTTP_Request2_Response("HTTP/1.1 403 Forbidden", false, 'https://api.toopher.com/v1/authentication_requests/1');
+        $resp->appendBody(sprintf('{"error_code":403, "error_message":"%c"}', chr(5)));
+        $this->mock->addResponse($resp);
+        $toopher = $this->getToopherApi($this->mock);
+        $auth = $toopher->advanced->authenticationRequests->getById('1');
     }
 }
 

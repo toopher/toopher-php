@@ -45,15 +45,12 @@ class Pairing
 
     public function getResetLink($kwargs = array())
     {
-        if(!array_key_exists('security_question', $kwargs))
-        {
+        if(!array_key_exists('security_question', $kwargs)) {
             $kwargs['security_question'] = NULL;
         }
-        if(!array_key_exists('security_answer', $kwargs))
-        {
+        if(!array_key_exists('security_answer', $kwargs)) {
             $kwargs['security_answer'] = NULL;
         }
-
         $url = 'pairings/' . $this->id . '/generate_reset_link';
         $result = $this->api->advanced->raw->post($url, $kwargs);
         return $result['url'];
@@ -69,8 +66,8 @@ class Pairing
 
     public function getQrCodeImage()
     {
-      $url = 'qr/pairings/' . $this->id;
-      return $this->api->advanced->raw->get_raw($url);
+        $url = 'qr/pairings/' . $this->id;
+        return $this->api->advanced->raw->get_raw($url);
     }
 
     private function update($jsonResponse)

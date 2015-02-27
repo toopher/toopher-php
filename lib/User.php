@@ -24,44 +24,44 @@ SOFTWARE.
 
 class User
 {
-  protected $api;
+    protected $api;
 
-  function __construct($jsonResponse, $api)
-  {
-    $this->api = $api;
-    $this->id = $jsonResponse['id'];
-    $this->name = $jsonResponse['name'];
-    $this->toopher_authentication_enabled = $jsonResponse['toopher_authentication_enabled'];
-    $this->raw_response = $jsonResponse;
-  }
+    function __construct($jsonResponse, $api)
+    {
+        $this->api = $api;
+        $this->id = $jsonResponse['id'];
+        $this->name = $jsonResponse['name'];
+        $this->toopher_authentication_enabled = $jsonResponse['toopher_authentication_enabled'];
+        $this->raw_response = $jsonResponse;
+    }
 
-  public function refreshFromServer()
-  {
-    $url = 'users/' . $this->id;
-    $result = $this->api->advanced->raw->get($url);
-    $this->update($result);
-  }
+    public function refreshFromServer()
+    {
+        $url = 'users/' . $this->id;
+        $result = $this->api->advanced->raw->get($url);
+        $this->update($result);
+    }
 
-  public function enableToopherAuthentication()
-  {
-    $url = 'users/' . $this->id;
-    $result = $this->api->advanced->raw->post($url, array("toopher_authentication_enabled" => "true"));
-    $this->update($result);
-  }
+    public function enableToopherAuthentication()
+    {
+        $url = 'users/' . $this->id;
+        $result = $this->api->advanced->raw->post($url, array("toopher_authentication_enabled" => "true"));
+        $this->update($result);
+    }
 
-  public function disableToopherAuthentication()
-  {
-    $url = 'users/' . $this->id;
-    $result = $this->api->advanced->raw->post($url, array("toopher_authentication_enabled" => "false"));
-    $this->update($result);
-  }
+    public function disableToopherAuthentication()
+    {
+        $url = 'users/' . $this->id;
+        $result = $this->api->advanced->raw->post($url, array("toopher_authentication_enabled" => "false"));
+        $this->update($result);
+    }
 
-  public function update($jsonResponse)
-  {
-    $this->name = $jsonResponse['name'];
-    $this->toopher_authentication_enabled = $jsonResponse['toopher_authentication_enabled'];
-    $this->raw_response = $jsonResponse;
-  }
+    public function update($jsonResponse)
+    {
+        $this->name = $jsonResponse['name'];
+        $this->toopher_authentication_enabled = $jsonResponse['toopher_authentication_enabled'];
+        $this->raw_response = $jsonResponse;
+    }
 }
 
 ?>

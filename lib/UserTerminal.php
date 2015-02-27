@@ -24,32 +24,32 @@ SOFTWARE.
 
 class UserTerminal
 {
-  protected $api;
+    protected $api;
 
-  function __construct($jsonResponse, $api)
-  {
-    $this->api = $api;
-    $this->id = $jsonResponse['id'];
-    $this->name = $jsonResponse['name'];
-    $this->requester_specified_id = $jsonResponse['requester_specified_id'];
-    $this->user = new User($jsonResponse['user'], $api);
-    $this->raw_response = $jsonResponse;
-  }
+    function __construct($jsonResponse, $api)
+    {
+        $this->api = $api;
+        $this->id = $jsonResponse['id'];
+        $this->name = $jsonResponse['name'];
+        $this->requester_specified_id = $jsonResponse['requester_specified_id'];
+        $this->user = new User($jsonResponse['user'], $api);
+        $this->raw_response = $jsonResponse;
+    }
 
-  public function refreshFromServer()
-  {
-    $url = 'user_terminals/' . $this->id;
-    $result = $this->api->advanced->raw->get($url);
-    $this->update($result);
-  }
+    public function refreshFromServer()
+    {
+        $url = 'user_terminals/' . $this->id;
+        $result = $this->api->advanced->raw->get($url);
+        $this->update($result);
+    }
 
-  public function update($jsonResponse)
-  {
-    $this->name = $jsonResponse['name'];
-    $this->requester_specified_id = $jsonResponse['requester_specified_id'];
-    $this->user->update($jsonResponse['user']);
-    $this->raw_response = $jsonResponse;
-  }
+    public function update($jsonResponse)
+    {
+        $this->name = $jsonResponse['name'];
+        $this->requester_specified_id = $jsonResponse['requester_specified_id'];
+        $this->user->update($jsonResponse['user']);
+        $this->raw_response = $jsonResponse;
+    }
 }
 
 ?>

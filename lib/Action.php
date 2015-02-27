@@ -24,18 +24,18 @@ SOFTWARE.
 
 class Action
 {
-  function __construct($jsonResponse)
-  {
-    $this->id = $jsonResponse['id'];
-    $this->name = $jsonResponse['name'];
-    $this->raw_response = $jsonResponse;
-  }
+    function __construct($jsonResponse)
+    {
+        $this->id = $jsonResponse['id'];
+        $this->name = $jsonResponse['name'];
+        $this->raw_response = $jsonResponse;
+    }
 
-  public function update($jsonResponse)
-  {
-    $this->name = $jsonResponse['name'];
-    $this->raw_response = $jsonResponse;
-  }
+    public function update($jsonResponse)
+    {
+        $this->name = $jsonResponse['name'];
+        $this->raw_response = $jsonResponse;
+    }
 }
 
 ?>
