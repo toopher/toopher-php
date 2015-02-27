@@ -51,7 +51,7 @@ class ToopherApi
         $this->advanced = new AdvancedApiUsageFactory($key, $secret, $baseUrl, $httpAdapter, $this);
     }
 
-    public function pair($username, $phraseOrNumber = '', $kwargs = array())
+    public function pair($username, $phraseOrNumber = NULL, $kwargs = array())
     {
         $params = array('user_name' => $username);
         $params = array_merge($params, $kwargs);
@@ -80,7 +80,7 @@ class ToopherApi
     {
         $url = 'authentication_requests/initiate';
         $uuidPattern = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
-        if(preg_match($uuidPattern, $pairingIdOrUsername, $match))
+        if (preg_match($uuidPattern, $pairingIdOrUsername, $match))
         {
             $params = array('pairing_id' => $pairingIdOrUsername);
         }
@@ -197,7 +197,7 @@ class ApiRawRequester
         }
 
         $resultBody = $result->getBody();
-        if ($result->getStatus() != 200)
+        if ($result->getStatus() >= 400)
         {
             error_log(sprintf("Toopher API call returned unexpected HTTP response: %d - %s", $result->getStatus(), $result->getReasonPhrase()));
             if (empty($resultBody)) {
@@ -295,7 +295,7 @@ class Users extends ToopherObjectFactory
       $users = $this->api->advanced->raw->get($url, $params);
       if (sizeof($users) > 1) {
         throw new ToopherRequestException(sprintf("Multiple users with name = %s", $username));
-      } elseif (empty ($users)) {
+      } elseif (empty($users)) {
         throw new ToopherRequestException(sprintf("No users with name = %s", $username));
       }
       return new User(array_shift($users), $this->api);

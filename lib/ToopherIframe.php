@@ -28,6 +28,8 @@ class SignatureValidationError extends Exception
 
 class ToopherIframe
 {
+  const VERSION = '2';
+
   function __construct($key, $secret, $baseUrl = 'https://api.toopher.com/v1/')
   {
     $this->consumerSecret = $secret;
@@ -69,7 +71,7 @@ class ToopherIframe
     }
 
     $params = array(
-      'v' => '2',
+      'v' => ToopherIframe::VERSION,
       'username' => $username,
       'reset_email' => $resetEmail,
       'action_name' => $actionName,
@@ -190,7 +192,7 @@ class ToopherIframe
     if (!is_null($this->nonceOverride)) {
       $oauthParams['oauth_nonce'] = $this->nonceOverride;
     } else {
-      $oauthParams['oauth_nonce'] = uniqid().'.'.time();
+      $oauthParams['oauth_nonce'] = uniqid() . '.' . time();
     }
     if (!is_null($this->timestampOverride)) {
       $oauthParams['oauth_timestamp'] = $this->timestampOverride;
