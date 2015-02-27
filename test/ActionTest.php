@@ -40,6 +40,27 @@ class ActionTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($action->id == '1', 'Action id was incorrect');
 		$this->assertTrue($action->name == 'action changed', 'Action name was incorrect');
 	}
+
+	/**
+	* @expectedException		ToopherRequestException
+	* @expectedExceptionMessage	Could not parse action from response
+	*/
+	public function testActionMissingKeyFails()
+	{
+		$toopher = new ToopherApi('key', 'secret');
+		$action = new Action(['name' => 'action changed']);
+	}
+
+	/**
+	* @expectedException		ToopherRequestException
+	* @expectedExceptionMessage	Could not parse action from response
+	*/
+	public function testActionUpdateMissingKeyFails()
+	{
+		$toopher = new ToopherApi('key', 'secret');
+		$action = new Action(['id' => '1', 'name' => 'action changed']);
+		$action->update(['id'=>'1']);
+	}
 }
 
 ?>

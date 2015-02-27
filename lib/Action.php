@@ -26,15 +26,23 @@ class Action
 {
     function __construct($jsonResponse)
     {
-        $this->id = $jsonResponse['id'];
-        $this->name = $jsonResponse['name'];
-        $this->raw_response = $jsonResponse;
+        try {
+            $this->id = $jsonResponse['id'];
+            $this->name = $jsonResponse['name'];
+            $this->raw_response = $jsonResponse;
+        } catch (Exception $e) {
+            throw new ToopherRequestException('Could not parse action from response: ' . $e->getMessage());
+        }
     }
 
     public function update($jsonResponse)
     {
-        $this->name = $jsonResponse['name'];
-        $this->raw_response = $jsonResponse;
+        try {
+            $this->name = $jsonResponse['name'];
+            $this->raw_response = $jsonResponse;
+        } catch (Exception $e) {
+            throw new ToopherRequestException('Could not parse action from response: ' . $e->getMessage());
+        }
     }
 }
 
