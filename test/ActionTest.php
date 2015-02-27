@@ -24,7 +24,7 @@ SOFTWARE.
 
 class ActionTests extends PHPUnit_Framework_TestCase {
 
-	public function testAction()
+	public function testActionCreatesAction()
 	{
 		$toopher = new ToopherApi('key', 'secret');
 		$action = new Action(['id' => '1', 'name' => 'action']);
@@ -32,7 +32,7 @@ class ActionTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($action->name == 'action', 'Action name was incorrect');
 	}
 
-	public function testActionUpdate()
+	public function testActionUpdateChangesAction()
 	{
 		$toopher = new ToopherApi('key', 'secret');
 		$action = new Action(['id' => '1', 'name' => 'action changed']);

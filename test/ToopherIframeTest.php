@@ -62,7 +62,7 @@ class ToopherIframeTests extends PHPUnit_Framework_TestCase {
 		$this->toopherIframe = new ToopherIframe($this->getIframeKey(), $this->getIframeSecret(), 'https://api.toopher.test/v1/');
 	}
 
-	public function testToopherIframeGetAuthenticationUrl()
+	public function testToopherIframeGetAuthenticationUrlReturnsValidUrl()
 	{
 		$this->toopherIframe->setTimestampOverride($this->getOauthTimestamp());
 		$this->toopherIframe->setNonceOverride($this->getOauthNonce());
@@ -71,7 +71,7 @@ class ToopherIframeTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($authenticationUrl == $expectedUrl, 'Authentication url was incorrect');
 	}
 
-	public function testToopherIframeGetAuthenticationUrlWithExtras()
+	public function testToopherIframeGetAuthenticationUrlWithExtrasReturnsValidUrl()
 	{
 		$extras = array('allow_inline_pairing' => 'false');
 		$this->toopherIframe->setTimestampOverride($this->getOauthTimestamp());
@@ -81,7 +81,7 @@ class ToopherIframeTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($authenticationUrl == $expectedUrl, 'Authentication url was incorrect');
 	}
 
-	public function testToopherIframeGetUserManagementUrl()
+	public function testToopherIframeGetUserManagementUrlReturnsValidUrl()
 	{
 		$this->toopherIframe->setTimestampOverride($this->getOauthTimestamp());
 		$this->toopherIframe->setNonceOverride($this->getOauthNonce());
@@ -90,7 +90,7 @@ class ToopherIframeTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($userManagementUrl == $expectedUrl, 'User management url was incorrect');
 	}
 
-	public function testToopherIframeGetUserManagementUrlWithExtras()
+	public function testToopherIframeGetUserManagementUrlWithExtrasReturnsValidUrl()
 	{
 		$extras = array('ttl' => '100');
 		$this->toopherIframe->setTimestampOverride($this->getOauthTimestamp());

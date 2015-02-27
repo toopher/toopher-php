@@ -38,7 +38,7 @@ class UserTests extends PHPUnit_Framework_TestCase {
 		return new User(['id' => '1', 'name' => 'user', 'toopher_authentication_enabled' => true], $api);
 	}
 
-	public function testUser()
+	public function testUserCreatesUser()
 	{
 		$user = $this->getUser($this->getToopherApi());
 		$this->assertTrue($user->id == '1', 'User id was incorrect');
@@ -46,7 +46,7 @@ class UserTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($user->toopher_authentication_enabled == true, 'User should be toopher_authentication_enabled');
 	}
 
-	public function testUserRefreshFromServer()
+	public function testUserRefreshFromServerUpdatesUser()
 	{
 		$resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/users/1');
 		$resp->appendBody('{"id":"1","name":"user changed","toopher_authentication_enabled":true}');
@@ -61,7 +61,7 @@ class UserTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($user->toopher_authentication_enabled == true, 'User should be toopher_authentication_enabled');
 	}
 
-	public function testUserEnableToopherAuthentication()
+	public function testUserEnableToopherAuthenticationPostsToCorrectUrl()
 	{
 		$resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/users/1');
 		$resp->appendBody('{"id":"1","name":"user","toopher_authentication_enabled":true}');
@@ -75,9 +75,10 @@ class UserTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($user->toopher_authentication_enabled == true, 'toopher authentication should be enabled');
 		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getBody() == 'toopher_authentication_enabled=true', "Post params should include 'toopher_authentication_enabled=true'");
 		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == 'https://api.toopher.com/v1/users/1', "Last called url should be 'https://api.toopher/v1/users/1'");
 	}
 
-	public function testUserDisableToopherAuthentication()
+	public function testUserDisableToopherAuthenticationPostsToCorrectUrl()
 	{
 		$resp1 = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/users/1');
 		$resp1->appendBody('{"id":"1","name":"user","toopher_authentication_enabled":false}');
@@ -91,9 +92,10 @@ class UserTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($user->toopher_authentication_enabled == false, 'toopher authentication should not be enabled');
 		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getBody() == 'toopher_authentication_enabled=false', "Post params should include'toopher_authentication_enabled=false'");
 		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == 'https://api.toopher.com/v1/users/1', "Last called url should be 'https://api.toopher/v1/users/1'");
 	}
 
-	public function testUserUpdate()
+	public function testUserUpdateChangesUser()
 	{
 		$toopher = $this->getToopherApi($this->mock);
 		$user = $this->getUser($toopher);

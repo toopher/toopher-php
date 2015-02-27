@@ -28,6 +28,37 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 		$this->mock = new HTTP_Request2_Adapter_Mock();
 	}
 
+	protected function getAuthenticationRequestJson()
+	{
+		return [
+			'id'=>'1',
+			'pending'=>true,
+			'granted'=>false,
+			'automated'=>false,
+			'reason_code'=>'1',
+			'reason'=>'some reason',
+			'terminal'=>[
+				'id'=>'1',
+				'name'=>'term name',
+				'requester_specified_id'=>'1',
+				'user'=>[
+					'id'=>'1',
+					'name'=>'user',
+					'toopher_authentication_enabled'=>'true'
+				]
+			],
+			'user'=>[
+				'id'=>'1',
+				'name'=>'user',
+				'toopher_authentication_enabled'=>'true'
+			],
+			'action'=>[
+				'id'=>'1',
+				'name'=>'test'
+			]
+		];
+	}
+
 	protected function getToopherApi($mock = NULL)
 	{
 		return new ToopherApi('key', 'secret', '', $mock);
@@ -35,10 +66,10 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 
 	protected function getAuthenticationRequest($api)
 	{
-		return new AuthenticationRequest(['id'=>'1','pending'=>true,'granted'=>false,'automated'=>false,'reason_code'=>'1','reason'=>'some reason','terminal'=>['id'=>'1','name'=>'term name','requester_specified_id'=>'1','user'=>['id'=>'1','name'=>'user','toopher_authentication_enabled'=>'true']],'user'=>['id'=>'1','name'=>'user', 'toopher_authentication_enabled'=>'true'],'action'=>['id'=>'1','name'=>'test']], $api);
+		return new AuthenticationRequest($this->getAuthenticationRequestJson(), $api);
 	}
 
-	public function testAuthenticationRequest()
+	public function testAuthenticationRequestCreatesAuthenticationRequest()
 	{
 		$authRequest = $this->getAuthenticationRequest($this->getToopherApi());
 		$this->assertTrue($authRequest->id == '1', 'Authentication request id was incorrect');
@@ -57,7 +88,8 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($authRequest->action->name == 'test', 'Action name was incorrect');
 	}
 
-	public function testAuthenticationRequestRefreshFromServer(){
+	public function testAuthenticationRequestRefreshFromServerUpdatesAuthenticationRequest()
+	{
 		$resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/authentication_requests/1');
 		$resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some other reason","terminal":{"id":"1","name":"term name changed","requester_specified_id":"1","user":{"id":"1","name":"user changed", "toopher_authentication_enabled":true}},"user":{"id":"1","name":"user changed", "toopher_authentication_enabled":true},"action":{"id":"1","name":"test changed"}}');
 		$this->mock->addResponse($resp);
@@ -76,7 +108,7 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($authRequest->action->name == 'test changed', 'Action name was incorrect');
 	}
 
-	public function testGrantAuthenticationRequestWithOtp(){
+	public function testGrantAuthenticationRequestPostsOtp(){
 		$resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/authentication_requests/1/otp_auth');
 		$resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":true}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":true},"action":{"id":"1","name":"test"}}');
 		$this->mock->addResponse($resp);
@@ -86,9 +118,11 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 
 		$authRequest->grantWithOtp('otp');
 		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-		$this->assertTrue($authRequest->pending == false, 'wrong auth pending');
-		$this->assertTrue($authRequest->granted == true, 'wrong auth granted');
-		$this->assertTrue($authRequest->automated == true, 'wrong auth automated');
+		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getBody() == 'otp=otp', "Post params should include 'otp=otp'");
+
+		$this->assertTrue($authRequest->pending == false, 'Authentication request should not be pending');
+		$this->assertTrue($authRequest->granted == true, 'Authentication request should be granted');
+		$this->assertTrue($authRequest->automated == true, 'Authentication request should be automated');
 	}
 }
 

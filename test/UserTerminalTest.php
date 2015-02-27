@@ -37,7 +37,7 @@ class UserTerminalTests extends PHPUnit_Framework_TestCase {
 		return new UserTerminal(['id' => '1', 'name' => 'terminal name', 'requester_specified_id' => 'requester specified id', 'user' => ['id' => '1','name' => 'user name', 'toopher_authentication_enabled' => true]], $api);
 	}
 
-	public function testUserTerminal(){
+	public function testUserTerminalCreatesUserTerminal(){
 		$userTerminal = $this->getUserTerminal($this->getToopherApi());
 		$this->assertTrue($userTerminal->id == '1', 'Terminal id was incorrect');
 		$this->assertTrue($userTerminal->name == 'terminal name', 'Terminal name was incorrect');
@@ -47,7 +47,7 @@ class UserTerminalTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($userTerminal->user->toopher_authentication_enabled == true, 'User should be toopher_authentication_enabled');
 	}
 
-	public function testUserTerminalRefreshFromServer(){
+	public function testUserTerminalRefreshFromServerUpdatesUserTerminal(){
 		$resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/user_terminals/1');
 		$resp->appendBody('{"id":"1", "name":"terminal name changed", "requester_specified_id":"requester specified id changed", "user":{"id":"1", "name":"user name changed", "toopher_authentication_enabled":false}}');
 		$this->mock->addResponse($resp);
@@ -63,7 +63,7 @@ class UserTerminalTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($userTerminal->user->toopher_authentication_enabled == false, 'User should not be toopher_authentication_enabled');
 	}
 
-	public function testUserTerminalUpdate(){
+	public function testUserTerminalUpdateChangesUserTerminal(){
 		$userTerminal = $this->getUserTerminal($this->getToopherApi());
 		$userTerminal->update(['id'=>'1', 'name'=>'terminal name changed', 'requester_specified_id'=>'requester specified id changed', 'user'=>['id'=>'1', 'name'=>'user name changed', 'toopher_authentication_enabled'=>false]]);
 		$this->assertTrue($userTerminal->name == 'terminal name changed', 'Terminal name was wrong');
