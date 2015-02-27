@@ -26,7 +26,6 @@ class ActionTests extends PHPUnit_Framework_TestCase {
 
 	public function testActionCreatesAction()
 	{
-		$toopher = new ToopherApi('key', 'secret');
 		$action = new Action(['id' => '1', 'name' => 'action']);
 		$this->assertTrue($action->id == '1', 'Action id was incorrect');
 		$this->assertTrue($action->name == 'action', 'Action name was incorrect');
@@ -34,7 +33,6 @@ class ActionTests extends PHPUnit_Framework_TestCase {
 
 	public function testActionUpdateChangesAction()
 	{
-		$toopher = new ToopherApi('key', 'secret');
 		$action = new Action(['id' => '1', 'name' => 'action changed']);
 		$action->update(['id'=>'1', 'name'=>'action changed']);
 		$this->assertTrue($action->id == '1', 'Action id was incorrect');
@@ -47,7 +45,6 @@ class ActionTests extends PHPUnit_Framework_TestCase {
 	*/
 	public function testActionMissingKeyFails()
 	{
-		$toopher = new ToopherApi('key', 'secret');
 		$action = new Action(['name' => 'action changed']);
 	}
 
@@ -57,7 +54,6 @@ class ActionTests extends PHPUnit_Framework_TestCase {
 	*/
 	public function testActionUpdateMissingKeyFails()
 	{
-		$toopher = new ToopherApi('key', 'secret');
 		$action = new Action(['id' => '1', 'name' => 'action changed']);
 		$action->update(['id'=>'1']);
 	}
