@@ -26,24 +26,43 @@ require_once("bootstrap.php");
 
 $stdin = fopen('php://stdin', 'r');
 
-$key = getenv('TOOPHER_CONSUMER_KEY');
-$secret = getenv('TOOPHER_CONSUMER_SECRET');
-if(empty($key) || empty($secret)){
-    echo("Enter your requester credentials (from https://dev.toopher.com).\n");
-    echo("Hint: Set the TOOPHER_CONSUMER_SECRET and TOOPHER_CONSUMER_SECRET environment variables to avoid this prompt.\n");
-    echo("Consumer Key:");
-    $key = rtrim(fgets($stdin));
-    echo("Consumer Secret:");
-    $secret = rtrim(fgets($stdin));
+function printHorizontalLine($character = '-')
+{
+  echo(str_repeat($character, 40) . "\n");
 }
 
-echo ("Using Consumer Key=$key, Consumer Secret=$secret\n");
-$toopher = new ToopherApi($key, $secret);
+function printTextWithUnderline($text, $character = '-')
+{
+  echo ("\n" . $text . "\n");
+  printHorizontalLine($character);
+}
 
-while(true) {
+function initializeApi()
+{
+  global $stdin;
+
+  $key = getenv('TOOPHER_CONSUMER_KEY');
+  $secret = getenv('TOOPHER_CONSUMER_SECRET');
+  if(empty($key) || empty($secret)){
+      echo("Enter your requester credentials (from https://dev.toopher.com).\n");
+      echo("Hint: Set the TOOPHER_CONSUMER_SECRET and TOOPHER_CONSUMER_SECRET environment variables to avoid this prompt.\n");
+      echo("Consumer Key:");
+      $key = rtrim(fgets($stdin));
+      echo("Consumer Secret:");
+      $secret = rtrim(fgets($stdin));
+  }
+
+  echo ("\nUsing Consumer Key=$key, Consumer Secret=$secret\n");
+  return new ToopherApi($key, $secret);
+}
+
+function pair($toopher)
+{
+  global $stdin;
+
   while(true) {
-    echo("\nSTEP 1: Pair requester with phone\n");
-    echo("----------------------------------------\n");
+
+    printTextWithUnderline("STEP 1: Pair requester with phone");
     echo("Pairing phrases are generated on the mobile app\n");
 
     do {
@@ -75,7 +94,7 @@ while(true) {
         echo("The pairing has not been authorized by the phone yet.\n");
       } elseif ($pairing->enabled) {
         echo("Pairing complete\n");
-        break 2;
+        return $pairing;
       } else {
         echo("The pairing has been denied.\n");
         break;
@@ -86,42 +105,63 @@ while(true) {
   }
 }
 
-while(true){
-  echo("\nSTEP 2: Authenticate log in\n");
-  echo("----------------------------------------\n");
-  do {
-    echo("Enter a terminal name for this authentication request [my computer]:");
-    $terminalName = rtrim(fgets($stdin));
-  } while (empty($terminalName));
+function authenticate($pairing, $toopher)
+{
+  global $stdin;
 
-  echo("Sending authentication request...\n");
-  try {
-    $auth = $toopher->authenticate($pairing->user->name, $terminalName);
-  } catch (Exception $e) {
-    echo ("Error initiating authentication (Reason: $e)");
-  }
+  while(true)
+  {
+    printTextWithUnderline("STEP 2: Authenticate log in");
+    do {
+      echo("Enter a terminal name for this authentication request [my computer]:");
+      $terminalName = rtrim(fgets($stdin));
+    } while (empty($terminalName));
 
-  while(true) {
-    echo ("Respond to authentication request on phone and then press return to continue.");
-    rtrim(fgets($stdin));
-    echo ("\nChecking status of authenticationr request...\n");
-
+    echo("Sending authentication request...\n");
     try {
-      $auth->refreshFromServer();
+      $auth = $toopher->authenticate($pairing->user->name, $terminalName);
     } catch (Exception $e) {
-      echo ("Could not check authentication status (Reason: $e)");
+      echo ("Error initiating authentication (Reason: $e)");
     }
 
-    if ($auth->pending) {
-      echo ("The authentication request has not received a response from the phone yet.\n");
-    } else {
-      $automation = $auth->automated ? 'automatically ' : '';
-      $result = $auth->granted ? 'granted' : 'denied';
-      echo ("The request was " . $automation . $result . "!\n" );
-      break;
+    while(true) {
+      echo ("Respond to authentication request on phone and then press return to continue.");
+      rtrim(fgets($stdin));
+      echo ("\nChecking status of authenticationr request...\n");
+
+      try {
+        $auth->refreshFromServer();
+      } catch (Exception $e) {
+        echo ("Could not check authentication status (Reason: $e)");
+      }
+
+      if ($auth->pending) {
+        echo ("The authentication request has not received a response from the phone yet.\n");
+      } else {
+        $automation = $auth->automated ? 'automatically ' : '';
+        $result = $auth->granted ? 'granted' : 'denied';
+        echo ("The request was " . $automation . $result . "!\n" );
+        break;
+      }
     }
+    echo("Press return to authenticate again, or [Ctrl+C] to exit");
+    rtrim(fgets($stdin));
   }
-  echo("Press return to authenticate again, or [Ctrl+C] to exit");
-  rtrim(fgets($stdin));
 }
+
+function demo()
+{
+  printTextWithUnderline("Toopher Library Demo", "=");
+
+  $toopher = initializeApi();
+
+  do {
+    $pairing = pair($toopher);
+  } while (!$pairing);
+
+  authenticate($pairing, $toopher);
+}
+
+demo()
+
 ?>
