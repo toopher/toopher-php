@@ -29,6 +29,7 @@ class SignatureValidationError extends Exception
 class ToopherIframe
 {
     const VERSION = '2';
+    const TTL = '300';
 
     function __construct($key, $secret, $baseUrl = 'https://api.toopher.com/v1/')
     {
@@ -90,7 +91,7 @@ class ToopherIframe
             $ttl = $kwargs['ttl'];
             unset($kwargs['ttl']);
         } else {
-            $ttl = 300;
+            $ttl = ToopherIframe::TTL;
         }
 
         $params = array(
@@ -103,56 +104,69 @@ class ToopherIframe
         return $this->getOauthSignedUrl($this->baseUrl . 'web/manage_user', $params);
     }
 
-    public function validatePostback($parameters, $sessionToken, $ttl)
+    public function validateData($data, $requestToken = '', $kwargs = array())
     {
         try {
-            $data = array();
-
-            foreach ($parameters as $key => $value) {
-                $data[$key] = $value[0];
-            }
-
-            $missingKeys = array();
-            if (!array_key_exists('toopher_sig', $data)) {
-                $missingKeys[] = 'toopher_sig';
-            }
-            if (!array_key_exists('timestamp', $data)) {
-                $missingKeys[] = 'timestamp';
-            }
-            if (!array_key_exists('session_token', $data)) {
-                $missingKeys[] = 'session_token';
-            }
-            if (count($missingKeys) > 0) {
-                $keys = implode(',', $missingKeys);
-                throw new SignatureValidationError('Missing required keys: ' . $keys);
-            }
-
-            if ($data['session_token'] != $sessionToken) {
-                throw new SignatureValidationError('Session token does not match expected value');
-            }
-
-            $maybeSignature = $data['toopher_sig'];
-            unset($data['toopher_sig']);
-            $signatureValid = false;
-            try {
-                $computedSignature = $this->signature($this->consumerSecret, $data);
-                $signatureValid = $maybeSignature == $computedSignature;
-            } catch (Exception $e) {
-                throw new SignatureValidationError('Error while calculating signature: ' . $e);
-            }
-
-            if (!$signatureValid) {
-                throw new SignatureValidationError('Computed signature does not match');
-            }
-
-            $ttlValid = ($this->getUnixTimestamp() - $ttl) < $data['timestamp'];
-            if (!$ttlValid) {
-                throw new SignatureValidationError('TTL Expired');
-            }
-
+            $this->checkForMissingKeys($data);
+            $this->verifySessionToken($data['session_token'], $requestToken);
+            $this->checkIfSignatureIsExpired($data['timestamp'], $kwargs);
+            $this->validateSignature($data);
             return $data;
         } catch (Exception $e) {
             throw new SignatureValidationError ('Exception while validating toopher signature: ' . $e);
+        }
+    }
+
+    private function checkForMissingKeys($data)
+    {
+        $missingKeys = array();
+        $requiredKeys = array('toopher_sig', 'timestamp', 'session_token');
+        foreach ($requiredKeys as &$key) {
+            if (!array_key_exists($key, $data)) {
+                $missingKeys[] = $key;
+            }
+        }
+        if (count($missingKeys) > 0) {
+            $keys = implode(',', $missingKeys);
+            throw new SignatureValidationError('Missing required keys: ' . $keys);
+        }
+    }
+
+    private function verifySessionToken($sessionToken, $requestToken)
+    {
+        if ($sessionToken != $requestToken) {
+            throw new SignatureValidationError('Session token does not match expected value');
+        }
+    }
+
+    private function checkIfSignatureIsExpired($timestamp, $kwargs)
+    {
+        if (array_key_exists('ttl', $kwargs)) {
+            $ttl = $kwargs['ttl'];
+            unset($kwargs['ttl']);
+        } else {
+            $ttl = 300;
+        }
+        $ttlValid = ($this->getUnixTimestamp() - $ttl) < $timestamp;
+        if (!$ttlValid) {
+            throw new SignatureValidationError('TTL Expired');
+        }
+    }
+
+    private function validateSignature($data)
+    {
+        $maybeSignature = $data['toopher_sig'];
+        unset($data['toopher_sig']);
+        $signatureValid = false;
+        try {
+            $computedSignature = $this->signature($this->consumerSecret, $data);
+            $signatureValid = $maybeSignature == $computedSignature;
+        } catch (Exception $e) {
+            throw new SignatureValidationError('Error while calculating signature: ' . $e);
+        }
+
+        if (!$signatureValid) {
+            throw new SignatureValidationError('Computed signature does not match');
         }
     }
 

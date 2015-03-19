@@ -100,17 +100,18 @@ class ToopherIframeTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($userManagementUrl == $expectedUrl, 'User management url was incorrect');
 	}
 
-	public function testToopherIframeValidatePostbackWithGoodSignatureIsSuccessful()
+	public function testToopherIframevalidateDataWithGoodSignatureIsSuccessful()
 	{
 		$this->toopherIframe->setTimestampOverride($this->getOauthTimestamp());
 		$data = array(
-			'foo' => array('bar'),
-			'timestamp' => array($this->getOauthTimestamp()),
-			'session_token' => array('s9s7vsb'),
-			'toopher_sig' => array('6d2c7GlQssGmeYYGpcf+V/kirOI=')
+			'foo' => 'bar',
+			'timestamp' => $this->getOauthTimestamp(),
+			'session_token' => 's9s7vsb',
+			'toopher_sig' => '6d2c7GlQssGmeYYGpcf+V/kirOI='
 		);
+		$extras = array('ttl' => '5');
 		try {
-			$this->toopherIframe->validatePostback($data, 's9s7vsb', 5);
+			$this->toopherIframe->validateData($data, 's9s7vsb', $extras);
 		} catch (Exception $e) {
 			$this->fail('Valid signature, timestamp, and session token did not return validated data');
 		}
@@ -120,92 +121,98 @@ class ToopherIframeTests extends PHPUnit_Framework_TestCase {
 	* @expectedException         SignatureValidationError
 	* @expectedExceptionMessage  Computed signature does not match
 	*/
-	public function testToopherIframeValidatePostbackWithBadSignatureFails()
+	public function testToopherIframevalidateDataWithBadSignatureFails()
 	{
 		$this->toopherIframe->setTimestampOverride($this->getOauthTimestamp());
 		$data = array(
-			'foo' => array('bar'),
-			'timestamp' => array(mktime(0, 16, 40, 1, 1, 1970)),
-			'session_token' => array('s9s7vsb'),
-			'toopher_sig' => array('invalid')
+			'foo' => 'bar',
+			'timestamp' => mktime(0, 16, 40, 1, 1, 1970),
+			'session_token' => 's9s7vsb',
+			'toopher_sig' => 'invalid'
 		);
-		$this->toopherIframe->validatePostback($data, 's9s7vsb', 5);
+		$extras = array('ttl' => '5');
+		$this->toopherIframe->validateData($data, 's9s7vsb', $extras);
 	}
 
 	/**
 	* @expectedException         SignatureValidationError
 	* @expectedExceptionMessage  TTL Expired
 	*/
-	public function testToopherIframeValidatePostbackWithExpiredSignatureFails()
+	public function testToopherIframevalidateDataWithExpiredSignatureFails()
 	{
 		$this->toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 2, 1, 1970));
 		$data = array(
-			'foo' => array('bar'),
-			'timestamp' => array($this->getOauthTimestamp()),
-			'session_token' => array('s9s7vsb'),
-			'toopher_sig' => array('6d2c7GlQssGmeYYGpcf+V/kirOI=')
+			'foo' => 'bar',
+			'timestamp' => $this->getOauthTimestamp(),
+			'session_token' => 's9s7vsb',
+			'toopher_sig' => '6d2c7GlQssGmeYYGpcf+V/kirOI='
 		);
-		$this->toopherIframe->validatePostback($data, 's9s7vsb', 5);
+		$extras = array('ttl' => '5');
+		$this->toopherIframe->validateData($data, 's9s7vsb', $extras);
 	}
 
 	/**
 	* @expectedException        SignatureValidationError
 	* @expectedExceptionMessage Session token does not match expected value
 	*/
-	public function testToopherIframeValidatePostbackWithInvalidSessionTokenFails()
+	public function testToopherIframevalidateDataWithInvalidSessionTokenFails()
 	{
 		$this->toopherIframe->setTimeStampOverride($this->getOauthTimestamp());
 		$data = array(
-			'foo' => array('bar'),
-			'timestamp' => array(mktime(0, 16, 40, 1, 1, 1970)),
-			'session_token' => array('invalid token'),
-			'toopher_sig' => array('6d2c7GlQssGmeYYGpcf+V/kirOI=')
+			'foo' => 'bar',
+			'timestamp' => mktime(0, 16, 40, 1, 1, 1970),
+			'session_token' => 'invalid token',
+			'toopher_sig' => '6d2c7GlQssGmeYYGpcf+V/kirOI='
 		);
-		$this->toopherIframe->validatePostback($data, 's9s7vsb', 5);
+		$extras = array('ttl' => '5');
+		$this->toopherIframe->validateData($data, 's9s7vsb', $extras);
 	}
 
 	/**
 	* @expectedException        SignatureValidationError
 	* @expectedExceptionMessage Missing required keys: timestamp
 	*/
-	public function testToopherIframeValidatePostbackMissingTimestampFails()
+	public function testToopherIframevalidateDataMissingTimestampFails()
 	{
 		$this->toopherIframe->setTimeStampOverride($this->getOauthTimestamp());
 		$data = array(
-			'foo' => array('bar'),
-			'session_token' => array('s9s7vsb'),
-			'toopher_sig' => array('6d2c7GlQssGmeYYGpcf+V/kirOI=')
+			'foo' => 'bar',
+			'session_token' => 's9s7vsb',
+			'toopher_sig' => '6d2c7GlQssGmeYYGpcf+V/kirOI='
 		);
-		$this->toopherIframe->validatePostback($data, 's9s7vsb', 5);
+		$extras = array('ttl' => '5');
+		$this->toopherIframe->validateData($data, 's9s7vsb', $extras);
 	}
 
 	/**
 	* @expectedException        SignatureValidationError
 	* @expectedExceptionMessage Missing required keys: toopher_sig
 	*/
-	public function testToopherIframeValidatePostbackMissingSignatureFails()
+	public function testToopherIframevalidateDataMissingSignatureFails()
 	{
 		$this->toopherIframe->setTimeStampOverride($this->getOauthTimestamp());
 		$data = array(
-			'foo' => array('bar'),
-			'session_token' => array('s9s7vsb'),
+			'foo' => 'bar',
+			'session_token' => 's9s7vsb',
 			'timestamp' => mktime(0, 16, 40, 1, 1, 1970)
 		);
-		$this->toopherIframe->validatePostback($data, 's9s7vsb', 5);
+		$extras = array('ttl' => '5');
+		$this->toopherIframe->validateData($data, 's9s7vsb', $extras);
 	}
 
 	/**
 	* @expectedException        SignatureValidationError
 	* @expectedExceptionMessage Missing required keys: session_token
 	*/
-	public function testToopherIframeValidatePostbackMissingSessionTokenFails()
+	public function testToopherIframevalidateDataMissingSessionTokenFails()
 	{
 		$this->toopherIframe->setTimeStampOverride($this->getOauthTimestamp());
 		$data = array(
-			'foo' => array('bar'),
-			'timestamp' => array($this->getOauthTimestamp()),
-			'toopher_sig' => array('6d2c7GlQssGmeYYGpcf+V/kirOI=')
+			'foo' => 'bar',
+			'timestamp' => $this->getOauthTimestamp(),
+			'toopher_sig' => '6d2c7GlQssGmeYYGpcf+V/kirOI='
 		);
-		$this->toopherIframe->validatePostback($data, 's9s7vsb', 5);
+		$extras = array('ttl' => '5');
+		$this->toopherIframe->validateData($data, 's9s7vsb', $extras);
 	}
 }
