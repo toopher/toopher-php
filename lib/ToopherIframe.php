@@ -104,7 +104,29 @@ class ToopherIframe
         return $this->getOauthSignedUrl($this->baseUrl . 'web/manage_user', $params);
     }
 
-    public function validateData($data, $requestToken = '', $kwargs = array())
+    public function processPostback($data, $requestToken = '', $kwargs = array())
+    {
+        parse_str($data["toopher_iframe_data"], $toopherData);
+
+        if (array_key_exists('error_code', $toopherData)) {
+            throw new ToopherRequestException($toopherData['error_message'], $toopherData['error_code']);
+        } else {
+            $this->validateData($toopherData, $requestToken, $kwargs);
+            $api = new ToopherApi($this->consumerKey, $this->consumerSecret);
+            $resourceType = $toopherData['resource_type'];
+            if ($resourceType == 'authentication_request') {
+                return new AuthenticationRequest($this->createAuthenticationRequestArray($toopherData), $api);
+            } else if ($resourceType == 'pairing') {
+                return new Pairing($this->createPairingArray($toopherData), $api);
+            } else if ($resourceType == 'requester_user') {
+                return new User($this->createUserArray($toopherData), $api);
+            } else {
+                throw new ToopherRequestException('The postback resource type is not valid: ' . $resourceType);
+            }
+        }
+    }
+
+    private function validateData($data, $requestToken, $kwargs)
     {
         try {
             $this->checkForMissingKeys($data);
@@ -134,7 +156,7 @@ class ToopherIframe
 
     private function verifySessionToken($sessionToken, $requestToken)
     {
-        if ($sessionToken != $requestToken) {
+        if ($requestToken != '' && $sessionToken != $requestToken) {
             throw new SignatureValidationError('Session token does not match expected value');
         }
     }
@@ -172,11 +194,64 @@ class ToopherIframe
 
     private function signature($secret, $parameters)
     {
-        $oauthConsumer = new HTTP_OAuth_Consumer($this->consumerKey, $this->consumerSecret);
-        $params = $oauthConsumer->buildHttpQuery($parameters);
-        $key = mb_convert_encoding($secret, 'UTF-8');
+        ksort($parameters);
+        $params = http_build_query($parameters);
         $sig = hash_hmac('sha1', $params, $secret, true);
         return base64_encode($sig);
+    }
+
+    private function createAuthenticationRequestArray($data)
+    {
+        return array(
+            'id' => $data['id'],
+            'pending'=>$data['pending'] == 'true',
+            'granted'=>$data['granted'] == 'true',
+            'automated'=>$data['automated'] == 'true',
+            'reason'=>$data['reason'],
+            'reason_code'=>$data['reason_code'],
+            'terminal'=>array(
+                'id'=>$data['terminal_id'],
+                'name'=>$data['terminal_name'],
+                'requester_specified_id'=>$data['terminal_requester_specified_id'],
+                'user'=>array(
+                    'id'=>$data['pairing_user_id'],
+                    'name'=>$data['user_name'],
+                    'toopher_authentication_enabled'=>$data['user_toopher_authentication_enabled'] == 'true'
+                )
+            ),
+            'user'=>array(
+                'id'=>$data['pairing_user_id'],
+                'name'=>$data['user_name'],
+                'toopher_authentication_enabled'=>$data['user_toopher_authentication_enabled'] == 'true'
+            ),
+            'action'=>array(
+                'id'=>$data['action_id'],
+                'name'=>$data['action_name']
+            )
+        );
+    }
+
+    private function createPairingArray($data)
+    {
+        return array(
+            'id' => $data['id'],
+            'enabled' => $data['enabled'] == 'true',
+            'pending' => $data['pending'] == 'true',
+            'user' => array(
+                'id' => $data['pairing_user_id'],
+                'name' => $data['user_name'],
+                'toopher_authentication_enabled' => $data['user_toopher_authentication_enabled']
+            )
+        );
+    }
+
+    private function createUserArray($data)
+    {
+        return array(
+            'id' => $data['id'],
+            'name' => $data['name'],
+            'toopher_authentication_enabled' => $data['toopher_authentication_enabled'] == 'true'
+        );
     }
 
     private function getOauthSignedUrl($url, $queryParams)
