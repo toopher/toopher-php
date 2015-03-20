@@ -72,17 +72,14 @@ class ToopherIframe
         }
 
         $params = array(
-            'v' => ToopherIframe::VERSION,
             'username' => $username,
             'reset_email' => $resetEmail,
             'action_name' => $actionName,
             'session_token' => $requestToken,
             'requester_metadata' => $requesterMetadata,
-            'expires' => $this->getUnixTimestamp() + $ttl
         );
         $params = array_merge($params, $kwargs);
-
-        return $this->getOauthSignedUrl($this->baseUrl . 'web/authenticate', $params);
+        return $this->getOauthSignedUrl($this->baseUrl . 'web/authenticate', $ttl, $params);
     }
 
     public function getUserManagementUrl($username, $resetEmail, $kwargs = array())
@@ -95,13 +92,11 @@ class ToopherIframe
         }
 
         $params = array(
-            'v' => ToopherIframe::VERSION,
             'username' => $username,
             'reset_email' => $resetEmail,
-            'expires' => $this->getUnixTimestamp() + $ttl
         );
         $params = array_merge($params, $kwargs);
-        return $this->getOauthSignedUrl($this->baseUrl . 'web/manage_user', $params);
+        return $this->getOauthSignedUrl($this->baseUrl . 'web/manage_user', $ttl, $params);
     }
 
     public function processPostback($data, $requestToken = '', $kwargs = array())
@@ -254,8 +249,11 @@ class ToopherIframe
         );
     }
 
-    private function getOauthSignedUrl($url, $queryParams)
+    private function getOauthSignedUrl($url, $ttl, $queryParams)
     {
+        $queryParams['v'] = ToopherIframe::VERSION;
+        $queryParams['expires'] = $this->getUnixTimestamp() + $ttl;
+
         $oauthParams = $this->getOauthParams();
         $encodedParams = $this->encodeParamsForSignature(array_merge($queryParams, $oauthParams));
         $signature = $this->oauthConsumer->generateSignature('GET', $url, $encodedParams);
