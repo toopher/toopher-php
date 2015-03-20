@@ -320,4 +320,60 @@ class ToopherIframeTests extends PHPUnit_Framework_TestCase {
 		$this->toopherIframe->processPostback($this->getUrlencodedData($authData), $this->getRequestToken());
 	}
 
+	public function testIsAuthenticationGrantedWithAuthenticationRequestGrantedReturnsTrue()
+	{
+		$this->assertTrue($this->toopherIframe->isAuthenticationGranted($this->getUrlencodedData($this->getAuthenticationRequestData()), $this->getRequestToken()));
+	}
+
+	public function testIsAuthenticationGrantedWithAuthenticationRequestGrantedAndExtrasReturnsTrue()
+	{
+		$extras = array('ttl' => '100');
+		$this->assertTrue($this->toopherIframe->isAuthenticationGranted($this->getUrlencodedData($this->getAuthenticationRequestData()), $this->getRequestToken(), $extras));
+	}
+
+	public function testIsAuthenticationGrantedWithAuthenticationRequestGrantedWithoutRequestTokenReturnsTrue()
+	{
+		$this->assertTrue($this->toopherIframe->isAuthenticationGranted($this->getUrlencodedData($this->getAuthenticationRequestData())));
+	}
+
+	public function testIsAuthenticationGrantedWithAuthenticationRequestNotGrantedReturnsFalse()
+	{
+		$authData = $this->getAuthenticationRequestData();
+		$authData['granted'] = 'false';
+		$authData['toopher_sig'] = 'nADNKdly9zA2IpczD6gvDumM48I=';
+		$this->assertFalse($this->toopherIframe->isAuthenticationGranted($this->getUrlencodedData($authData), $this->getRequestToken()));
+	}
+
+	public function testIsAuthenticationGrantedWithPairingReturnsFalse()
+	{
+		$this->assertFalse($this->toopherIframe->isAuthenticationGranted($this->getUrlencodedData($this->getPairingData(), $this->getRequestToken())));
+	}
+
+	public function testIsAuthenticationGrantedWithUserReturnsFalse()
+	{
+		$this->assertFalse($this->toopherIframe->isAuthenticationGranted($this->getUrlencodedData($this->getUserData(), $this->getRequestToken())));
+	}
+
+	public function testIsAuthenticationGrantedWithSignatureValidationErrorReturnsFalse()
+	{
+		$authData = $this->getAuthenticationRequestData();
+		unset($authData['id']);
+		$this->assertFalse($this->toopherIframe->isAuthenticationGranted($this->getUrlencodedData($authData), $this->getRequestToken()));
+	}
+
+	public function testIsAuthenticationGrantedWithToopherRequestExceptionReturnsFalse()
+	{
+		$authData = $this->getAuthenticationRequestData();
+		$authData['resource_type'] = 'invalid';
+		$authData['toopher_sig'] = 'xEY+oOtJcdMsmTLp6eOy9isO/xQ=';
+		$this->assertFalse($this->toopherIframe->isAuthenticationGranted($this->getUrlencodedData($authData), $this->getRequestToken()));
+	}
+
+	public function testIsAuthenticationGrantedWithErrorCode704ReturnsTrue()
+	{
+		$authData = $this->getAuthenticationRequestData();
+		$authData['error_code'] = '704';
+		$authData['error_message'] = 'The specified user has disabled Toopher authentication';
+		$this->assertTrue($this->toopherIframe->isAuthenticationGranted($this->getUrlencodedData($authData)));
+	}
 }

@@ -121,6 +121,25 @@ class ToopherIframe
         }
     }
 
+    public function isAuthenticationGranted($data, $requestToken = '', $kwargs = array())
+    {
+        try {
+            $authenticationRequest = $this->processPostback($data, $requestToken, $kwargs);
+            if (is_a($authenticationRequest, 'AuthenticationRequest')) {
+                return !$authenticationRequest->pending && $authenticationRequest->granted;
+            } else {
+                return false;
+            }
+        } catch (Exception $e) {
+            if ($e->getCode() == 704) {
+                error_log($e->getMessage());
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+
     private function validateData($data, $requestToken, $kwargs)
     {
         try {
