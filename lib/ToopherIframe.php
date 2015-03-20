@@ -188,14 +188,6 @@ class ToopherIframe
         return $this->buildUrl($url, $queryParams, $oauthParams);
     }
 
-    private function encodeParamsForSignature($params)
-    {
-        foreach ($params as $key => $value) {
-            $params[$key] = oauth_urlencode($value);
-        }
-        return $params;
-    }
-
     private function getOauthParams()
     {
         $oauthParams = array(
@@ -215,6 +207,14 @@ class ToopherIframe
             $oauthParams['oauth_timestamp'] = time();
         }
         return $oauthParams;
+    }
+
+    private function encodeParamsForSignature($params)
+    {
+        foreach ($params as $key => $value) {
+            $params[$key] = oauth_urlencode($value);
+        }
+        return $params;
     }
 
     private function buildUrl($url, $queryParams, $oauthParams)
