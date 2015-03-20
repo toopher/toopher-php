@@ -151,19 +151,27 @@ class ToopherIframeTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue($authenticationUrl == $expectedUrl, 'Authentication url was incorrect');
 	}
 
-	public function testToopherIframeGetUserManagementUrlReturnsValidUrl()
+	public function testGetUserManagementUrlOnlyUsernameReturnsValidUrl()
 	{
 		$this->toopherIframe->setNonceOverride($this->getOauthNonce());
-		$expectedUrl = 'https://api.toopher.test/v1/web/manage_user?v=2&username=jdoe&reset_email=jdoe%40example.com&expires=1300&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_nonce=12345678&oauth_timestamp=1000&oauth_signature=NjwH5yWPE2CCJL8v%2FMNknL%2BeTpE%3D';
+		$expectedUrl = 'https://api.toopher.test/v1/web/manage_user?username=jdoe&reset_email=&v=2&expires=1300&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_nonce=12345678&oauth_timestamp=1000&oauth_signature=SA7CAUj%2B5QcGO%2BMmdPv9ubbaozk%3D';
+		$userManagementUrl = $this->toopherIframe->getUserManagementUrl('jdoe');
+		$this->assertTrue($userManagementUrl == $expectedUrl, 'User management url was incorrect');
+	}
+
+	public function testToopherIframeGetUserManagementUrlWithEmailReturnsValidUrl()
+	{
+		$this->toopherIframe->setNonceOverride($this->getOauthNonce());
+		$expectedUrl = 'https://api.toopher.test/v1/web/manage_user?username=jdoe&reset_email=jdoe%40example.com&v=2&expires=1300&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_nonce=12345678&oauth_timestamp=1000&oauth_signature=NjwH5yWPE2CCJL8v%2FMNknL%2BeTpE%3D';
 		$userManagementUrl = $this->toopherIframe->getUserManagementUrl('jdoe', 'jdoe@example.com');
 		$this->assertTrue($userManagementUrl == $expectedUrl, 'User management url was incorrect');
 	}
 
-	public function testToopherIframeGetUserManagementUrlWithExtrasReturnsValidUrl()
+	public function testToopherIframeGetUserManagementUrlWithEmailAndExtrasReturnsValidUrl()
 	{
 		$extras = array('ttl' => '100');
 		$this->toopherIframe->setNonceOverride($this->getOauthNonce());
-		$expectedUrl = 'https://api.toopher.test/v1/web/manage_user?v=2&username=jdoe&reset_email=jdoe%40example.com&expires=1100&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_nonce=12345678&oauth_timestamp=1000&oauth_signature=sV8qoKnxJ3fxfP6AHNa0eNFxzJs%3D';
+		$expectedUrl = 'https://api.toopher.test/v1/web/manage_user?username=jdoe&reset_email=jdoe%40example.com&v=2&expires=1100&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_nonce=12345678&oauth_timestamp=1000&oauth_signature=sV8qoKnxJ3fxfP6AHNa0eNFxzJs%3D';
 		$userManagementUrl = $this->toopherIframe->getUserManagementUrl('jdoe', 'jdoe@example.com', $extras);
 		$this->assertTrue($userManagementUrl == $expectedUrl, 'User management url was incorrect');
 	}

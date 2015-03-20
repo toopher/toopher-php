@@ -82,7 +82,7 @@ class ToopherIframe
         return $this->getOauthSignedUrl($this->baseUrl . 'web/authenticate', $ttl, $params);
     }
 
-    public function getUserManagementUrl($username, $resetEmail, $kwargs = array())
+    public function getUserManagementUrl($username, $resetEmail = '', $kwargs = array())
     {
         if (array_key_exists('ttl', $kwargs)) {
             $ttl = $kwargs['ttl'];
