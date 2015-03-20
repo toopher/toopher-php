@@ -62,13 +62,13 @@ class ToopherIframe
         }
     }
 
-    public function getAuthenticationUrl($username, $resetEmail, $requestToken = 'None', $actionName = 'Log In', $requesterMetadata = 'None', $kwargs = array())
+    public function getAuthenticationUrl($username, $resetEmail = '', $requestToken = '', $actionName = 'Log In', $requesterMetadata = '', $kwargs = array())
     {
         if (array_key_exists('ttl', $kwargs)) {
             $ttl = $kwargs['ttl'];
             unset($kwargs['ttl']);
         } else {
-            $ttl = 300;
+            $ttl = ToopherIframe::TTL;
         }
 
         $params = array(

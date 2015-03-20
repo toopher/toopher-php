@@ -121,20 +121,33 @@ class ToopherIframeTests extends PHPUnit_Framework_TestCase {
 		$this->toopherIframe->setTimestampOverride($this->getOauthTimestamp());
 	}
 
-	public function testToopherIframeGetAuthenticationUrlReturnsValidUrl()
+	public function testGetAuthenticationUrlOnlyUsernameReturnsValidUrl()
 	{
 		$this->toopherIframe->setNonceOverride($this->getOauthNonce());
-		$expectedUrl = 'https://api.toopher.test/v1/web/authenticate?v=2&username=jdoe&reset_email=jdoe%40example.com&action_name=Log+In&session_token=s9s7vsb&requester_metadata=None&expires=1300&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_nonce=12345678&oauth_timestamp=1000&oauth_signature=YN%2BkKNTaoypsB37fsjvMS8vsG5A%3D';
-		$authenticationUrl = $this->toopherIframe->getAuthenticationUrl('jdoe', 'jdoe@example.com', $this->getRequestToken());
+		$expectedUrl = 'https://api.toopher.test/v1/web/authenticate?username=jdoe&reset_email=&action_name=Log+In&session_token=&requester_metadata=&v=2&expires=1300&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_nonce=12345678&oauth_timestamp=1000&oauth_signature=NkaWUjEPRLwgsQMEJGsIQEpyRT4%3D';
+		$authenticationUrl = $this->toopherIframe->getAuthenticationUrl('jdoe');
 		$this->assertTrue($authenticationUrl == $expectedUrl, 'Authentication url was incorrect');
 	}
 
-	public function testToopherIframeGetAuthenticationUrlWithExtrasReturnsValidUrl()
+	public function testGetAuthenticationUrlWithOptionalArgsReturnsValidUrl()
 	{
-		$extras = array('allow_inline_pairing' => 'false');
 		$this->toopherIframe->setNonceOverride($this->getOauthNonce());
-		$expectedUrl = 'https://api.toopher.test/v1/web/authenticate?v=2&username=jdoe&reset_email=jdoe%40example.com&action_name=it+is+a+test&session_token=s9s7vsb&requester_metadata=None&expires=1300&allow_inline_pairing=false&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_nonce=12345678&oauth_timestamp=1000&oauth_signature=W%2F2dcdsVc7YgdSCZuEo8ViHLlOo%3D';
-		$authenticationUrl = $this->toopherIframe->getAuthenticationUrl('jdoe', 'jdoe@example.com', $this->getRequestToken(), 'it is a test', 'None', $extras);
+		$expectedUrl = 'https://api.toopher.test/v1/web/authenticate?username=jdoe&reset_email=jdoe%40example.com&action_name=it+is+a+test&session_token=s9s7vsb&requester_metadata=metadata&v=2&expires=1300&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_nonce=12345678&oauth_timestamp=1000&oauth_signature=2TydgMnUwWoiwfpljKpSaFg0Luo%3D';
+		$authenticationUrl = $this->toopherIframe->getAuthenticationUrl('jdoe', 'jdoe@example.com', $this->getRequestToken(), 'it is a test', 'metadata');
+		$this->assertTrue($authenticationUrl == $expectedUrl, 'Authentication url was incorrect');
+	}
+
+	public function testGetAuthenticationUrlWithOptionalArgsAndExtrasReturnsValidUrl()
+	{
+		$extras = array(
+			'allow_inline_pairing' => 'false',
+			'automation_allowed' => 'false',
+			'challenge_required' => 'true',
+			'ttl' => '100'
+		);
+		$this->toopherIframe->setNonceOverride($this->getOauthNonce());
+		$expectedUrl = 'https://api.toopher.test/v1/web/authenticate?username=jdoe&reset_email=jdoe%40example.com&action_name=it+is+a+test&session_token=s9s7vsb&requester_metadata=metadata&allow_inline_pairing=false&automation_allowed=false&challenge_required=true&v=2&expires=1100&oauth_consumer_key=abcdefg&oauth_signature_method=HMAC-SHA1&oauth_version=1.0&oauth_nonce=12345678&oauth_timestamp=1000&oauth_signature=61dqeQNPFxNy8PyEFB9e5UfgN8s%3D';
+		$authenticationUrl = $this->toopherIframe->getAuthenticationUrl('jdoe', 'jdoe@example.com', $this->getRequestToken(), 'it is a test', 'metadata', $extras);
 		$this->assertTrue($authenticationUrl == $expectedUrl, 'Authentication url was incorrect');
 	}
 
