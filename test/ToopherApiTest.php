@@ -154,8 +154,28 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
         $this->mock->addResponse($resp);
 
         $toopher = $this->getToopherApi($this->mock);
-        $authRequest = $toopher->authenticate($id, 'term name');
+        $authRequest = $toopher->authenticate($id);
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+        $this->compareToDefaultAuthenticationRequest($authRequest, $id);
+    }
+
+    public function testAuthenticateWithPairingIdOptionalArgsAndExtrasReturnsAuthenticationRequest()
+    {
+        $extras = array('foo' => 'bar');
+        $id = Uuid::uuid4()->toString();
+        $resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/authentication_requests/initiate');
+        $resp->appendBody('{"id":"' . $id . '","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":true}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":true},"action":{"id":"1","name":"test"}}');
+        $this->mock->addResponse($resp);
+
+        $toopher = $this->getToopherApi($this->mock);
+        $authRequest = $toopher->authenticate($id, 'term name', '1', 'it is a test', $extras);
+        $parameters = $toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getParameters();
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+        $this->assertTrue($parameters['pairing_id'] == $id, sprintf("Last called parameters should include key-value pair: 'pairing_id'=> %s", $id));
+        $this->assertTrue($parameters['action_name'] == 'it is a test', "Last called parameters should include key-value pair: 'action_name'=>'it is a test'");
+        $this->assertTrue($parameters['terminal_name'] == 'term name', "Last called parameters should include key-value pair: 'terminal_name'=>'term name'");
+        $this->assertTrue($parameters['requester_specified_terminal_id'] == '1', "Last called parameters should include key-value pair: 'requester_specified_terminal_id'=>'1'");
+        $this->assertTrue($parameters['foo'] == 'bar', "Last called parameters should include key-value pair: 'foo'=>'bar'");
         $this->compareToDefaultAuthenticationRequest($authRequest, $id);
     }
 
@@ -166,8 +186,27 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
         $this->mock->addResponse($resp);
 
         $toopher = $this->getToopherApi($this->mock);
-        $authRequest = $toopher->authenticate('user', 'term name', '1');
+        $authRequest = $toopher->authenticate('user');
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+        $this->compareToDefaultAuthenticationRequest($authRequest);
+    }
+
+    public function testAuthentiateWithUsernameOptionalArgsAndExtrasReturnsAuthenticationRequest()
+    {
+        $extras = array('foo' => 'bar');
+        $resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/authentication_requests/initiate');
+        $resp->appendBody('{"id":"1","pending":false,"granted":true,"automated":true,"reason_code":"1","reason":"some reason","terminal":{"id":"1","name":"term name","requester_specified_id":"1","user":{"id":"1","name":"user", "toopher_authentication_enabled":true}},"user":{"id":"1","name":"user", "toopher_authentication_enabled":true},"action":{"id":"1","name":"test"}}');
+        $this->mock->addResponse($resp);
+
+        $toopher = $this->getToopherApi($this->mock);
+        $authRequest = $toopher->authenticate('user', 'term name', '1', 'it is a test', $extras);
+        $parameters = $toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getParameters();
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+        $this->assertTrue($parameters['user_name'] == 'user', "Last called parameters should include key-value pair: 'user_name'=>'user'");
+        $this->assertTrue($parameters['action_name'] == 'it is a test', "Last called parameters should include key-value pair: 'action_name'=>'it is a test'");
+        $this->assertTrue($parameters['terminal_name'] == 'term name', "Last called parameters should include key-value pair: 'terminal_name'=>'term name'");
+        $this->assertTrue($parameters['requester_specified_terminal_id'] == '1', "Last called parameters should include key-value pair: 'requester_specified_terminal_id'=>'1'");
+        $this->assertTrue($parameters['foo'] == 'bar', "Last called parameters should include key-value pair: 'foo'=>'bar'");
         $this->compareToDefaultAuthenticationRequest($authRequest);
     }
 
