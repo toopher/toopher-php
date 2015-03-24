@@ -115,15 +115,16 @@ class ToopherIframe
         } else {
             $this->validateData($toopherData, $requestToken, $kwargs);
             $api = new ToopherApi($this->consumerKey, $this->consumerSecret);
-            $resourceType = $toopherData['resource_type'];
-            if ($resourceType == 'authentication_request') {
-                return new AuthenticationRequest($this->createAuthenticationRequestArray($toopherData), $api);
-            } else if ($resourceType == 'pairing') {
-                return new Pairing($this->createPairingArray($toopherData), $api);
-            } else if ($resourceType == 'requester_user') {
-                return new User($this->createUserArray($toopherData), $api);
-            } else {
-                throw new ToopherRequestException('The postback resource type is not valid: ' . $resourceType);
+
+            switch ($toopherData['resource_type']) {
+                case 'authentication_request':
+                    return new AuthenticationRequest($this->createAuthenticationRequestArray($toopherData), $api);
+                case 'pairing':
+                    return new Pairing($this->createPairingArray($toopherData), $api);
+                case 'requester_user':
+                    return new User($this->createUserArray($toopherData), $api);
+                default:
+                    throw new ToopherRequestException('The postback resource type is not valid: ' . $toopherData['resource_type']);
             }
         }
     }
