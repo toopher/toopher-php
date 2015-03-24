@@ -155,7 +155,6 @@ class ToopherIframe
             $this->verifySessionToken($data['session_token'], $requestToken);
             $this->checkIfSignatureIsExpired($data['timestamp'], $kwargs);
             $this->validateSignature($data);
-            return $data;
         } catch (Exception $e) {
             throw new SignatureValidationError ('Exception while validating toopher signature: ' . $e);
         }
@@ -178,7 +177,7 @@ class ToopherIframe
 
     private function verifySessionToken($sessionToken, $requestToken)
     {
-        if ($requestToken != '' && $sessionToken != $requestToken) {
+        if (!empty($requestToken) && $sessionToken != $requestToken) {
             throw new SignatureValidationError('Session token does not match expected value');
         }
     }
@@ -295,17 +294,8 @@ class ToopherIframe
             'oauth_signature_method' => $this->signatureMethod,
             'oauth_version' => $this->oauthVersion
         );
-
-        if (!is_null($this->nonceOverride)) {
-            $oauthParams['oauth_nonce'] = $this->nonceOverride;
-        } else {
-            $oauthParams['oauth_nonce'] = uniqid() . '.' . time();
-        }
-        if (!is_null($this->timestampOverride)) {
-            $oauthParams['oauth_timestamp'] = $this->timestampOverride;
-        } else {
-            $oauthParams['oauth_timestamp'] = time();
-        }
+        $oauthParams['oauth_nonce'] = $this->nonceOverride ?: uniqid() . '.' . time();
+        $oauthParams['oauth_timestamp'] = $this->timestampOverride ?: time();
         return $oauthParams;
     }
 
