@@ -116,9 +116,9 @@ class AuthenticationRequestTests extends PHPUnit_Framework_TestCase {
 		$toopher = $this->getToopherApi($this->mock);
 		$authRequest = $this->getAuthenticationRequest($toopher);
 
-		$authRequest->grantWithOtp('otp');
+		$authRequest->grantWithOtp('foo');
 		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
-		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getBody() == 'otp=otp', "Post params should include 'otp=otp'");
+		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getBody() == 'otp=foo', "Post params should include 'otp=foo'");
 
 		$this->assertTrue($authRequest->pending == false, 'Authentication request should not be pending');
 		$this->assertTrue($authRequest->granted == true, 'Authentication request should be granted');

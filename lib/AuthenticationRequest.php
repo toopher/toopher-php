@@ -55,9 +55,8 @@ class AuthenticationRequest
     public function grantWithOtp($otp, $kwargs = array())
     {
         $url = 'authentication_requests/' . $this->id . '/otp_auth';
-        $params = array('otp' => $otp);
-        $params = array_merge($params, $kwargs);
-        $result = $this->api->advanced->raw->post($url, $params);
+        $kwargs['otp'] = $otp;
+        $result = $this->api->advanced->raw->post($url, $kwargs);
         $this->update($result);
     }
 
