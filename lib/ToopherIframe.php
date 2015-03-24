@@ -33,6 +33,13 @@ class ToopherIframe
 
     function __construct($key, $secret, $baseUrl = 'https://api.toopher.com/v1/')
     {
+        if (empty($key)) {
+            throw new InvalidArgumentException('Toopher consumer key cannot be empty');
+        }
+        if (empty($secret)) {
+            throw new InvalidArgumentException('Toopher consumer secret cannot be empty');
+        }
+
         $this->consumerSecret = $secret;
         $this->consumerKey = $key;
         $this->oauthConsumer = new OAuth($key, $secret);
