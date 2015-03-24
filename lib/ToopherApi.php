@@ -53,7 +53,6 @@ class ToopherApi
     public function pair($username, $phraseOrNumber = NULL, $kwargs = array())
     {
         $params = array('user_name' => $username);
-        $params = array_merge($params, $kwargs);
         if (!empty($phraseOrNumber)) {
             if (preg_match('/\d/', $phraseOrNumber, $match)) {
                 $url = 'pairings/create/sms';
@@ -65,6 +64,7 @@ class ToopherApi
         } else {
             $url = 'pairings/create/qr';
         }
+        $params = array_merge($params, $kwargs);
         $result = $this->advanced->raw->post($url, $params);
         return new Pairing($result, $this);
     }
@@ -123,15 +123,8 @@ class ApiRawRequester
 
     function __construct($key, $secret, $baseUrl, $httpAdapter)
     {
-        if (empty($key)) {
-            throw new InvalidArgumentException('Toopher consumer key cannot be empty');
-        }
-        if (empty($secret)) {
-            throw new InvalidArgumentException('Toopher consumer secret cannot be empty');
-        }
-
         $this->oauthConsumer = new HTTP_OAuth_Consumer($key, $secret);
-        $this->baseUrl = (!empty($baseUrl)) ? $baseUrl : 'https://api.toopher.com/v1/';
+        $this->baseUrl = (!empty($baseUrl)) ? $baseUrl : ToopherApi::DEFAULT_BASE_URL;
         $this->httpAdapter = (!is_null($httpAdapter)) ? $httpAdapter : new HTTP_Request2_Adapter_Curl();
     }
 
@@ -181,7 +174,7 @@ class ApiRawRequester
         if ($result->getStatus() >= 400) {
             error_log(sprintf('Toopher API call returned unexpected HTTP response: %d - %s', $result->getStatus(), $result->getReasonPhrase()));
             if (empty($resultBody)) {
-                error_log('empty response body');
+                error_log('Empty response body');
                 throw new ToopherRequestException($result->getReasonPhrase(), $result->getStatus());
             }
 
@@ -191,7 +184,7 @@ class ApiRawRequester
                 if (!empty($jsonError))
                 {
                     error_log(sprintf('Error parsing response body JSON: %s', $jsonError));
-                    error_log(sprintf('response body: %s', $result->getBody()));
+                    error_log(sprintf('Response body: %s', $result->getBody()));
                     throw new ToopherRequestException(sprintf('JSON Parsing Error: %s', $jsonError));
                 }
             } else {
@@ -212,7 +205,7 @@ class ApiRawRequester
                 $jsonError = $this->json_error_to_string(json_last_error());
                 if (!empty($jsonError)) {
                     error_log(sprintf('Error parsing response body JSON: %s', $jsonError));
-                    error_log(sprintf('response body: %s', $result->getBody()));
+                    error_log(sprintf('Response body: %s', $result->getBody()));
                     throw new ToopherRequestException(sprintf('JSON Parsing Error: %s', $jsonError));
                 }
             }
@@ -286,9 +279,8 @@ class Users extends ToopherObjectFactory
     public function create($username, $kwargs = array())
     {
         $url = 'users/create';
-        $params = array('name' => $username);
-        $params = array_merge($params, $kwargs);
-        $result = $this->api->advanced->raw->post($url, $params);
+        $kwargs ['name'] = $username;
+        $result = $this->api->advanced->raw->post($url, $kwargs);
         return new User($result, $this->api);
     }
 }
