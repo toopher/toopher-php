@@ -63,10 +63,9 @@ class Pairing
 
     public function emailResetLink($email, $kwargs = array())
     {
-        $params = array('reset_email' => $email);
-        $params = array_merge($params, $kwargs);
+        $kwargs['reset_email'] = $email;
         $url = 'pairings/' . $this->id . '/send_reset_link';
-        $this->api->advanced->raw->post($url, $params);
+        $this->api->advanced->raw->post($url, $kwargs);
     }
 
     public function getQrCodeImage()

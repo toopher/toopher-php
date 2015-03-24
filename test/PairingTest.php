@@ -102,6 +102,7 @@ class PairingTests extends PHPUnit_Framework_TestCase {
 
 		$pairing->emailResetLink('jdoe@example.com');
 		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
+		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getBody() == 'reset_email=jdoe%40example.com', "Post params should include 'reset_email=jdoe%40example.com'");
 		$this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == 'https://api.toopher.com/v1/pairings/1/send_reset_link', "Last called url should be 'https://api.toopher.com/v1/pairings/1/send_reset_link'");
 	}
 
