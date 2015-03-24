@@ -26,6 +26,9 @@ require_once('bootstrap.php');
 
 $stdin = fopen('php://stdin', 'r');
 
+const DEFAULT_USERNAME = 'demo@toopher.com';
+const DEFAULT_TERMINAL_NAME = 'my computer';
+
 function printHorizontalLine($character = '-')
 {
     echo(str_repeat($character, 40) . "\n");
@@ -43,20 +46,20 @@ function initializeApi()
 
     $key = getenv('TOOPHER_CONSUMER_KEY');
     $secret = getenv('TOOPHER_CONSUMER_SECRET');
+
     if(empty($key) || empty($secret)){
         echo("Enter your requester credentials (from https://dev.toopher.com).\n");
         echo("Hint: Set the TOOPHER_CONSUMER_SECRET and TOOPHER_CONSUMER_SECRET environment variables to avoid this prompt.\n");
-        echo('Consumer Key:');
+        echo('TOOPHER_CONSUMER_KEY:');
         $key = rtrim(fgets($stdin));
-        echo('Consumer Secret:');
+        echo('TOOPHER_CONSUMER_SECRET:');
         $secret = rtrim(fgets($stdin));
     }
 
-    echo ("\nUsing Consumer Key=$key, Consumer Secret=$secret\n");
-    return new ToopherApi($key, $secret);
+    return new ToopherApi($key, $secret, getenv('TOOPHER_BASE_URL'));
 }
 
-function pair($toopher)
+function pairDeviceWithToopher($toopher)
 {
     global $stdin;
 
@@ -69,16 +72,19 @@ function pair($toopher)
             $phrase = rtrim(fgets($stdin));
         } while (empty($phrase));
 
-        do {
-            echo('Enter user name: ');
-            $userName = rtrim(fgets($stdin));
-        } while (empty($userName));
+
+        echo(sprintf('Enter a username for this pairing [%s]: ', DEFAULT_USERNAME));
+        $userName = rtrim(fgets($stdin));
+
+        if (empty($userName)) {
+            $userName = DEFAULT_USERNAME;
+        }
 
         try {
             $pairing = $toopher->pair($userName, $phrase);
             break;
         } catch (Exception $e) {
-            echo ("The pairing phrase was not accepted. Please try pairing again.\n");
+            echo (sprintf("The pairing phrase was not accepted (Reason: %s) \n", $e->getMessage()));
         }
     }
 
@@ -99,39 +105,42 @@ function pair($toopher)
                 break;
             }
         } catch (Exception $e) {
-            echo ("Could not check pairing status. Please try authorizing again.)\n");
+            echo (sprintf("Could not check pairing status (Reason: %s)\n", $e->getMessage()));
         }
     }
 }
 
-function authenticate($pairing, $toopher)
+function authenticateWithToopher($pairing, $toopher)
 {
     global $stdin;
 
     while(true) {
         printTextWithUnderline('STEP 2: Authenticate log in');
 
-        do {
-            echo('Enter a terminal name for this authentication request [my computer]:');
-            $terminalName = rtrim(fgets($stdin));
-        } while (empty($terminalName));
+        echo(sprintf('Enter a terminal name for this authentication request [%s]: ', DEFAULT_TERMINAL_NAME));
+        $terminalName = rtrim(fgets($stdin));
+
+        if (empty($terminalName)) {
+            $terminalName = DEFAULT_TERMINAL_NAME;
+        }
 
         echo("Sending authentication request...\n");
         try {
             $auth = $toopher->authenticate($pairing->user->name, $terminalName);
         } catch (Exception $e) {
-            echo ('Error initiating authentication (Reason: $e)');
+            echo (sprintf('Error initiating authentication (Reason: %s)', $e->getMessage()));
+            break;
         }
 
         while(true) {
             echo ('Respond to authentication request on phone and then press return to continue.');
             rtrim(fgets($stdin));
-            echo ("\nChecking status of authenticationr request...\n");
+            echo ("\nChecking status of authentication request...\n");
 
             try {
                 $auth->refreshFromServer();
             } catch (Exception $e) {
-                echo ('Could not check authentication status (Reason: $e)');
+                echo (sprintf('Could not check authentication status (Reason: %s)', $e->getMessage()));
             }
 
             if ($auth->pending) {
@@ -155,10 +164,10 @@ function demo()
     $toopher = initializeApi();
 
     do {
-        $pairing = pair($toopher);
+        $pairing = pairDeviceWithToopher($toopher);
     } while (!$pairing);
 
-    authenticate($pairing, $toopher);
+    authenticateWithToopher($pairing, $toopher);
 }
 
 demo()
