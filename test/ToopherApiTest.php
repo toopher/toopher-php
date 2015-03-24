@@ -113,6 +113,11 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
         $this->assertGreaterThanOrEqual(0, (int)$patch);
     }
 
+    public function testDefaultBaseUrl()
+    {
+        $this->assertTrue(ToopherApi::DEFAULT_BASE_URL == 'https://api.toopher.com/v1/', "Default base url should be 'https://api.toopher.com/v1/'");
+    }
+
     public function testPairReturnsPairing()
     {
         $resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/pairings/create');

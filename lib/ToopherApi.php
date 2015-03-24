@@ -29,6 +29,7 @@ class ToopherRequestException extends Exception
 class ToopherApi
 {
     const VERSION = '2.0.0';
+    const DEFAULT_BASE_URL = 'https://api.toopher.com/v1/';
 
     protected $baseUrl;
     protected $oauthConsumer;
@@ -44,7 +45,7 @@ class ToopherApi
         }
 
         $this->oauthConsumer = new HTTP_OAuth_Consumer($key, $secret);
-        $this->baseUrl = (!empty($baseUrl)) ? $baseUrl : 'https://api.toopher.com/v1/';
+        $this->baseUrl = (!empty($baseUrl)) ? $baseUrl : ToopherApi::DEFAULT_BASE_URL;
         $this->httpAdapter = (!is_null($httpAdapter)) ? $httpAdapter : new HTTP_Request2_Adapter_Curl();
         $this->advanced = new AdvancedApiUsageFactory($key, $secret, $baseUrl, $httpAdapter, $this);
     }
