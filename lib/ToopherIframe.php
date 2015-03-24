@@ -114,7 +114,7 @@ class ToopherIframe
             throw new ToopherRequestException($toopherData['error_message'], $toopherData['error_code']);
         } else {
             $this->validateData($toopherData, $requestToken, $kwargs);
-            $api = new ToopherApi($this->consumerKey, $this->consumerSecret);
+            $api = new ToopherApi($this->consumerKey, $this->consumerSecret, $this->baseUrl);
 
             switch ($toopherData['resource_type']) {
                 case 'authentication_request':
