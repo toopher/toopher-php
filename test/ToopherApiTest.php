@@ -26,6 +26,8 @@ use Rhumsaa\Uuid\Uuid;
 
 class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
+    const DEFAULT_BASE_URL = 'https://api.toopher.test/v1/';
+
     protected function setUp()
     {
         $this->mock = new HTTP_Request2_Adapter_Mock();
@@ -33,7 +35,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
     protected function getToopherApi($mock = NULL)
     {
-        return new ToopherApi('key', 'secret', '', $mock);
+        return new ToopherApi('key', 'secret', ToopherApiTests::DEFAULT_BASE_URL, $mock);
     }
 
     public function compareToDefaultPairing($pairing)
@@ -124,7 +126,11 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
         $resp->appendBody('{"id":"1","enabled":true,"pending":false,"user":{"id":"1","name":"user", "toopher_authentication_enabled":true}}');
         $this->mock->addResponse($resp);
         $toopher = $this->getToopherApi($this->mock);
-        $pairing = $toopher->pair('user', 'immediate_pair');
+        $pairing = $toopher->pair('user', 'immediate pair');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'pairings/create', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'pairings/create'));
+        $parameters = $toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getParameters();
+        $this->assertTrue($parameters['user_name'] == 'user', "Last called parameters should include key-value pair: 'user_name'=>'user'");
+        $this->assertTrue($parameters['pairing_phrase'] == 'immediate pair', "Last called parameters should include key-value pair: 'pairing_phrase'=>'immediate pair'");
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
         $this->compareToDefaultPairing($pairing);
     }
@@ -136,6 +142,10 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
         $this->mock->addResponse($resp);
         $toopher = $this->getToopherApi($this->mock);
         $pairing = $toopher->pair('user', '555-555-5555');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'pairings/create/sms', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'pairings/create/sms'));
+        $parameters = $toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getParameters();
+        $this->assertTrue($parameters['user_name'] == 'user', "Last called parameters should include key-value pair: 'user_name'=>'user'");
+        $this->assertTrue($parameters['phone_number'] == '555-555-5555', "Last called parameters should include key-value pair: 'phone_number'=>'555-555-5555'");
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
         $this->compareToDefaultPairing($pairing);
     }
@@ -147,6 +157,9 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
         $this->mock->addResponse($resp);
         $toopher = $this->getToopherApi($this->mock);
         $pairing = $toopher->pair('user');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'pairings/create/qr', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'pairings/create/qr'));
+        $parameters = $toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getParameters();
+        $this->assertTrue($parameters['user_name'] == 'user', "Last called parameters should include key-value pair: 'user_name'=>'user'");
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
         $this->compareToDefaultPairing($pairing);
     }
@@ -160,6 +173,9 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
         $toopher = $this->getToopherApi($this->mock);
         $authRequest = $toopher->authenticate($id);
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'authentication_requests/initiate', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'authentication_requests/initiate'));
+        $parameters = $toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getParameters();
+        $this->assertTrue($parameters['pairing_id'] == $id, "Last called parameters should include key-value pair: 'pairing_id'=>" . $id);
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
         $this->compareToDefaultAuthenticationRequest($authRequest, $id);
     }
@@ -174,6 +190,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
         $toopher = $this->getToopherApi($this->mock);
         $authRequest = $toopher->authenticate($id, 'term name', '1', 'it is a test', $extras);
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'authentication_requests/initiate', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'authentication_requests/initiate'));
         $parameters = $toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getParameters();
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
         $this->assertTrue($parameters['pairing_id'] == $id, sprintf("Last called parameters should include key-value pair: 'pairing_id'=> %s", $id));
@@ -192,11 +209,14 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
         $toopher = $this->getToopherApi($this->mock);
         $authRequest = $toopher->authenticate('user');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'authentication_requests/initiate', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'authentication_requests/initiate'));
+        $parameters = $toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getParameters();
+        $this->assertTrue($parameters['user_name'] == 'user', "Last called parameters should include key-value pair: 'user_name'=>'user'");
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
         $this->compareToDefaultAuthenticationRequest($authRequest);
     }
 
-    public function testAuthentiateWithUsernameOptionalArgsAndExtrasReturnsAuthenticationRequest()
+    public function testAuthenticateWithUsernameOptionalArgsAndExtrasReturnsAuthenticationRequest()
     {
         $extras = array('foo' => 'bar');
         $resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/authentication_requests/initiate');
@@ -205,6 +225,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
         $toopher = $this->getToopherApi($this->mock);
         $authRequest = $toopher->authenticate('user', 'term name', '1', 'it is a test', $extras);
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'authentication_requests/initiate', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'authentication_requests/initiate'));
         $parameters = $toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getParameters();
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
         $this->assertTrue($parameters['user_name'] == 'user', "Last called parameters should include key-value pair: 'user_name'=>'user'");
@@ -224,6 +245,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
         $toopher = $this->getToopherApi($this->mock);
         $params = array('pairing_id' => '1', 'terminal_name' => 'term name');
         $authRequest = $toopher->advanced->raw->post('authentication_requests/initiate', $params);
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'authentication_requests/initiate', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'authentication_requests/initiate'));
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
         $this->assertTrue($authRequest['id'] == '1', 'Authentication request id was incorrect');
         $this->assertTrue($authRequest['pending'] == false, 'Authentication request should not be pending');
@@ -244,6 +266,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
         $toopher = $this->getToopherApi($this->mock);
         $authRequest = $toopher->advanced->raw->get('authentication_requests/1');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'authentication_requests/1', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'authentication_requests/1'));
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
         $this->assertTrue($authRequest['id'] == '1', 'Authentication request id was incorrect');
         $this->assertTrue($authRequest['pending'] == false, 'Authentication request should not be pending');
@@ -264,6 +287,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
         $toopher = $this->getToopherApi($this->mock);
         $pairing = $toopher->advanced->pairings->getById('1');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'pairings/1', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'pairings/1'));
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
         $this->compareToDefaultPairing($pairing);
     }
@@ -276,6 +300,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
         $toopher = $this->getToopherApi($this->mock);
         $authRequest = $toopher->advanced->authenticationRequests->getById('1');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'authentication_requests/1', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'authentication_requests/1'));
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
         $this->compareToDefaultAuthenticationRequest($authRequest);
     }
@@ -288,6 +313,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
         $toopher = $this->getToopherApi($this->mock);
         $user = $toopher->advanced->users->getById('1');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'users/1', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'users/1'));
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
         $this->compareToDefaultUser($user);
     }
@@ -300,6 +326,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
         $toopher = $this->getToopherApi($this->mock);
         $user = $toopher->advanced->users->getByName('user');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'users?user_name=user', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'users?user_name=user'));
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
         $this->compareToDefaultUser($user);
     }
@@ -316,8 +343,6 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
         $toopher = $this->getToopherApi($this->mock);
         $user = $toopher->advanced->users->getByName('user');
-        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
-        $this->compareToDefaultUser($user);
     }
 
     /**
@@ -332,8 +357,6 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
         $toopher = $this->getToopherApi($this->mock);
         $user = $toopher->advanced->users->getByName('user');
-        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
-        $this->compareToDefaultUser($user);
     }
 
     public function testUsersCreateReturnsUser()
@@ -344,6 +367,9 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
         $toopher = $this->getToopherApi($this->mock);
         $user = $toopher->advanced->users->create('paired user');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'users/create', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'users/create'));
+        $parameters = $toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getParameters();
+        $this->assertTrue($parameters['name'] == 'paired user', "Last called parameters should include key-value pair: 'name'=>'paired user'");
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
         $this->compareToDefaultUser($user);
     }
@@ -356,6 +382,10 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
         $toopher = $this->getToopherApi($this->mock);
         $user = $toopher->advanced->users->create('paired user', array('foo'=>'bar'));
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'users/create', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'users/create'));
+        $parameters = $toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getParameters();
+        $this->assertTrue($parameters['name'] == 'paired user', "Last called parameters should include key-value pair: 'name'=>'paired user'");
+        $this->assertTrue($parameters['foo'] == 'bar', "Last called parameters should include key-value pair: 'foo'=>'bar'");
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
         $this->compareToDefaultUser($user);
     }
@@ -366,8 +396,9 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
         $resp->appendBody('{"id":"1", "name":"terminal name", "requester_specified_id": "requester specified id", "user":{"id":"1","name":"user name","toopher_authentication_enabled":true}}');
         $this->mock->addResponse($resp);
 
-        $toopher = new ToopherApi('key', 'secret', '', $this->mock);
+        $toopher = $this->getToopherApi($this->mock);
         $userTerminal = $toopher->advanced->userTerminals->getById('1');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'user_terminals/1', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'user_terminals/1'));
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'GET', "Last called method should be 'GET'");
         $this->compareToDefaultUserTerminal($userTerminal);
     }
@@ -378,8 +409,13 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
         $resp->appendBody('{"id":"1", "name":"terminal name", "requester_specified_id": "requester specified id", "user":{"id":"1","name":"user name","toopher_authentication_enabled":true}}');
         $this->mock->addResponse($resp);
 
-        $toopher = new ToopherApi('key', 'secret', '', $this->mock);
+        $toopher = $this->getToopherApi($this->mock);
         $userTerminal = $toopher->advanced->userTerminals->create('name', 'terminal one', 'requester specified id');
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'user_terminals/create', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'user_terminals/create'));
+        $parameters = $toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getParameters();
+        $this->assertTrue($parameters['user_name'] == 'name', "Last called parameters should include key-value pair: 'user_name'=>'name'");
+        $this->assertTrue($parameters['name'] == 'terminal one', "Last called parameters should include key-value pair: 'name'=>'terminal one'");
+        $this->assertTrue($parameters['name_extra'] == 'requester specified id', "Last called parameters should include key-value pair: 'name_extra'=>'requester specified id'");
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
         $this->compareToDefaultUserTerminal($userTerminal);
     }
@@ -390,8 +426,14 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
         $resp->appendBody('{"id":"1", "name":"terminal name", "requester_specified_id": "requester specified id", "user":{"id":"1","name":"user name","toopher_authentication_enabled":true}}');
         $this->mock->addResponse($resp);
 
-        $toopher = new ToopherApi('key', 'secret', '', $this->mock);
+        $toopher = $this->getToopherApi($this->mock);
         $userTerminal = $toopher->advanced->userTerminals->create('name', 'terminal one', 'requester specified id', array('foo'=>'bar'));
+        $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getUrl() == ToopherApiTests::DEFAULT_BASE_URL . 'user_terminals/create', sprintf("Last called url should be '%s'", ToopherApiTests::DEFAULT_BASE_URL . 'user_terminals/create'));
+        $parameters = $toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getParameters();
+        $this->assertTrue($parameters['user_name'] == 'name', "Last called parameters should include key-value pair: 'user_name'=>'name'");
+        $this->assertTrue($parameters['name'] == 'terminal one', "Last called parameters should include key-value pair: 'name'=>'terminal one'");
+        $this->assertTrue($parameters['name_extra'] == 'requester specified id', "Last called parameters should include key-value pair: 'name_extra'=>'requester specified id'");
+        $this->assertTrue($parameters['foo'] == 'bar', "Last called parameters should include key-value pair: 'foo'=>'bar'");
         $this->assertTrue($toopher->advanced->raw->getOauthConsumer()->getLastRequest()->getMethod() == 'POST', "Last called method should be 'POST'");
         $this->compareToDefaultUserTerminal($userTerminal);
     }
