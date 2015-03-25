@@ -138,9 +138,9 @@ class ApiRawRequester
         return $this->request('POST', $endpoint, $parameters);
     }
 
-    public function get($endpoint)
+    public function get($endpoint, $parameters = array())
     {
-        return $this->request('GET', $endpoint);
+        return $this->request('GET', $endpoint, $parameters);
     }
 
     public function get_raw($endpoint)
