@@ -338,6 +338,18 @@ class ToopherIframeTests extends PHPUnit_Framework_TestCase {
 		$this->toopherIframe->processPostback($this->getUrlencodedData($authData), $this->getRequestToken());
 	}
 
+	/**
+	* @expectedException SignatureValidationError
+	* @expectedExceptionMessage Error while calculating signature:
+	*/
+	public function testProcessPostbackWithBadSecretRaisesError()
+	{
+		$toopherIframe = new ToopherIframe('key', array('hi'), 'https://api.toopher.test/v1/');
+		$toopherIframe->setTimeStampOverride($this->getOauthTimestamp());
+		$toopherIframe->setNonceOverride($this->getOauthNonce());
+		$toopherIframe->processPostback($this->getUrlencodedData($this->getAuthenticationRequestData()), $this->getRequestToken());
+	}
+
 	public function testIsAuthenticationGrantedWithAuthenticationRequestGrantedReturnsTrue()
 	{
 		$this->assertTrue($this->toopherIframe->isAuthenticationGranted($this->getUrlencodedData($this->getAuthenticationRequestData()), $this->getRequestToken()));

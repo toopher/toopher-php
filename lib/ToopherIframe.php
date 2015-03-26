@@ -205,7 +205,7 @@ class ToopherIframe
             $computedSignature = $this->signature($this->consumerSecret, $data);
             $signatureValid = $maybeSignature == $computedSignature;
         } catch (Exception $e) {
-            throw new SignatureValidationError('Error while calculating signature: ' . $e);
+            throw new SignatureValidationError('Error while calculating signature: ' . $e->getMessage());
         }
 
         if (!$signatureValid) {
