@@ -279,6 +279,16 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
         $this->assertTrue($authRequest['action'] == array('id'=>'1', 'name'=>'test'), 'Action data was incorrect');
     }
 
+    /**
+    * @expectedException ToopherRequestException
+    * @expectedExceptionMessage Error making Toopher API request
+    */
+    public function testGetWithoutHttpRequestMockRaisesToopherRequestException()
+    {
+        $toopher = $this->getToopherApi();
+        $toopher->advanced->raw->get('');
+    }
+
     public function testPairingsGetByIdReturnsPairing()
     {
         $resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/pairings/1');
@@ -469,6 +479,45 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
     {
         $resp = new HTTP_Request2_Response('HTTP/1.1 403 Forbidden', false, 'https://api.toopher.com/v1/authentication_requests/1');
         $resp->appendBody(sprintf("{'error_code':403, 'error_message':'%c'}", chr(5)));
+        $this->mock->addResponse($resp);
+        $toopher = $this->getToopherApi($this->mock);
+        $auth = $toopher->advanced->authenticationRequests->getById('1');
+    }
+
+    /**
+    * @expectedException ToopherRequestException
+    * @expectedExceptionMessage Forbidden - {"error_code":401}
+    */
+    public function test403WithEmptyMessageRaisesToopherRequestException()
+    {
+        $resp = new HTTP_Request2_Response('HTTP/1.1 403 Forbidden', false, 'https://api.toopher.com/v1/authentication_requests/1');
+        $resp->appendBody('{"error_code":401}');
+        $this->mock->addResponse($resp);
+        $toopher = $this->getToopherApi($this->mock);
+        $auth = $toopher->advanced->authenticationRequests->getById('1');
+    }
+
+    /**
+    * @expectedException ToopherRequestException
+    * @expectedExceptionMessage JSON Parsing Error: Syntax error, malformed JSON
+    */
+    public function test200WithEmptyMessageRaisesToopherRequestException()
+    {
+        $resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/authentication_requests/1');
+        $resp->appendBody('stuff');
+        $this->mock->addResponse($resp);
+        $toopher = $this->getToopherApi($this->mock);
+        $auth = $toopher->advanced->authenticationRequests->getById('1');
+    }
+
+    /**
+    * @expectedException ToopherRequestException
+    * @expectedExceptionMessage JSON Parsing Error: Syntax error, malformed JSON
+    */
+    public function test403WithBadJsonRaisesToopherRequestException()
+    {
+        $resp = new HTTP_Request2_Response('HTTP/1.1 403 Forbidden', false, 'https://api.toopher.com/v1/authentication_requests/1');
+        $resp->appendBody('stuff');
         $this->mock->addResponse($resp);
         $toopher = $this->getToopherApi($this->mock);
         $auth = $toopher->advanced->authenticationRequests->getById('1');

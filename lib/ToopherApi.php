@@ -166,7 +166,7 @@ class ApiRawRequester
         try {
             $result = $this->oauthConsumer->sendRequest($this->baseUrl . $endpoint, $parameters, $method);
         } catch (Exception $e) {
-            error_log($e);
+            error_log($e->getMessage());
             throw new ToopherRequestException('Error making Toopher API request', $e->getCode(), $e);
         }
 
