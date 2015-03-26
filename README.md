@@ -1,10 +1,8 @@
-# ToopherApi PHP Client
-
-[![Build
+# ToopherPHP [![Build
 Status](https://travis-ci.org/toopher/toopher-php.png?branch=master)](https://travis-ci.org/toopher/toopher-php)
 
 #### Introduction
-ToopherApi PHP Client simplifies the task of interfacing with the Toopher API from PHP code.  This project includes all the dependency libraries and handles the required OAuth and JSON functionality so you can focus on just using the API.
+ToopherPHP is a Toopher API library that simplifies the task of interfacing with the Toopher API from PHP code.  This project includes all the dependency libraries and handles the required OAuth and JSON functionality so you can focus on just using the API.
 
 #### Learn the Toopher API
 Make sure you visit [http://dev.toopher.com](http://dev.toopher.com) to get acquainted with the Toopher API fundamentals.  The documentation there will tell you the details about the operations this API wrapper library provides.
@@ -81,3 +79,6 @@ would be
 ```shell
 $ vendor/bin/phpunit test
 ```
+
+#### License
+ToopherPHP is licensed under the MIT License. See LICENSE.txt for the full license text.
