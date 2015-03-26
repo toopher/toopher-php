@@ -265,7 +265,7 @@ class ToopherIframeTests extends PHPUnit_Framework_TestCase {
 	*/
 	public function testProcessPostbackWithExpiredSignatureRaisesError()
 	{
-		$this->toopherIframe->setTimeStampOverride(mktime(0, 16, 40, 2, 1, 1970));
+		$this->toopherIframe->setTimeStampOverride(null);
 		$authData = $this->getAuthenticationRequestData();
 		$this->toopherIframe->processPostback($this->getUrlencodedData($authData), $this->getRequestToken());
 	}
