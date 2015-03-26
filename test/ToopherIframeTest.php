@@ -121,6 +121,24 @@ class ToopherIframeTests extends PHPUnit_Framework_TestCase {
 		$this->toopherIframe->setTimestampOverride($this->getOauthTimestamp());
 	}
 
+	/**
+	* @expectedException InvalidArgumentException
+	* @expectedExceptionMessage Toopher consumer key cannot be empty
+	*/
+	public function testEmptyKeyThrowsException()
+	{
+		$toopher = new ToopherIframe('', 'secret');
+	}
+
+	/**
+	* @expectedException InvalidArgumentException
+	* @expectedExceptionMessage Toopher consumer secret cannot be empty
+	*/
+	public function testEmptySecretThrowsException()
+	{
+		$toopher = new ToopherIframe('key', '');
+	}
+
 	public function testGetAuthenticationUrlOnlyUsernameReturnsValidUrl()
 	{
 		$this->toopherIframe->setNonceOverride($this->getOauthNonce());
