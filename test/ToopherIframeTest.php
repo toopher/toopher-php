@@ -248,6 +248,15 @@ class ToopherIframeTests extends PHPUnit_Framework_TestCase {
 		$this->assertTrue(is_a($authRequest, 'AuthenticationRequest'), 'AuthenticationRequest should be returned');
 	}
 
+	public function testProcessPostbackWithKeyWithEmptyValueReturnsAuthenticationRequest()
+	{
+		$authData = $this->getAuthenticationRequestData();
+		$authData['requester_metadata'] = '';
+		$authData['toopher_sig'] = '2CQouLu8dL3OA8N/mgHK6eeYHm4=';
+		$authRequest = $this->toopherIframe->processPostback($this->getUrlEncodedData($authData));
+		$this->assertTrue(is_a($authRequest, 'AuthenticationRequest'), 'AuthenticationRequest should be returned');
+	}
+
 	/**
 	* @expectedException         SignatureValidationError
 	* @expectedExceptionMessage  Computed signature does not match
