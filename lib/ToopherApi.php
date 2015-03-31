@@ -187,13 +187,13 @@ class ApiRawRequester
                     error_log(sprintf('Response body: %s', $result->getBody()));
                     throw new ToopherRequestException(sprintf('JSON Parsing Error: %s', $jsonError));
                 }
+            }
+
+            if(array_key_exists('error_message', $err))
+            {
+                throw new ToopherRequestException($err['error_message'], $err['error_code']);
             } else {
-                if(array_key_exists('error_message', $err))
-                {
-                    throw new ToopherRequestException($err['error_message'], $err['error_code']);
-                } else {
-                    throw new ToopherRequestException(sprintf('%s - %s', $result->getReasonPhrase(), $resultBody), $result->getStatus());
-                }
+                throw new ToopherRequestException(sprintf('%s - %s', $result->getReasonPhrase(), $resultBody), $result->getStatus());
             }
         }
 
