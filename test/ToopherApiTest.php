@@ -510,9 +510,9 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
     * @expectedException ToopherRequestException
     * @expectedExceptionMessage JSON Parsing Error: Syntax error, malformed JSON
     */
-    public function test200WithEmptyMessageRaisesToopherRequestException()
+    public function test403WithBadJsonRaisesToopherRequestException()
     {
-        $resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/authentication_requests/1');
+        $resp = new HTTP_Request2_Response('HTTP/1.1 403 Forbidden', false, 'https://api.toopher.com/v1/authentication_requests/1');
         $resp->appendBody('stuff');
         $this->mock->addResponse($resp);
         $toopher = $this->getToopherApi($this->mock);
@@ -523,9 +523,9 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
     * @expectedException ToopherRequestException
     * @expectedExceptionMessage JSON Parsing Error: Syntax error, malformed JSON
     */
-    public function test403WithBadJsonRaisesToopherRequestException()
+    public function test200WithEmptyMessageRaisesToopherRequestException()
     {
-        $resp = new HTTP_Request2_Response('HTTP/1.1 403 Forbidden', false, 'https://api.toopher.com/v1/authentication_requests/1');
+        $resp = new HTTP_Request2_Response('HTTP/1.1 200 OK', false, 'https://api.toopher.com/v1/authentication_requests/1');
         $resp->appendBody('stuff');
         $this->mock->addResponse($resp);
         $toopher = $this->getToopherApi($this->mock);

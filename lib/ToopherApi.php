@@ -181,20 +181,19 @@ class ApiRawRequester
             $err = json_decode($resultBody, true);
             if ($err === NULL) {
                 $jsonError = $this->json_error_to_string(json_last_error());
-                if (!empty($jsonError))
+                if ($jsonError)
                 {
                     error_log(sprintf('Error parsing response body JSON: %s', $jsonError));
                     error_log(sprintf('Response body: %s', $result->getBody()));
                     throw new ToopherRequestException(sprintf('JSON Parsing Error: %s', $jsonError));
                 }
-            }
-
-            if(array_key_exists('error_message', $err))
-            {
-                throw new ToopherRequestException($err['error_message'], $err['error_code']);
             } else {
-                throw new ToopherRequestException(sprintf('%s - %s', $result->getReasonPhrase(), $resultBody), $result->getStatus());
+                if(array_key_exists('error_message', $err))
+                {
+                    throw new ToopherRequestException($err['error_message'], $err['error_code']);
+                }
             }
+            throw new ToopherRequestException(sprintf('%s - %s', $result->getReasonPhrase(), $resultBody), $result->getStatus());
         }
 
         if ($rawRequest) {
@@ -203,14 +202,14 @@ class ApiRawRequester
             $decoded = json_decode($resultBody, true);
             if ($decoded === NULL) {
                 $jsonError = $this->json_error_to_string(json_last_error());
-                if (!empty($jsonError))
+                if ($jsonError)
                 {
                     error_log(sprintf('Error parsing response body JSON: %s', $jsonError));
                     error_log(sprintf('Response body: %s', $result->getBody()));
                     throw new ToopherRequestException(sprintf('JSON Parsing Error: %s', $jsonError));
                 }
             }
-        return $decoded;
+            return $decoded;
         }
     }
 
