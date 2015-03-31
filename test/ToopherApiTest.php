@@ -38,6 +38,13 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
         return new ToopherApi('key', 'secret', ToopherApiTests::DEFAULT_BASE_URL, $mock);
     }
 
+    protected function getApiRawRequesterReflectionMethod()
+    {
+        $method = new ReflectionMethod('ApiRawRequester', 'json_error_to_string');
+        $method->setAccessible(true);
+        return $method;
+    }
+
     public function compareToDefaultPairing($pairing)
     {
         $this->assertTrue($pairing->id == '1', 'Pairing id was incorrect');
@@ -521,6 +528,48 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
         $this->mock->addResponse($resp);
         $toopher = $this->getToopherApi($this->mock);
         $auth = $toopher->advanced->authenticationRequests->getById('1');
+    }
+
+    public function testJsonErrorToStringErrorNone()
+    {
+        $method = $this->getApiRawRequesterReflectionMethod();
+        $this->assertTrue($method->invoke(new ApiRawRequester('key', 'secret', ToopherApiTests::DEFAULT_BASE_URL, null), 0) == null, "JSON error code '0' should return 'null'");
+    }
+
+    public function testJsonErrorToStringErrorDepth()
+    {
+        $method = $this->getApiRawRequesterReflectionMethod();
+        $this->assertTrue($method->invoke(new ApiRawRequester('key', 'secret', ToopherApiTests::DEFAULT_BASE_URL, null), 1) == 'Maximum stack depth exceeded', "JSON error code '1' should return 'Maximum stack depth exceeded'");
+    }
+
+    public function testJsonErrorToStringErrorStateMismatch()
+    {
+        $method = $this->getApiRawRequesterReflectionMethod();
+        $this->assertTrue($method->invoke(new ApiRawRequester('key', 'secret', ToopherApiTests::DEFAULT_BASE_URL, null), 2) == 'Underflow or the modes mismatch', "JSON error code '2' should return 'Underflow or the modes mismatch'");
+    }
+
+    public function testJsonErrorToStringErrorCtrlChar()
+    {
+        $method = $this->getApiRawRequesterReflectionMethod();
+        $this->assertTrue($method->invoke(new ApiRawRequester('key', 'secret', ToopherApiTests::DEFAULT_BASE_URL, null), 3) == 'Unexpected control character found', "JSON error code '3' should return 'Unexpected control character found'");
+    }
+
+    public function testJsonErrorToStringErrorSyntax()
+    {
+        $method = $this->getApiRawRequesterReflectionMethod();
+        $this->assertTrue($method->invoke(new ApiRawRequester('key', 'secret', ToopherApiTests::DEFAULT_BASE_URL, null), 4) == 'Syntax error, malformed JSON', "JSON error code '4' should return 'Syntax error, malformed JSON'");
+    }
+
+    public function testJsonErrorToStringErrorUTF8()
+    {
+        $method = $this->getApiRawRequesterReflectionMethod();
+        $this->assertTrue($method->invoke(new ApiRawRequester('key', 'secret', ToopherApiTests::DEFAULT_BASE_URL, null), 5) == 'Malformed UTF-8 characters, possibly incorrectly encoded', "JSON error code '5' should return 'Malformed UTF-8 characters, possibly incorrectly encoded'");
+    }
+
+    public function testJsonErrorToStringErrorUnknown()
+    {
+        $method = $this->getApiRawRequesterReflectionMethod();
+        $this->assertTrue($method->invoke(new ApiRawRequester('key', 'secret', ToopherApiTests::DEFAULT_BASE_URL, null), 6) == 'Unknown error', "JSON error code '6' should return 'Unknown error'");
     }
 }
 
