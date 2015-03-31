@@ -179,7 +179,7 @@ class ApiRawRequester
             }
 
             $err = json_decode($resultBody, true);
-            if ($err == NULL) {
+            if ($err === NULL) {
                 $jsonError = $this->json_error_to_string(json_last_error());
                 if (!empty($jsonError))
                 {
@@ -203,7 +203,8 @@ class ApiRawRequester
             $decoded = json_decode($resultBody, true);
             if ($decoded === NULL) {
                 $jsonError = $this->json_error_to_string(json_last_error());
-                if (!empty($jsonError)) {
+                if (!empty($jsonError))
+                {
                     error_log(sprintf('Error parsing response body JSON: %s', $jsonError));
                     error_log(sprintf('Response body: %s', $result->getBody()));
                     throw new ToopherRequestException(sprintf('JSON Parsing Error: %s', $jsonError));
