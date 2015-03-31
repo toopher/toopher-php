@@ -470,6 +470,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
     /**
      * @expectedException ToopherRequestException
+     * @expectedExceptionMessage Forbidden
      */
     public function test403WithEmptyBodyRaisesToopherRequestException()
     {
@@ -481,6 +482,7 @@ class ToopherApiTests extends PHPUnit_Framework_TestCase {
 
     /**
      * @expectedException ToopherRequestException
+     * @expectedExceptionMessage JSON Parsing Error: Syntax error, malformed JSON
      */
     public function test403WithUnprintableBodyRaisesToopherRequestException()
     {

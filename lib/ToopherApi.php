@@ -179,7 +179,7 @@ class ApiRawRequester
             }
 
             $err = json_decode($resultBody, true);
-            if ($err === NULL) {
+            if ($err == NULL) {
                 $jsonError = $this->json_error_to_string(json_last_error());
                 if (!empty($jsonError))
                 {
