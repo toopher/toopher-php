@@ -29,7 +29,7 @@ require_once("toopher_api.php");
 $toopherApi = new ToopherAPI($key, $secret);
 
 // Step 1 - Pair with their phone's Toopher app
-$pairing = $toopherApi->pair("pairing phrase", "username@yourservice.com");
+$pairingStatus = $toopherApi->pair("pairing phrase", "username@yourservice.com");
 
 // Step 2 - Authenticate a log in
 $authStatus = $toopherApi->authenticate($pairingStatus['id'], "my computer");
